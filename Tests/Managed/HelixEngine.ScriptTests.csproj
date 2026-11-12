@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- C# scripts of the tests and benchmarks: GameBehaviour classes the C++ test program runs. -->
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>net11.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <!-- Message methods are found by reflection: unused private members are expected. -->
+    <NoWarn>IDE0051;CS0169</NoWarn>
+    <AssemblyName>HelixEngine.ScriptTests</AssemblyName>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="HelixEngine.CoreModule">
+      <HintPath>$(HelixCoreModule)</HintPath>
+    </Reference>
+    <Reference Include="Helix.Scripting.Runtime">
+      <HintPath>$(HelixScriptingRuntime)</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+</Project>

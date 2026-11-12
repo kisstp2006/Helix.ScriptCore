@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- HelixEngine.CoreModule: the engine's generated classes (from its tagged headers), the interop runtime of
+       Helix.Bindgen, and the C# side of scripts. -->
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>net11.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <RootNamespace>HelixEngine</RootNamespace>
+    <AssemblyName>HelixEngine.CoreModule</AssemblyName>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(HelixEngineBindings)" />
+    <Compile Include="$(HelixInteropFile)" />
+    <!-- The host's managed side: loaded by the host itself (the default load context), not copied. -->
+    <Reference Include="Helix.Scripting.Runtime">
+      <HintPath>$(HelixScriptingRuntime)</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+</Project>
