@@ -31,6 +31,9 @@ namespace HelixEngine
         bool m_Completed;
         bool m_AwaitedOnMain;
         bool m_Pooled;
+        // A thread switch: completed when its continuation is given (so the continuation never runs on the thread it
+        // leaves).
+        bool m_Switch;
         Exception m_Exception;
         CancellationTokenRegistration m_Registration;
         internal ulong m_Wait;
@@ -59,6 +62,7 @@ namespace HelixEngine
             m_Wait = 0;
             m_Operation = null;
             m_Resume = Resume.Captured;
+            m_Switch = false;
         }
 
         /// <summary>The awaitable ran to completion (or was canceled).</summary>
@@ -146,6 +150,8 @@ namespace HelixEngine
             lock (m_Lock)
             {
                 m_AwaitedOnMain = AwaitableScheduler.IsMainThread;
+                if (m_Switch && !m_Completed)
+                    m_Completed = true;
                 now = m_Completed;
                 if (!now)
                     m_Continuation = continuation;
@@ -214,7 +220,7 @@ namespace HelixEngine
             if (!AwaitableScheduler.IsMainThread)
                 a.Complete(null);
             else
-                ThreadPool.UnsafeQueueUserWorkItem(static x => ((Awaitable)x).Complete(null), a);
+                a.m_Switch = true;
             return a;
         }
 
@@ -226,7 +232,7 @@ namespace HelixEngine
             if (AwaitableScheduler.IsMainThread)
                 a.Complete(null);
             else
-                AwaitableScheduler.Post(() => a.Complete(null));
+                a.m_Switch = true;
             return a;
         }
 
