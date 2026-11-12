@@ -10,7 +10,7 @@ repo; scripts are classes deriving from `GameBehaviour`.
 |---|---|
 | `Source/HelixEngine.CoreModule/` | `HelixEngine.CoreModule`: the generated engine classes (`Object`, `GameObject`, `Component`, `Behaviour`, `GameBehaviour`), `DefaultExecutionOrder`, `MissingReferenceException` |
 | `Source/HelixEngine.CoreModule/Scripting/ScriptBridge.cs` | The C# side of scripts: the start of the engine's C# side, script classes of assemblies registered with their messages, the C# objects of scripts, the loops of the phases |
-| `Tests/` | C# and C++ scripts in one engine under the .NET host: the order of messages, both languages on one GameObject, exceptions, `AddComponent<T>` |
+| `Tests/` | C# and C++ scripts in one engine under the .NET host (the tests link the shared engine): the order of messages, both languages on one GameObject, exceptions, `AddComponent<T>`, `SendMessage` both ways, a game module loaded, run and unloaded as a shared library |
 
 ## Scripts
 

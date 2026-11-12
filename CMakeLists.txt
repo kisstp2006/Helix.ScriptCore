@@ -34,13 +34,18 @@ if(TARGET helix_scripting_runtime)
     add_dependencies(helix_core_module helix_scripting_runtime)
 endif()
 set(HELIX_CORE_MODULE "${core_module_dll}" CACHE INTERNAL "")
+# Helix::ScriptCore for the repos that take the assembly (HELIX_CORE_MODULE): linking it builds the assembly first.
+add_library(helix_scriptcore INTERFACE)
+add_library(Helix::ScriptCore ALIAS helix_scriptcore)
+add_dependencies(helix_scriptcore helix_core_module)
 
 # Tests: C# scripts (an assembly of test scripts) and C++ scripts (a game module of the test program) in one engine,
 # run by the .NET host of the desktop.
 # The .NET host is the desktop's (Android and the Web build the assemblies; their hosts come with their steps).
+# They link the shared engine, as the player does, and load a game module of their own (a shared library).
 if(HELIX_PLATFORM STREQUAL "windows" OR HELIX_PLATFORM STREQUAL "linux")
-    helix_add_test_suite(helix_scriptcore_tests EXCLUDE "/Managed/" DEPS Helix::Engine Helix::Scripting)
-    helix_add_benchmark_suite(helix_scriptcore_bench DEPS Helix::Engine Helix::Scripting)
+    helix_add_test_suite(helix_scriptcore_tests EXCLUDE "/(Managed|Module)/" DEPS Helix::EngineShared)
+    helix_add_benchmark_suite(helix_scriptcore_bench DEPS Helix::EngineShared)
 endif()
 if(TARGET helix_scriptcore_tests OR TARGET helix_scriptcore_bench)
     include("${HELIX_BINDGEN_ROOT}/CMake/HelixBindgen.cmake")
@@ -70,6 +75,16 @@ if(TARGET helix_scriptcore_tests OR TARGET helix_scriptcore_bench)
     if(TARGET helix_scriptcore_tests)
         helix_bindgen(helix_scriptcore_tests MODULE ScriptCoreTests NAMESPACE ScriptCoreTests KIND NativeGame
                       HEADERS "${tests_dir}/Cpp/CppScripts.h" REFERENCES ${engine_binding_headers} INCLUDE_ROOTS "${tests_dir}" "${engine_source}")
+        # A game module loaded at run time: its file name is its module name.
+        add_library(helix_scriptcore_test_module SHARED "${tests_dir}/Module/ModuleScripts.h")
+        set_target_properties(helix_scriptcore_test_module PROPERTIES OUTPUT_NAME ScriptCoreModule PREFIX "" LINKER_LANGUAGE CXX)
+        target_link_libraries(helix_scriptcore_test_module PRIVATE Helix::EngineShared)
+        target_include_directories(helix_scriptcore_test_module PRIVATE "${tests_dir}")
+        helix_apply_options(helix_scriptcore_test_module)
+        helix_bindgen(helix_scriptcore_test_module MODULE ScriptCoreModule NAMESPACE ScriptCoreModule KIND NativeGame
+                      HEADERS "${tests_dir}/Module/ModuleScripts.h" REFERENCES ${engine_binding_headers} INCLUDE_ROOTS "${tests_dir}" "${engine_source}")
+        add_dependencies(helix_scriptcore_tests helix_scriptcore_test_module)
+        target_compile_definitions(helix_scriptcore_tests PRIVATE "HX_TEST_MODULE=\"$<TARGET_FILE:helix_scriptcore_test_module>\"")
     endif()
 endif()
 

@@ -2,9 +2,13 @@
 
 #include <Helix/Core/Logging/Log.h>
 #include <Helix/Engine/Application/Application.h>
+#include <Helix/Engine/Asset/Asset.h>
 #include <Helix/Engine/GameObject/Lifecycle.h>
+#include <Helix/Engine/Scene/SceneFile.h>
+#include <Helix/Engine/Scene/SceneManager.h>
 #include <Helix/Testing/Test.h>
 
+#include <cstring>
 #include <initializer_list>
 
 using namespace helix;
@@ -154,4 +158,110 @@ HX_TEST(Scripts, SendMessageAcrossTheLanguages)
     HX_CHECK(Expect({"R:cpp.Start", "R:cs.Ping", "R:cpp.Ping", "R:cpp.Toggle(true)", "R:cs.Carry(7)", "R:cpp.Update"}));
     DestroyImmediate(g);
     Calls().Clear();
+}
+
+HX_TEST(Scripts, AGameModuleLoadsRunsAndUnloads)
+{
+    HX_REQUIRE(StartScripts());
+    Calls().Clear();
+    // A shared library against the shared engine: its scripts beside the C# ones, its messages, its unload, again.
+    for (int round = 0; round < 2; round++)
+    {
+        String error;
+        HX_REQUIRE(LoadGameModule(HX_TEST_MODULE, error));
+        const ScriptClass* recorder = FindScriptClass("ScriptCoreModule", "ScriptCoreModule", "ModuleRecorder");
+        HX_REQUIRE(recorder != nullptr);
+        GameObject* g = GameObject::Create("D");
+        g->AddComponent(CSharp("CsRecorder").type);
+        GameObject* k = GameObject::Create("K");
+        HX_REQUIRE(AddScript(k, *recorder) != nullptr);
+        HX_REQUIRE(AddScript(g, *recorder) != nullptr);
+        HX_CHECK(Expect({"D:cs.Awake", "D:cs.OnEnable", "K:mod.Awake", "K:mod.OnEnable", "D:mod.Awake", "D:mod.OnEnable"}));
+        RunScriptPhase(ScriptMessage::Update);
+        HX_CHECK(Expect({"K:mod.Start", "D:mod.Start", "D:cs.Start", "K:mod.Update", "D:mod.Update", "D:cs.Update"}));
+        HX_CHECK(SendScriptMessage(g, "Ping"));
+        HX_CHECK(Expect({"D:mod.Ping"}));
+        // Unloading destroys the module's scripts; the C# one stays.
+        UnloadGameModule("ScriptCoreModule");
+        HX_CHECK(Expect({"K:mod.OnDisable", "K:mod.OnDestroy", "D:mod.OnDisable", "D:mod.OnDestroy"}));
+        HX_CHECK(FindScriptClass("ScriptCoreModule", "ScriptCoreModule", "ModuleRecorder") == nullptr);
+        HX_CHECK(g->GetComponent(CSharp("CsRecorder").type) != nullptr);
+        RunScriptPhase(ScriptMessage::Update);
+        HX_CHECK(Expect({"D:cs.Update"}));
+        DestroyImmediate(g);
+        DestroyImmediate(k);
+        Calls().Clear();
+    }
+}
+
+HX_TEST(Scripts, ASceneOfBothLanguagesLoadsAndUnloads)
+{
+    HX_REQUIRE(StartScripts());
+    Calls().Clear();
+    // The script assets of a C# and a C++ class, a scene with both on one GameObject and the C++ one on another.
+    Guid cs, cpp;
+    Guid::TryParse("e0000000000000000000000000000001", cs);
+    Guid::TryParse("e0000000000000000000000000000002", cpp);
+    MonoScript* csAsset = MonoScript::FromScriptClass(CSharp("CsRecorder"));
+    MonoScript* cppAsset = MonoScript::FromScriptClass(Cpp("CppRecorder"));
+    RegisterAssetObject(cs, 11500000, csAsset, true);
+    RegisterAssetObject(cpp, 11500000, cppAsset, true);
+    const char* file = R"(%YAML 1.1
+%TAG !h! tag:helixengine,2026:
+--- !h!1 &100
+GameObject:
+  m_Component:
+  - component: {fileID: 101}
+  - component: {fileID: 102}
+  - component: {fileID: 103}
+  m_Name: A
+  m_IsActive: 1
+--- !h!4 &101
+Transform:
+  m_GameObject: {fileID: 100}
+  m_Children: []
+  m_Father: {fileID: 0}
+--- !h!114 &102
+GameBehaviour:
+  m_GameObject: {fileID: 100}
+  m_Enabled: 1
+  m_Script: {fileID: 11500000, guid: e0000000000000000000000000000001, type: 3}
+--- !h!114 &103
+GameBehaviour:
+  m_GameObject: {fileID: 100}
+  m_Enabled: 1
+  m_Script: {fileID: 11500000, guid: e0000000000000000000000000000002, type: 3}
+--- !h!1 &200
+GameObject:
+  m_Component:
+  - component: {fileID: 201}
+  - component: {fileID: 202}
+  m_Name: B
+  m_IsActive: 1
+--- !h!4 &201
+Transform:
+  m_GameObject: {fileID: 200}
+  m_Children: []
+  m_Father: {fileID: 0}
+--- !h!114 &202
+GameBehaviour:
+  m_GameObject: {fileID: 200}
+  m_Enabled: 1
+  m_Script: {fileID: 11500000, guid: e0000000000000000000000000000002, type: 3}
+)";
+    Scene s = SceneManager::CreateScene("Mixed");
+    Array<String> errors;
+    HX_CHECK(ReadSceneFile(Span<const u8>(reinterpret_cast<const u8*>(file), std::strlen(file)), s, errors) && errors.Empty());
+    // Awake and OnEnable of every script of the scene before any Start; the Starts before the first Update.
+    HX_CHECK(Expect({"A:cs.Awake", "A:cs.OnEnable", "A:cpp.Awake", "A:cpp.OnEnable", "B:cpp.Awake", "B:cpp.OnEnable"}));
+    Frame();
+    HX_CHECK(Expect({"A:cpp.Start", "B:cpp.Start", "A:cs.Start", "A:cs.FixedUpdate", "A:cpp.Update", "B:cpp.Update", "A:cs.Update",
+                     "A:cs.LateUpdate"}));
+    SceneManager::UnloadSceneAsync(s);
+    SceneManager::ProcessSceneLoads();
+    // Unloading destroys the components in reverse order, each script's OnDisable before its OnDestroy.
+    HX_CHECK(Expect({"A:cpp.OnDisable", "A:cpp.OnDestroy", "A:cs.OnDisable", "A:cs.OnDestroy", "B:cpp.OnDisable", "B:cpp.OnDestroy"}));
+    ResetAssets();
+    DestroyImmediate(csAsset, true);
+    DestroyImmediate(cppAsset, true);
 }
