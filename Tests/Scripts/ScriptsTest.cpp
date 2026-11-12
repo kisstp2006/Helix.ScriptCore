@@ -135,3 +135,23 @@ HX_TEST(Scripts, CSharpScriptsDisableThemselvesAndSeeTheirDeath)
     DestroyImmediate(g);
     HX_CHECK(Expect({"S:cs.SelfDisabler.OnDestroy(alive)"}));
 }
+
+HX_TEST(Scripts, SendMessageAcrossTheLanguages)
+{
+    HX_REQUIRE(StartScripts());
+    Calls().Clear();
+    GameObject* g = GameObject::Create("R");
+    g->AddComponent(CSharp("CsReceiver").type);
+    AddScript(g, Cpp("CppRecorder"));
+    Calls().Clear();
+    // C++ to C#: a number converted to the parameter, text, no argument.
+    HX_CHECK(SendScriptMessage(g, "Hit", scripting::Variant::Int(scripting::TypeOf<i32>(), 3)));
+    HX_CHECK(SendScriptMessage(g, "Named", scripting::Variant::Text("bolt")));
+    HX_CHECK(SendScriptMessage(g, "Ping"));
+    HX_CHECK(Expect({"R:cs.Hit(3)", "R:cs.Named(bolt)", "R:cs.Ping", "R:cpp.Ping"}));
+    // C# to both languages from CsReceiver's Start, and a C# object to C# scripts.
+    RunScriptPhase(ScriptMessage::Update);
+    HX_CHECK(Expect({"R:cpp.Start", "R:cs.Ping", "R:cpp.Ping", "R:cpp.Toggle(true)", "R:cs.Carry(7)", "R:cpp.Update"}));
+    DestroyImmediate(g);
+    Calls().Clear();
+}

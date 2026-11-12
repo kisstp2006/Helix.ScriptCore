@@ -37,8 +37,11 @@ set(HELIX_CORE_MODULE "${core_module_dll}" CACHE INTERNAL "")
 
 # Tests: C# scripts (an assembly of test scripts) and C++ scripts (a game module of the test program) in one engine,
 # run by the .NET host of the desktop.
-helix_add_test_suite(helix_scriptcore_tests EXCLUDE "/Managed/" DEPS Helix::Engine Helix::Scripting)
-helix_add_benchmark_suite(helix_scriptcore_bench DEPS Helix::Engine Helix::Scripting)
+# The .NET host is the desktop's (Android and the Web build the assemblies; their hosts come with their steps).
+if(HELIX_PLATFORM STREQUAL "windows" OR HELIX_PLATFORM STREQUAL "linux")
+    helix_add_test_suite(helix_scriptcore_tests EXCLUDE "/Managed/" DEPS Helix::Engine Helix::Scripting)
+    helix_add_benchmark_suite(helix_scriptcore_bench DEPS Helix::Engine Helix::Scripting)
+endif()
 if(TARGET helix_scriptcore_tests OR TARGET helix_scriptcore_bench)
     include("${HELIX_BINDGEN_ROOT}/CMake/HelixBindgen.cmake")
     set(tests_dir "${CMAKE_CURRENT_SOURCE_DIR}/Tests")
@@ -68,4 +71,11 @@ if(TARGET helix_scriptcore_tests OR TARGET helix_scriptcore_bench)
         helix_bindgen(helix_scriptcore_tests MODULE ScriptCoreTests NAMESPACE ScriptCoreTests KIND NativeGame
                       HEADERS "${tests_dir}/Cpp/CppScripts.h" REFERENCES ${engine_binding_headers} INCLUDE_ROOTS "${tests_dir}" "${engine_source}")
     endif()
+endif()
+
+# The .NET runtime is never unloaded: LeakSanitizer is told about its modules (as in Helix.Scripting's tests).
+if(TEST helix_scriptcore_tests AND HELIX_ENABLE_ASAN AND HELIX_PLATFORM STREQUAL "linux")
+    helix_dependency_dir(scripting_dir Scripting)
+    set_tests_properties(helix_scriptcore_tests PROPERTIES
+                         ENVIRONMENT "LSAN_OPTIONS=suppressions=${scripting_dir}/Tests/Support/LeakSuppressions.txt")
 endif()

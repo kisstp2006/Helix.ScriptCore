@@ -26,5 +26,7 @@ namespace helix::scriptcore::testing
         void Update() { Note(this, "cpp.Update"); }
         void OnDisable() { Note(this, "cpp.OnDisable"); }
         void OnDestroy() { Note(this, "cpp.OnDestroy"); }
+        void Ping() { Note(this, "cpp.Ping"); }
+        void Toggle(bool on) { Note(this, on ? "cpp.Toggle(true)" : "cpp.Toggle(false)"); }
     };
 }

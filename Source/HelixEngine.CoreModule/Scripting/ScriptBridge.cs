@@ -65,11 +65,12 @@ namespace HelixEngine.Internal
                 var setManaged = (delegate* unmanaged[Cdecl]<void**, uint, byte>)Export("HxEngineScripts_SetManaged");
                 if (setManaged == null || s_RegisterClass == null)
                     return 2;
-                void** table = (void**)NativeMemory.Alloc((nuint)(3 * sizeof(void*)));
+                void** table = (void**)NativeMemory.Alloc((nuint)(4 * sizeof(void*)));
                 table[0] = (void*)(delegate* unmanaged[Cdecl]<ulong, uint, ulong*, int>)&Create;
                 table[1] = (void*)(delegate* unmanaged[Cdecl]<uint, ulong*, uint*, byte*, int, void>)&RunBatch;
                 table[2] = (void*)(delegate* unmanaged[Cdecl]<ulong, uint, byte, void>)&RunOne;
-                if (setManaged(table, 3) == 0)
+                table[3] = (void*)(delegate* unmanaged[Cdecl]<ulong, byte*, int, MessageValue*, byte>)&Messages.Receive;
+                if (setManaged(table, 4) == 0)
                     return 3;
                 s_Started = true;
                 return 0;

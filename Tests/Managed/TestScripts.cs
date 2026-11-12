@@ -87,4 +87,25 @@ namespace Tests
         public static long updates;
         void Update() => updates++;
     }
+
+    // SendMessage targets: a value of a type, a number converted, no argument; and a sender of messages to C++.
+    public class CsReceiver : GameBehaviour
+    {
+        void Ping() => Notes.Note(this, "cs.Ping");
+        void Hit(float damage) => Notes.Note(this, "cs.Hit(" + damage.ToString(System.Globalization.CultureInfo.InvariantCulture) + ")");
+        void Named(string text) => Notes.Note(this, "cs.Named(" + text + ")");
+        void Carry(Payload p) => Notes.Note(this, "cs.Carry(" + p.value + ")");
+        void Start()
+        {
+            // C# to the scripts of both languages, a C# object to C# ones.
+            gameObject.SendMessage("Ping");
+            BroadcastMessage("Toggle", true, SendMessageOptions.DontRequireReceiver);
+            SendMessage("Carry", new Payload { value = 7 });
+        }
+    }
+
+    public class Payload
+    {
+        public int value;
+    }
 }
