@@ -88,6 +88,23 @@ if(TARGET helix_scriptcore_tests OR TARGET helix_scriptcore_bench)
     endif()
 endif()
 
+# The public surface of HelixEngine.CoreModule against the inventory (Tests/Api/HelixEngine.csv): a member without a
+# row, or a row without its member, fails. Tools/ApiInventory --write rewrites the inventory from the assembly.
+if(HELIX_BUILD_TESTS AND PROJECT_IS_TOP_LEVEL)
+    set(inventory_dir "${CMAKE_CURRENT_SOURCE_DIR}/Tools/ApiInventory")
+    set(inventory_dll "${scriptcore_artifacts}/bin/ApiInventory/release/HelixApiInventory.dll")
+    file(GLOB inventory_sources CONFIGURE_DEPENDS "${inventory_dir}/*.cs" "${inventory_dir}/*.csproj")
+    add_custom_command(
+        OUTPUT "${inventory_dll}"
+        COMMAND "${HELIX_DOTNET}" build "${inventory_dir}/ApiInventory.csproj" -c Release --artifacts-path "${scriptcore_artifacts}" --nologo -v quiet
+        DEPENDS ${inventory_sources}
+        COMMENT "Building the API inventory tool")
+    add_custom_target(helix_api_inventory ALL DEPENDS "${inventory_dll}")
+    add_dependencies(helix_api_inventory helix_core_module)
+    add_test(NAME helix_scriptcore_api COMMAND "${HELIX_DOTNET}" "${inventory_dll}" --assembly "${core_module_dll}" --reference "${HELIX_SCRIPTING_RUNTIME}"
+             --inventory "${CMAKE_CURRENT_SOURCE_DIR}/Tests/Api/HelixEngine.csv")
+endif()
+
 # The .NET runtime is never unloaded: LeakSanitizer is told about its modules (as in Helix.Scripting's tests).
 if(TEST helix_scriptcore_tests AND HELIX_ENABLE_ASAN AND HELIX_PLATFORM STREQUAL "linux")
     helix_dependency_dir(scripting_dir Scripting)

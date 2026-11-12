@@ -8,6 +8,9 @@
 #include <Helix/Engine/Scene/SceneManager.h>
 #include <Helix/Testing/Test.h>
 
+#include <Helix/Math/Random.h>
+
+#include <bit>
 #include <cstring>
 #include <initializer_list>
 
@@ -264,4 +267,40 @@ GameBehaviour:
     ResetAssets();
     DestroyImmediate(csAsset, true);
     DestroyImmediate(cppAsset, true);
+}
+
+HX_TEST(Scripts, TheScriptApiGivesTheSameResultsInBothLanguages)
+{
+    HX_REQUIRE(StartScripts());
+    Calls().Clear();
+    GameObject* host = GameObject::Create("Host");
+    host->AddComponent(CSharp("CsScenario").type);
+    AddScript(host, Cpp("CppScenario"));
+    RunScriptPhase(ScriptMessage::Update);
+    Array<String>& calls = Calls();
+    HX_REQUIRE(calls.Size() == 2);
+    // The C++ script's line starts with its probe's name, the C# one with the host's (Notes).
+    StringView cpp = calls[0], cs = calls[1];
+    cpp = cpp.Substr(cpp.Find("scenario:"));
+    cs = cs.Substr(cs.Find("scenario:"));
+    if (cpp != cs)
+        std::printf("    C++: %.*s\n    C#:  %.*s\n", int(cpp.Size()), cpp.Data(), int(cs.Size()), cs.Data());
+    HX_CHECK(cpp == cs);
+    HX_CHECK(cs == "scenario:pos=(2.00, 2.00, 3.00);child=(2.00, 3.00, 3.00);found=True;same=True;clone=Probe(Clone):1;destroyed=True;roots=+1;gone=True");
+    DestroyImmediate(host);
+    Calls().Clear();
+}
+
+HX_TEST(Scripts, TheValueTypesKeepTheDocumentedValues)
+{
+    HX_REQUIRE(StartScripts());
+    Calls().Clear();
+    GameObject* host = GameObject::Create("V");
+    host->AddComponent(CSharp("CsValueChecks").type);
+    RunScriptPhase(ScriptMessage::Update);
+    // The C# checks, then C#'s first value of the engine's generator after InitState(7), as C++ gets it.
+    Random::InitState(7);
+    String random = Format("V:cs.random:{}", std::bit_cast<i32>(Random::value()));
+    HX_CHECK(Expect({random.CStr(), "V:cs.checks.done"}));
+    DestroyImmediate(host);
 }

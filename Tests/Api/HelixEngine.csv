@@ -1,0 +1,881 @@
+type,member,signature
+Application,.ctor,Application()
+Application,Quit,static void Quit(int = 0)
+Application,absoluteURL,static string absoluteURL { get; }
+Application,backgroundLoadingPriority,static ThreadPriority backgroundLoadingPriority { get; set; }
+Application,companyName,static string companyName { get; }
+Application,consoleLogPath,static string consoleLogPath { get; }
+Application,dataPath,static string dataPath { get; }
+Application,deepLinkActivated,static event Action<string> deepLinkActivated
+Application,focusChanged,static event Action<bool> focusChanged
+Application,helixVersion,static string helixVersion { get; }
+Application,identifier,static string identifier { get; }
+Application,internetReachability,static NetworkReachability internetReachability { get; }
+Application,isBatchMode,static bool isBatchMode { get; }
+Application,isConsolePlatform,static bool isConsolePlatform { get; }
+Application,isEditor,static bool isEditor { get; }
+Application,isFocused,static bool isFocused { get; }
+Application,isMobilePlatform,static bool isMobilePlatform { get; }
+Application,isPlaying,static bool isPlaying { get; }
+Application,logMessageReceived,static event Application.LogCallback logMessageReceived
+Application,logMessageReceivedThreaded,static event Application.LogCallback logMessageReceivedThreaded
+Application,lowMemory,static event Application.LowMemoryCallback lowMemory
+Application,persistentDataPath,static string persistentDataPath { get; }
+Application,platform,static RuntimePlatform platform { get; }
+Application,productName,static string productName { get; }
+Application,quitting,static event Action quitting
+Application,runInBackground,static bool runInBackground { get; set; }
+Application,streamingAssetsPath,static string streamingAssetsPath { get; }
+Application,targetFrameRate,static int targetFrameRate { get; set; }
+Application,temporaryCachePath,static string temporaryCachePath { get; }
+Application,unloading,static event Action unloading
+Application,version,static string version { get; }
+Application,wantsToQuit,static event Func<bool> wantsToQuit
+Application.LogCallback,delegate,"void (string, string, LogType)"
+Application.LowMemoryCallback,delegate,void ()
+AsyncOperation,allowSceneActivation,bool allowSceneActivation { get; set; }
+AsyncOperation,completed,event Action<AsyncOperation> completed
+AsyncOperation,isDone,bool isDone { get; }
+AsyncOperation,priority,int priority { get; set; }
+AsyncOperation,progress,float progress { get; }
+Behaviour,enabled,bool enabled { get; set; }
+Behaviour,isActiveAndEnabled,bool isActiveAndEnabled { get; }
+Bounds,.ctor,"Bounds(Vector3, Vector3)"
+Bounds,ClosestPoint,Vector3 ClosestPoint(Vector3)
+Bounds,Contains,bool Contains(Vector3)
+Bounds,Encapsulate,void Encapsulate(Vector3) / void Encapsulate(Bounds)
+Bounds,Expand,void Expand(float) / void Expand(Vector3)
+Bounds,IntersectRay,"bool IntersectRay(Ray) / bool IntersectRay(Ray, out float)"
+Bounds,Intersects,bool Intersects(Bounds)
+Bounds,SetMinMax,"void SetMinMax(Vector3, Vector3)"
+Bounds,SqrDistance,float SqrDistance(Vector3)
+Bounds,ToString,"string ToString() / string ToString(string) / string ToString(string, IFormatProvider)"
+Bounds,center,Vector3 center { get; set; }
+Bounds,extents,Vector3 extents { get; set; }
+Bounds,max,Vector3 max { get; set; }
+Bounds,min,Vector3 min { get; set; }
+Bounds,operators,"Equality(Bounds, Bounds) / Inequality(Bounds, Bounds)"
+Bounds,size,Vector3 size { get; set; }
+Color,.ctor,"Color(float, float, float, float) / Color(float, float, float)"
+Color,HSVToRGB,"static Color HSVToRGB(float, float, float) / static Color HSVToRGB(float, float, float, bool)"
+Color,Lerp,"static Color Lerp(Color, Color, float)"
+Color,LerpUnclamped,"static Color LerpUnclamped(Color, Color, float)"
+Color,RGBToHSV,"static void RGBToHSV(Color, out float, out float, out float)"
+Color,ToString,"string ToString() / string ToString(string) / string ToString(string, IFormatProvider)"
+Color,a,float a
+Color,aliceBlue,static Color aliceBlue { get; }
+Color,antiqueWhite,static Color antiqueWhite { get; }
+Color,aquamarine,static Color aquamarine { get; }
+Color,azure,static Color azure { get; }
+Color,b,float b
+Color,beige,static Color beige { get; }
+Color,bisque,static Color bisque { get; }
+Color,black,static Color black { get; }
+Color,blanchedAlmond,static Color blanchedAlmond { get; }
+Color,blue,static Color blue { get; }
+Color,blueViolet,static Color blueViolet { get; }
+Color,brown,static Color brown { get; }
+Color,burlywood,static Color burlywood { get; }
+Color,cadetBlue,static Color cadetBlue { get; }
+Color,chartreuse,static Color chartreuse { get; }
+Color,chocolate,static Color chocolate { get; }
+Color,clear,static Color clear { get; }
+Color,coral,static Color coral { get; }
+Color,cornflowerBlue,static Color cornflowerBlue { get; }
+Color,cornsilk,static Color cornsilk { get; }
+Color,crimson,static Color crimson { get; }
+Color,cyan,static Color cyan { get; }
+Color,darkBlue,static Color darkBlue { get; }
+Color,darkCyan,static Color darkCyan { get; }
+Color,darkGoldenRod,static Color darkGoldenRod { get; }
+Color,darkGray,static Color darkGray { get; }
+Color,darkGreen,static Color darkGreen { get; }
+Color,darkKhaki,static Color darkKhaki { get; }
+Color,darkMagenta,static Color darkMagenta { get; }
+Color,darkOliveGreen,static Color darkOliveGreen { get; }
+Color,darkOrange,static Color darkOrange { get; }
+Color,darkOrchid,static Color darkOrchid { get; }
+Color,darkRed,static Color darkRed { get; }
+Color,darkSalmon,static Color darkSalmon { get; }
+Color,darkSeaGreen,static Color darkSeaGreen { get; }
+Color,darkSlateBlue,static Color darkSlateBlue { get; }
+Color,darkSlateGray,static Color darkSlateGray { get; }
+Color,darkTurquoise,static Color darkTurquoise { get; }
+Color,darkViolet,static Color darkViolet { get; }
+Color,deepPink,static Color deepPink { get; }
+Color,deepSkyBlue,static Color deepSkyBlue { get; }
+Color,dimGray,static Color dimGray { get; }
+Color,dodgerBlue,static Color dodgerBlue { get; }
+Color,firebrick,static Color firebrick { get; }
+Color,floralWhite,static Color floralWhite { get; }
+Color,forestGreen,static Color forestGreen { get; }
+Color,g,float g
+Color,gainsboro,static Color gainsboro { get; }
+Color,gamma,Color gamma { get; }
+Color,ghostWhite,static Color ghostWhite { get; }
+Color,gold,static Color gold { get; }
+Color,goldenRod,static Color goldenRod { get; }
+Color,gray,static Color gray { get; }
+Color,gray1,static Color gray1 { get; }
+Color,gray2,static Color gray2 { get; }
+Color,gray3,static Color gray3 { get; }
+Color,gray4,static Color gray4 { get; }
+Color,gray5,static Color gray5 { get; }
+Color,gray6,static Color gray6 { get; }
+Color,gray7,static Color gray7 { get; }
+Color,gray8,static Color gray8 { get; }
+Color,gray9,static Color gray9 { get; }
+Color,grayscale,float grayscale { get; }
+Color,green,static Color green { get; }
+Color,greenYellow,static Color greenYellow { get; }
+Color,grey,static Color grey { get; }
+Color,honeydew,static Color honeydew { get; }
+Color,hotPink,static Color hotPink { get; }
+Color,indianRed,static Color indianRed { get; }
+Color,indigo,static Color indigo { get; }
+Color,ivory,static Color ivory { get; }
+Color,khaki,static Color khaki { get; }
+Color,lavender,static Color lavender { get; }
+Color,lavenderBlush,static Color lavenderBlush { get; }
+Color,lawnGreen,static Color lawnGreen { get; }
+Color,lemonChiffon,static Color lemonChiffon { get; }
+Color,lightBlue,static Color lightBlue { get; }
+Color,lightCoral,static Color lightCoral { get; }
+Color,lightCyan,static Color lightCyan { get; }
+Color,lightGoldenRod,static Color lightGoldenRod { get; }
+Color,lightGoldenRodYellow,static Color lightGoldenRodYellow { get; }
+Color,lightGray,static Color lightGray { get; }
+Color,lightGreen,static Color lightGreen { get; }
+Color,lightPink,static Color lightPink { get; }
+Color,lightSalmon,static Color lightSalmon { get; }
+Color,lightSeaGreen,static Color lightSeaGreen { get; }
+Color,lightSkyBlue,static Color lightSkyBlue { get; }
+Color,lightSlateBlue,static Color lightSlateBlue { get; }
+Color,lightSlateGray,static Color lightSlateGray { get; }
+Color,lightSteelBlue,static Color lightSteelBlue { get; }
+Color,lightYellow,static Color lightYellow { get; }
+Color,limeGreen,static Color limeGreen { get; }
+Color,linear,Color linear { get; }
+Color,linen,static Color linen { get; }
+Color,magenta,static Color magenta { get; }
+Color,maroon,static Color maroon { get; }
+Color,maxColorComponent,float maxColorComponent { get; }
+Color,mediumAquamarine,static Color mediumAquamarine { get; }
+Color,mediumBlue,static Color mediumBlue { get; }
+Color,mediumOrchid,static Color mediumOrchid { get; }
+Color,mediumPurple,static Color mediumPurple { get; }
+Color,mediumSeaGreen,static Color mediumSeaGreen { get; }
+Color,mediumSlateBlue,static Color mediumSlateBlue { get; }
+Color,mediumSpringGreen,static Color mediumSpringGreen { get; }
+Color,mediumTurquoise,static Color mediumTurquoise { get; }
+Color,mediumVioletRed,static Color mediumVioletRed { get; }
+Color,midnightBlue,static Color midnightBlue { get; }
+Color,mintCream,static Color mintCream { get; }
+Color,mistyRose,static Color mistyRose { get; }
+Color,moccasin,static Color moccasin { get; }
+Color,navajoWhite,static Color navajoWhite { get; }
+Color,navyBlue,static Color navyBlue { get; }
+Color,oldLace,static Color oldLace { get; }
+Color,olive,static Color olive { get; }
+Color,oliveDrab,static Color oliveDrab { get; }
+Color,operators,"Addition(Color, Color) / Subtraction(Color, Color) / Multiply(Color, Color) / Multiply(Color, float) / Multiply(float, Color) / Division(Color, float) / Equality(Color, Color) / Inequality(Color, Color) / Implicit(Color) / Implicit(Vector4)"
+Color,orange,static Color orange { get; }
+Color,orangeRed,static Color orangeRed { get; }
+Color,orchid,static Color orchid { get; }
+Color,paleGoldenRod,static Color paleGoldenRod { get; }
+Color,paleGreen,static Color paleGreen { get; }
+Color,paleTurquoise,static Color paleTurquoise { get; }
+Color,paleVioletRed,static Color paleVioletRed { get; }
+Color,papayaWhip,static Color papayaWhip { get; }
+Color,peachPuff,static Color peachPuff { get; }
+Color,peru,static Color peru { get; }
+Color,pink,static Color pink { get; }
+Color,plum,static Color plum { get; }
+Color,powderBlue,static Color powderBlue { get; }
+Color,purple,static Color purple { get; }
+Color,r,float r
+Color,rebeccaPurple,static Color rebeccaPurple { get; }
+Color,red,static Color red { get; }
+Color,rosyBrown,static Color rosyBrown { get; }
+Color,royalBlue,static Color royalBlue { get; }
+Color,saddleBrown,static Color saddleBrown { get; }
+Color,salmon,static Color salmon { get; }
+Color,sandyBrown,static Color sandyBrown { get; }
+Color,seaGreen,static Color seaGreen { get; }
+Color,seashell,static Color seashell { get; }
+Color,sienna,static Color sienna { get; }
+Color,silver,static Color silver { get; }
+Color,skyBlue,static Color skyBlue { get; }
+Color,slateBlue,static Color slateBlue { get; }
+Color,slateGray,static Color slateGray { get; }
+Color,snow,static Color snow { get; }
+Color,softBlue,static Color softBlue { get; }
+Color,softGreen,static Color softGreen { get; }
+Color,softRed,static Color softRed { get; }
+Color,softYellow,static Color softYellow { get; }
+Color,springGreen,static Color springGreen { get; }
+Color,steelBlue,static Color steelBlue { get; }
+Color,tan,static Color tan { get; }
+Color,teal,static Color teal { get; }
+Color,this[],float this[][int] { get; set; }
+Color,thistle,static Color thistle { get; }
+Color,tomato,static Color tomato { get; }
+Color,turquoise,static Color turquoise { get; }
+Color,violet,static Color violet { get; }
+Color,violetRed,static Color violetRed { get; }
+Color,wheat,static Color wheat { get; }
+Color,white,static Color white { get; }
+Color,whiteSmoke,static Color whiteSmoke { get; }
+Color,yellow,static Color yellow { get; }
+Color,yellowGreen,static Color yellowGreen { get; }
+Color,yellowNice,static Color yellowNice { get; }
+Color32,.ctor,"Color32(byte, byte, byte, byte)"
+Color32,Lerp,"static Color32 Lerp(Color32, Color32, float)"
+Color32,LerpUnclamped,"static Color32 LerpUnclamped(Color32, Color32, float)"
+Color32,ToString,"string ToString() / string ToString(string) / string ToString(string, IFormatProvider)"
+Color32,a,byte a
+Color32,b,byte b
+Color32,g,byte g
+Color32,operators,Implicit(Color) / Implicit(Color32)
+Color32,r,byte r
+Color32,this[],byte this[][int] { get; set; }
+Component,BroadcastMessage,"void BroadcastMessage(string) / void BroadcastMessage(string, object) / void BroadcastMessage(string, object, SendMessageOptions) / void BroadcastMessage(string, SendMessageOptions)"
+Component,CompareTag,bool CompareTag(string)
+Component,GetComponent,Component GetComponent(Type) / T GetComponent<T>() / Component GetComponent(string)
+Component,GetComponentInChildren,"Component GetComponentInChildren(Type, bool = False) / T GetComponentInChildren<T>(bool = False)"
+Component,GetComponentInParent,"Component GetComponentInParent(Type, bool = False) / T GetComponentInParent<T>(bool = False)"
+Component,GetComponentIndex,int GetComponentIndex()
+Component,GetComponents,"Component[] GetComponents(Type) / void GetComponents(Type, List<Component>) / T[] GetComponents<T>() / void GetComponents<T>(List<T>)"
+Component,GetComponentsInChildren,"Component[] GetComponentsInChildren(Type, bool = False) / void GetComponentsInChildren(Type, List<Component>) / void GetComponentsInChildren(Type, bool, List<Component>) / T[] GetComponentsInChildren<T>(bool = False) / void GetComponentsInChildren<T>(List<T>) / void GetComponentsInChildren<T>(bool, List<T>)"
+Component,GetComponentsInParent,"Component[] GetComponentsInParent(Type, bool = False) / void GetComponentsInParent(Type, List<Component>) / void GetComponentsInParent(Type, bool, List<Component>) / T[] GetComponentsInParent<T>(bool = False) / void GetComponentsInParent<T>(List<T>) / void GetComponentsInParent<T>(bool, List<T>)"
+Component,SendMessage,"void SendMessage(string) / void SendMessage(string, object) / void SendMessage(string, object, SendMessageOptions) / void SendMessage(string, SendMessageOptions)"
+Component,SendMessageUpwards,"void SendMessageUpwards(string) / void SendMessageUpwards(string, object) / void SendMessageUpwards(string, object, SendMessageOptions) / void SendMessageUpwards(string, SendMessageOptions)"
+Component,TryGetComponent,"bool TryGetComponent(Type, out Component) / bool TryGetComponent<T>(out T)"
+Component,gameObject,GameObject gameObject { get; }
+Component,tag,string tag { get; set; }
+Component,transform,Transform transform { get; }
+Debug,.ctor,Debug()
+Debug,Assert,"static void Assert(bool, object) / static void Assert(bool, object, Object) / static void Assert(bool) / static void Assert(bool, string) / static void Assert(bool, string, Object) / static void Assert(bool, Object)"
+Debug,AssertFormat,"static void AssertFormat(bool, string, params object[]) / static void AssertFormat(bool, Object, string, params object[])"
+Debug,Break,static void Break()
+Debug,DrawLine,"static void DrawLine(Vector3, Vector3) / static void DrawLine(Vector3, Vector3, Color) / static void DrawLine(Vector3, Vector3, Color, float) / static void DrawLine(Vector3, Vector3, Color, float, bool)"
+Debug,DrawRay,"static void DrawRay(Vector3, Vector3) / static void DrawRay(Vector3, Vector3, Color) / static void DrawRay(Vector3, Vector3, Color, float) / static void DrawRay(Vector3, Vector3, Color, float, bool)"
+Debug,Log,"static void Log(object) / static void Log(object, Object)"
+Debug,LogAssertion,"static void LogAssertion(object) / static void LogAssertion(object, Object)"
+Debug,LogAssertionFormat,"static void LogAssertionFormat(string, params object[]) / static void LogAssertionFormat(Object, string, params object[])"
+Debug,LogError,"static void LogError(object) / static void LogError(object, Object)"
+Debug,LogErrorFormat,"static void LogErrorFormat(string, params object[]) / static void LogErrorFormat(Object, string, params object[])"
+Debug,LogException,"static void LogException(Exception) / static void LogException(Exception, Object)"
+Debug,LogFormat,"static void LogFormat(string, params object[]) / static void LogFormat(Object, string, params object[]) / static void LogFormat(LogType, LogOption, Object, string, params object[])"
+Debug,LogWarning,"static void LogWarning(object) / static void LogWarning(object, Object)"
+Debug,LogWarningFormat,"static void LogWarningFormat(string, params object[]) / static void LogWarningFormat(Object, string, params object[])"
+Debug,isDebugBuild,static bool isDebugBuild { get; }
+DefaultExecutionOrder,.ctor,DefaultExecutionOrder(int)
+DefaultExecutionOrder,order,int order { get; }
+EntityId,value,ulong value
+Events.HelixAction,delegate,"void () / void (T0) / void (T0, T1) / void (T0, T1, T2) / void (T0, T1, T2, T3)"
+FindObjectsInactive,Exclude,FindObjectsInactive.Exclude = 0
+FindObjectsInactive,Include,FindObjectsInactive.Include = 1
+FindObjectsSortMode,InstanceID,FindObjectsSortMode.InstanceID = 1
+FindObjectsSortMode,None,FindObjectsSortMode.None = 0
+FrustumPlanes,bottom,float bottom
+FrustumPlanes,left,float left
+FrustumPlanes,right,float right
+FrustumPlanes,top,float top
+FrustumPlanes,zFar,float zFar
+FrustumPlanes,zNear,float zNear
+FullScreenMode,ExclusiveFullScreen,FullScreenMode.ExclusiveFullScreen = 0
+FullScreenMode,FullScreenWindow,FullScreenMode.FullScreenWindow = 1
+FullScreenMode,MaximizedWindow,FullScreenMode.MaximizedWindow = 2
+FullScreenMode,Windowed,FullScreenMode.Windowed = 3
+GameObject,.ctor,GameObject(string = GameObject)
+GameObject,AddComponent,Component AddComponent(Type) / T AddComponent<T>()
+GameObject,BroadcastMessage,"void BroadcastMessage(string) / void BroadcastMessage(string, object) / void BroadcastMessage(string, object, SendMessageOptions) / void BroadcastMessage(string, SendMessageOptions)"
+GameObject,CompareTag,bool CompareTag(string)
+GameObject,Find,static GameObject Find(string)
+GameObject,FindGameObjectWithTag,static GameObject FindGameObjectWithTag(string)
+GameObject,FindGameObjectsWithTag,static GameObject[] FindGameObjectsWithTag(string)
+GameObject,FindWithTag,static GameObject FindWithTag(string)
+GameObject,GetComponent,Component GetComponent(Type) / T GetComponent<T>() / Component GetComponent(string)
+GameObject,GetComponentAtIndex,Component GetComponentAtIndex(int)
+GameObject,GetComponentCount,int GetComponentCount()
+GameObject,GetComponentInChildren,"Component GetComponentInChildren(Type, bool = False) / T GetComponentInChildren<T>(bool = False)"
+GameObject,GetComponentInParent,"Component GetComponentInParent(Type, bool = False) / T GetComponentInParent<T>(bool = False)"
+GameObject,GetComponentIndex,int GetComponentIndex(Component)
+GameObject,GetComponents,"Component[] GetComponents(Type) / void GetComponents(Type, List<Component>) / T[] GetComponents<T>() / void GetComponents<T>(List<T>)"
+GameObject,GetComponentsInChildren,"Component[] GetComponentsInChildren(Type, bool = False) / void GetComponentsInChildren(Type, List<Component>) / void GetComponentsInChildren(Type, bool, List<Component>) / T[] GetComponentsInChildren<T>(bool = False) / void GetComponentsInChildren<T>(List<T>) / void GetComponentsInChildren<T>(bool, List<T>)"
+GameObject,GetComponentsInParent,"Component[] GetComponentsInParent(Type, bool = False) / void GetComponentsInParent(Type, List<Component>) / void GetComponentsInParent(Type, bool, List<Component>) / T[] GetComponentsInParent<T>(bool = False) / void GetComponentsInParent<T>(List<T>) / void GetComponentsInParent<T>(bool, List<T>)"
+GameObject,SendMessage,"void SendMessage(string) / void SendMessage(string, object) / void SendMessage(string, object, SendMessageOptions) / void SendMessage(string, SendMessageOptions)"
+GameObject,SendMessageUpwards,"void SendMessageUpwards(string) / void SendMessageUpwards(string, object) / void SendMessageUpwards(string, object, SendMessageOptions) / void SendMessageUpwards(string, SendMessageOptions)"
+GameObject,SetActive,void SetActive(bool)
+GameObject,TryGetComponent,"bool TryGetComponent(Type, out Component) / bool TryGetComponent<T>(out T)"
+GameObject,activeInHierarchy,bool activeInHierarchy { get; }
+GameObject,activeSelf,bool activeSelf { get; }
+GameObject,isStatic,bool isStatic { get; }
+GameObject,layer,int layer { get; set; }
+GameObject,tag,string tag { get; set; }
+GameObject,transform,Transform transform { get; }
+HideFlags,DontSave,HideFlags.DontSave = 52
+HideFlags,DontSaveInBuild,HideFlags.DontSaveInBuild = 16
+HideFlags,DontSaveInEditor,HideFlags.DontSaveInEditor = 4
+HideFlags,DontUnloadUnusedAsset,HideFlags.DontUnloadUnusedAsset = 32
+HideFlags,HideAndDontSave,HideFlags.HideAndDontSave = 61
+HideFlags,HideInHierarchy,HideFlags.HideInHierarchy = 1
+HideFlags,HideInInspector,HideFlags.HideInInspector = 2
+HideFlags,None,HideFlags.None = 0
+HideFlags,NotEditable,HideFlags.NotEditable = 8
+LogOption,NoStacktrace,LogOption.NoStacktrace = 1
+LogOption,None,LogOption.None = 0
+LogType,Assert,LogType.Assert = 1
+LogType,Error,LogType.Error = 0
+LogType,Exception,LogType.Exception = 4
+LogType,Log,LogType.Log = 3
+LogType,Warning,LogType.Warning = 2
+Mathf,Abs,static float Abs(float) / static int Abs(int)
+Mathf,Acos,static float Acos(float)
+Mathf,Approximately,"static bool Approximately(float, float)"
+Mathf,Asin,static float Asin(float)
+Mathf,Atan,static float Atan(float)
+Mathf,Atan2,"static float Atan2(float, float)"
+Mathf,Ceil,static float Ceil(float)
+Mathf,CeilToInt,static int CeilToInt(float)
+Mathf,Clamp,"static float Clamp(float, float, float) / static int Clamp(int, int, int)"
+Mathf,Clamp01,static float Clamp01(float)
+Mathf,ClosestPowerOfTwo,static int ClosestPowerOfTwo(int)
+Mathf,CorrelatedColorTemperatureToRGB,static Color CorrelatedColorTemperatureToRGB(float)
+Mathf,Cos,static float Cos(float)
+Mathf,Deg2Rad,const float Deg2Rad
+Mathf,DeltaAngle,"static float DeltaAngle(float, float)"
+Mathf,Epsilon,static float Epsilon
+Mathf,Exp,static float Exp(float)
+Mathf,FloatToHalf,static ushort FloatToHalf(float)
+Mathf,Floor,static float Floor(float)
+Mathf,FloorToInt,static int FloorToInt(float)
+Mathf,GammaToLinearSpace,static float GammaToLinearSpace(float)
+Mathf,HalfToFloat,static float HalfToFloat(ushort)
+Mathf,Infinity,const float Infinity
+Mathf,InverseLerp,"static float InverseLerp(float, float, float)"
+Mathf,IsPowerOfTwo,static bool IsPowerOfTwo(int)
+Mathf,Lerp,"static float Lerp(float, float, float)"
+Mathf,LerpAngle,"static float LerpAngle(float, float, float)"
+Mathf,LerpUnclamped,"static float LerpUnclamped(float, float, float)"
+Mathf,LinearToGammaSpace,static float LinearToGammaSpace(float)
+Mathf,Log,"static float Log(float, float) / static float Log(float)"
+Mathf,Log10,static float Log10(float)
+Mathf,Max,"static float Max(float, float) / static float Max(params float[]) / static int Max(int, int) / static int Max(params int[])"
+Mathf,Min,"static float Min(float, float) / static float Min(params float[]) / static int Min(int, int) / static int Min(params int[])"
+Mathf,MoveTowards,"static float MoveTowards(float, float, float)"
+Mathf,MoveTowardsAngle,"static float MoveTowardsAngle(float, float, float)"
+Mathf,NegativeInfinity,const float NegativeInfinity
+Mathf,NextPowerOfTwo,static int NextPowerOfTwo(int)
+Mathf,PI,const float PI
+Mathf,PerlinNoise,"static float PerlinNoise(float, float)"
+Mathf,PerlinNoise1D,static float PerlinNoise1D(float)
+Mathf,PingPong,"static float PingPong(float, float)"
+Mathf,Pow,"static float Pow(float, float)"
+Mathf,Rad2Deg,const float Rad2Deg
+Mathf,Repeat,"static float Repeat(float, float)"
+Mathf,Round,static float Round(float)
+Mathf,RoundToInt,static int RoundToInt(float)
+Mathf,Sign,static float Sign(float)
+Mathf,Sin,static float Sin(float)
+Mathf,SmoothDamp,"static float SmoothDamp(float, float, ref float, float) / static float SmoothDamp(float, float, ref float, float, float) / static float SmoothDamp(float, float, ref float, float, float, float)"
+Mathf,SmoothDampAngle,"static float SmoothDampAngle(float, float, ref float, float) / static float SmoothDampAngle(float, float, ref float, float, float) / static float SmoothDampAngle(float, float, ref float, float, float, float)"
+Mathf,SmoothStep,"static float SmoothStep(float, float, float)"
+Mathf,Sqrt,static float Sqrt(float)
+Mathf,Tan,static float Tan(float)
+Matrix4x4,.ctor,"Matrix4x4(Vector4, Vector4, Vector4, Vector4)"
+Matrix4x4,Determinant,static float Determinant(Matrix4x4)
+Matrix4x4,Frustum,"static Matrix4x4 Frustum(float, float, float, float, float, float) / static Matrix4x4 Frustum(FrustumPlanes)"
+Matrix4x4,GetColumn,Vector4 GetColumn(int)
+Matrix4x4,GetPosition,Vector3 GetPosition()
+Matrix4x4,GetRow,Vector4 GetRow(int)
+Matrix4x4,Inverse,static Matrix4x4 Inverse(Matrix4x4)
+Matrix4x4,Inverse3DAffine,"static bool Inverse3DAffine(Matrix4x4, ref Matrix4x4)"
+Matrix4x4,LookAt,"static Matrix4x4 LookAt(Vector3, Vector3, Vector3)"
+Matrix4x4,MultiplyPoint,Vector3 MultiplyPoint(Vector3)
+Matrix4x4,MultiplyPoint3x4,Vector3 MultiplyPoint3x4(Vector3)
+Matrix4x4,MultiplyVector,Vector3 MultiplyVector(Vector3)
+Matrix4x4,Ortho,"static Matrix4x4 Ortho(float, float, float, float, float, float)"
+Matrix4x4,Perspective,"static Matrix4x4 Perspective(float, float, float, float)"
+Matrix4x4,Rotate,static Matrix4x4 Rotate(Quaternion)
+Matrix4x4,Scale,static Matrix4x4 Scale(Vector3)
+Matrix4x4,SetColumn,"void SetColumn(int, Vector4)"
+Matrix4x4,SetRow,"void SetRow(int, Vector4)"
+Matrix4x4,SetTRS,"void SetTRS(Vector3, Quaternion, Vector3)"
+Matrix4x4,TRS,"static Matrix4x4 TRS(Vector3, Quaternion, Vector3)"
+Matrix4x4,ToString,"string ToString() / string ToString(string) / string ToString(string, IFormatProvider)"
+Matrix4x4,TransformPlane,Plane TransformPlane(Plane)
+Matrix4x4,Translate,static Matrix4x4 Translate(Vector3)
+Matrix4x4,Transpose,static Matrix4x4 Transpose(Matrix4x4)
+Matrix4x4,ValidTRS,bool ValidTRS()
+Matrix4x4,decomposeProjection,FrustumPlanes decomposeProjection { get; }
+Matrix4x4,determinant,float determinant { get; }
+Matrix4x4,identity,static Matrix4x4 identity { get; }
+Matrix4x4,inverse,Matrix4x4 inverse { get; }
+Matrix4x4,isIdentity,bool isIdentity { get; }
+Matrix4x4,lossyScale,Vector3 lossyScale { get; }
+Matrix4x4,m00,float m00
+Matrix4x4,m01,float m01
+Matrix4x4,m02,float m02
+Matrix4x4,m03,float m03
+Matrix4x4,m10,float m10
+Matrix4x4,m11,float m11
+Matrix4x4,m12,float m12
+Matrix4x4,m13,float m13
+Matrix4x4,m20,float m20
+Matrix4x4,m21,float m21
+Matrix4x4,m22,float m22
+Matrix4x4,m23,float m23
+Matrix4x4,m30,float m30
+Matrix4x4,m31,float m31
+Matrix4x4,m32,float m32
+Matrix4x4,m33,float m33
+Matrix4x4,operators,"Multiply(Matrix4x4, Matrix4x4) / Multiply(Matrix4x4, Vector4) / Equality(Matrix4x4, Matrix4x4) / Inequality(Matrix4x4, Matrix4x4)"
+Matrix4x4,rotation,Quaternion rotation { get; }
+Matrix4x4,this[],"float this[][int, int] { get; set; } / float this[][int] { get; set; }"
+Matrix4x4,transpose,Matrix4x4 transpose { get; }
+Matrix4x4,zero,static Matrix4x4 zero { get; }
+MissingReferenceException,.ctor,"MissingReferenceException() / MissingReferenceException(string) / MissingReferenceException(string, Exception)"
+NetworkReachability,NotReachable,NetworkReachability.NotReachable = 0
+NetworkReachability,ReachableViaCarrierDataNetwork,NetworkReachability.ReachableViaCarrierDataNetwork = 1
+NetworkReachability,ReachableViaLocalAreaNetwork,NetworkReachability.ReachableViaLocalAreaNetwork = 2
+Object,Destroy,"static void Destroy(Object) / static void Destroy(Object, float)"
+Object,DestroyImmediate,"static void DestroyImmediate(Object) / static void DestroyImmediate(Object, bool)"
+Object,DontDestroyOnLoad,static void DontDestroyOnLoad(Object)
+Object,FindAnyObjectByType,"static Object FindAnyObjectByType(Type) / static T FindAnyObjectByType<T>() / static Object FindAnyObjectByType(Type, FindObjectsInactive) / static T FindAnyObjectByType<T>(FindObjectsInactive)"
+Object,FindFirstObjectByType,"static Object FindFirstObjectByType(Type) / static T FindFirstObjectByType<T>() / static Object FindFirstObjectByType(Type, FindObjectsInactive) / static T FindFirstObjectByType<T>(FindObjectsInactive)"
+Object,FindObjectsByType,"static Object[] FindObjectsByType(Type, FindObjectsSortMode) / static void FindObjectsByType(Type, FindObjectsSortMode, List<Object>) / static T[] FindObjectsByType<T>(FindObjectsSortMode) / static void FindObjectsByType<T>(FindObjectsSortMode, List<T>) / static Object[] FindObjectsByType(Type, FindObjectsInactive, FindObjectsSortMode) / static void FindObjectsByType(Type, FindObjectsInactive, FindObjectsSortMode, List<Object>) / static T[] FindObjectsByType<T>(FindObjectsInactive, FindObjectsSortMode) / static void FindObjectsByType<T>(FindObjectsInactive, FindObjectsSortMode, List<T>)"
+Object,GetEntityId,EntityId GetEntityId()
+Object,Instantiate,"static T Instantiate<T>(T) / static T Instantiate<T>(T, Transform) / static T Instantiate<T>(T, Transform, bool) / static T Instantiate<T>(T, Vector3, Quaternion) / static T Instantiate<T>(T, Vector3, Quaternion, Transform) / static Object Instantiate(Object) / static Object Instantiate(Object, Transform) / static Object Instantiate(Object, Transform, bool) / static Object Instantiate(Object, Vector3, Quaternion) / static Object Instantiate(Object, Vector3, Quaternion, Transform)"
+Object,ToString,string ToString()
+Object,hideFlags,HideFlags hideFlags { get; set; }
+Object,name,string name { get; set; }
+Object,operators,"Equality(Object, Object) / Inequality(Object, Object) / Implicit(Object)"
+Plane,.ctor,"Plane(Vector3, Vector3) / Plane(Vector3, float) / Plane(Vector3, Vector3, Vector3)"
+Plane,ClosestPointOnPlane,Vector3 ClosestPointOnPlane(Vector3)
+Plane,Flip,void Flip()
+Plane,GetDistanceToPoint,float GetDistanceToPoint(Vector3)
+Plane,GetSide,bool GetSide(Vector3)
+Plane,Raycast,"bool Raycast(Ray, out float)"
+Plane,SameSide,"bool SameSide(Vector3, Vector3)"
+Plane,Set3Points,"void Set3Points(Vector3, Vector3, Vector3)"
+Plane,SetNormalAndPosition,"void SetNormalAndPosition(Vector3, Vector3)"
+Plane,ToString,"string ToString() / string ToString(string) / string ToString(string, IFormatProvider)"
+Plane,Translate,"void Translate(Vector3) / static Plane Translate(Plane, Vector3)"
+Plane,distance,float distance { get; set; }
+Plane,flipped,Plane flipped { get; }
+Plane,normal,Vector3 normal { get; set; }
+Quaternion,.ctor,"Quaternion(float, float, float, float)"
+Quaternion,Angle,"static float Angle(Quaternion, Quaternion)"
+Quaternion,AngleAxis,"static Quaternion AngleAxis(float, Vector3)"
+Quaternion,Dot,"static float Dot(Quaternion, Quaternion)"
+Quaternion,Euler,"static Quaternion Euler(float, float, float) / static Quaternion Euler(Vector3)"
+Quaternion,FromToRotation,"static Quaternion FromToRotation(Vector3, Vector3)"
+Quaternion,Inverse,static Quaternion Inverse(Quaternion)
+Quaternion,Lerp,"static Quaternion Lerp(Quaternion, Quaternion, float)"
+Quaternion,LerpUnclamped,"static Quaternion LerpUnclamped(Quaternion, Quaternion, float)"
+Quaternion,LookRotation,"static Quaternion LookRotation(Vector3) / static Quaternion LookRotation(Vector3, Vector3)"
+Quaternion,Normalize,void Normalize() / static Quaternion Normalize(Quaternion)
+Quaternion,RotateTowards,"static Quaternion RotateTowards(Quaternion, Quaternion, float)"
+Quaternion,Set,"void Set(float, float, float, float)"
+Quaternion,SetFromToRotation,"void SetFromToRotation(Vector3, Vector3)"
+Quaternion,SetLookRotation,"void SetLookRotation(Vector3) / void SetLookRotation(Vector3, Vector3)"
+Quaternion,Slerp,"static Quaternion Slerp(Quaternion, Quaternion, float)"
+Quaternion,SlerpUnclamped,"static Quaternion SlerpUnclamped(Quaternion, Quaternion, float)"
+Quaternion,ToAngleAxis,"void ToAngleAxis(out float, out Vector3)"
+Quaternion,ToString,"string ToString() / string ToString(string) / string ToString(string, IFormatProvider)"
+Quaternion,eulerAngles,Vector3 eulerAngles { get; set; }
+Quaternion,identity,static Quaternion identity { get; }
+Quaternion,kEpsilon,const float kEpsilon
+Quaternion,normalized,Quaternion normalized { get; }
+Quaternion,operators,"Multiply(Quaternion, Quaternion) / Multiply(Quaternion, Vector3) / Equality(Quaternion, Quaternion) / Inequality(Quaternion, Quaternion)"
+Quaternion,this[],float this[][int] { get; set; }
+Quaternion,w,float w
+Quaternion,x,float x
+Quaternion,y,float y
+Quaternion,z,float z
+Random,ColorHSV,"static Color ColorHSV() / static Color ColorHSV(float, float) / static Color ColorHSV(float, float, float, float) / static Color ColorHSV(float, float, float, float, float, float) / static Color ColorHSV(float, float, float, float, float, float, float, float)"
+Random,InitState,static void InitState(int)
+Random,Range,"static float Range(float, float) / static int Range(int, int)"
+Random,insideUnitCircle,static Vector2 insideUnitCircle { get; }
+Random,insideUnitSphere,static Vector3 insideUnitSphere { get; }
+Random,onUnitCircle,static Vector2 onUnitCircle { get; }
+Random,onUnitSphere,static Vector3 onUnitSphere { get; }
+Random,rotation,static Quaternion rotation { get; }
+Random,rotationUniform,static Quaternion rotationUniform { get; }
+Random,state,static Random.State state { get; set; }
+Random,value,static float value { get; }
+Ray,.ctor,"Ray(Vector3, Vector3)"
+Ray,GetPoint,Vector3 GetPoint(float)
+Ray,ToString,"string ToString() / string ToString(string) / string ToString(string, IFormatProvider)"
+Ray,direction,Vector3 direction { get; set; }
+Ray,origin,Vector3 origin { get; set; }
+Rect,.ctor,"Rect(float, float, float, float) / Rect(Vector2, Vector2) / Rect(Rect)"
+Rect,Contains,"bool Contains(Vector2) / bool Contains(Vector3) / bool Contains(Vector3, bool)"
+Rect,MinMaxRect,"static Rect MinMaxRect(float, float, float, float)"
+Rect,NormalizedToPoint,"static Vector2 NormalizedToPoint(Rect, Vector2)"
+Rect,Overlaps,"bool Overlaps(Rect) / bool Overlaps(Rect, bool)"
+Rect,PointToNormalized,"static Vector2 PointToNormalized(Rect, Vector2)"
+Rect,Set,"void Set(float, float, float, float)"
+Rect,ToString,"string ToString() / string ToString(string) / string ToString(string, IFormatProvider)"
+Rect,center,Vector2 center { get; set; }
+Rect,height,float height { get; set; }
+Rect,max,Vector2 max { get; set; }
+Rect,min,Vector2 min { get; set; }
+Rect,operators,"Equality(Rect, Rect) / Inequality(Rect, Rect)"
+Rect,position,Vector2 position { get; set; }
+Rect,size,Vector2 size { get; set; }
+Rect,width,float width { get; set; }
+Rect,x,float x { get; set; }
+Rect,xMax,float xMax { get; set; }
+Rect,xMin,float xMin { get; set; }
+Rect,y,float y { get; set; }
+Rect,yMax,float yMax { get; set; }
+Rect,yMin,float yMin { get; set; }
+Rect,zero,static Rect zero { get; }
+RectInt,.ctor,"RectInt(int, int, int, int) / RectInt(Vector2Int, Vector2Int)"
+RectInt,ClampToBounds,void ClampToBounds(RectInt)
+RectInt,Contains,bool Contains(Vector2Int)
+RectInt,Overlaps,bool Overlaps(RectInt)
+RectInt,SetMinMax,"void SetMinMax(Vector2Int, Vector2Int)"
+RectInt,ToString,"string ToString() / string ToString(string) / string ToString(string, IFormatProvider)"
+RectInt,allPositionsWithin,RectInt.PositionEnumerator allPositionsWithin { get; }
+RectInt,center,Vector2 center { get; }
+RectInt,height,int height { get; set; }
+RectInt,max,Vector2Int max { get; set; }
+RectInt,min,Vector2Int min { get; set; }
+RectInt,position,Vector2Int position { get; set; }
+RectInt,size,Vector2Int size { get; set; }
+RectInt,width,int width { get; set; }
+RectInt,x,int x { get; set; }
+RectInt,xMax,int xMax { get; set; }
+RectInt,xMin,int xMin { get; set; }
+RectInt,y,int y { get; set; }
+RectInt,yMax,int yMax { get; set; }
+RectInt,yMin,int yMin { get; set; }
+RectInt,zero,static RectInt zero { get; }
+RectInt.PositionEnumerator,.ctor,"PositionEnumerator(Vector2Int, Vector2Int)"
+RectInt.PositionEnumerator,Current,Vector2Int Current { get; }
+RectInt.PositionEnumerator,GetEnumerator,RectInt.PositionEnumerator GetEnumerator()
+RectInt.PositionEnumerator,MoveNext,bool MoveNext()
+RectInt.PositionEnumerator,Reset,void Reset()
+RefreshRate,denominator,uint denominator
+RefreshRate,numerator,uint numerator
+Resolution,height,int height
+Resolution,refreshRateRatio,RefreshRate refreshRateRatio
+Resolution,width,int width
+ResourceRequest,asset,Object asset { get; }
+Resources,.ctor,Resources()
+Resources,EntityIdToObject,static Object EntityIdToObject(EntityId)
+Resources,FindObjectsOfTypeAll,static Object[] FindObjectsOfTypeAll(Type) / static T[] FindObjectsOfTypeAll<T>()
+Resources,Load,"static Object Load(string) / static Object Load(string, Type) / static T Load<T>(string)"
+Resources,LoadAll,"static Object[] LoadAll(string) / static Object[] LoadAll(string, Type) / static T[] LoadAll<T>(string)"
+Resources,LoadAsync,"static ResourceRequest LoadAsync(string) / static ResourceRequest LoadAsync(string, Type) / static ResourceRequest LoadAsync<T>(string)"
+Resources,UnloadAsset,static void UnloadAsset(Object)
+Resources,UnloadUnusedAssets,static AsyncOperation UnloadUnusedAssets()
+RuntimePlatform,Android,RuntimePlatform.Android = 11
+RuntimePlatform,IPhonePlayer,RuntimePlatform.IPhonePlayer = 8
+RuntimePlatform,LinuxEditor,RuntimePlatform.LinuxEditor = 16
+RuntimePlatform,LinuxPlayer,RuntimePlatform.LinuxPlayer = 13
+RuntimePlatform,OSXEditor,RuntimePlatform.OSXEditor = 0
+RuntimePlatform,OSXPlayer,RuntimePlatform.OSXPlayer = 1
+RuntimePlatform,WebGLPlayer,RuntimePlatform.WebGLPlayer = 17
+RuntimePlatform,WindowsEditor,RuntimePlatform.WindowsEditor = 7
+RuntimePlatform,WindowsPlayer,RuntimePlatform.WindowsPlayer = 2
+SceneManagement.CreateSceneParameters,localPhysicsMode,LocalPhysicsMode localPhysicsMode
+SceneManagement.LoadSceneMode,Additive,SceneManagement.LoadSceneMode.Additive = 1
+SceneManagement.LoadSceneMode,Single,SceneManagement.LoadSceneMode.Single = 0
+SceneManagement.LoadSceneParameters,loadSceneMode,LoadSceneMode loadSceneMode
+SceneManagement.LoadSceneParameters,localPhysicsMode,LocalPhysicsMode localPhysicsMode
+SceneManagement.LocalPhysicsMode,None,SceneManagement.LocalPhysicsMode.None = 0
+SceneManagement.LocalPhysicsMode,Physics2D,SceneManagement.LocalPhysicsMode.Physics2D = 1
+SceneManagement.LocalPhysicsMode,Physics3D,SceneManagement.LocalPhysicsMode.Physics3D = 2
+SceneManagement.Scene,GetRootGameObjects,GameObject[] GetRootGameObjects() / void GetRootGameObjects(List<GameObject>)
+SceneManagement.Scene,IsValid,bool IsValid()
+SceneManagement.Scene,buildIndex,int buildIndex { get; }
+SceneManagement.Scene,handle,int handle { get; }
+SceneManagement.Scene,isDirty,bool isDirty { get; }
+SceneManagement.Scene,isLoaded,bool isLoaded { get; }
+SceneManagement.Scene,isSubScene,bool isSubScene { get; set; }
+SceneManagement.Scene,name,string name { get; }
+SceneManagement.Scene,operators,"Equality(Scene, Scene) / Inequality(Scene, Scene)"
+SceneManagement.Scene,path,string path { get; }
+SceneManagement.Scene,rootCount,int rootCount { get; }
+SceneManagement.SceneManager,.ctor,SceneManager()
+SceneManagement.SceneManager,CreateScene,"static Scene CreateScene(string) / static Scene CreateScene(string, CreateSceneParameters)"
+SceneManagement.SceneManager,GetActiveScene,static Scene GetActiveScene()
+SceneManagement.SceneManager,GetSceneAt,static Scene GetSceneAt(int)
+SceneManagement.SceneManager,GetSceneByBuildIndex,static Scene GetSceneByBuildIndex(int)
+SceneManagement.SceneManager,GetSceneByName,static Scene GetSceneByName(string)
+SceneManagement.SceneManager,GetSceneByPath,static Scene GetSceneByPath(string)
+SceneManagement.SceneManager,LoadScene,"static void LoadScene(string) / static void LoadScene(string, LoadSceneMode) / static Scene LoadScene(string, LoadSceneParameters) / static void LoadScene(int) / static void LoadScene(int, LoadSceneMode) / static Scene LoadScene(int, LoadSceneParameters)"
+SceneManagement.SceneManager,LoadSceneAsync,"static AsyncOperation LoadSceneAsync(string) / static AsyncOperation LoadSceneAsync(string, LoadSceneMode) / static AsyncOperation LoadSceneAsync(string, LoadSceneParameters) / static AsyncOperation LoadSceneAsync(int) / static AsyncOperation LoadSceneAsync(int, LoadSceneMode) / static AsyncOperation LoadSceneAsync(int, LoadSceneParameters)"
+SceneManagement.SceneManager,MergeScenes,"static void MergeScenes(Scene, Scene)"
+SceneManagement.SceneManager,MoveGameObjectToScene,"static void MoveGameObjectToScene(GameObject, Scene)"
+SceneManagement.SceneManager,SetActiveScene,static bool SetActiveScene(Scene)
+SceneManagement.SceneManager,UnloadSceneAsync,"static AsyncOperation UnloadSceneAsync(Scene) / static AsyncOperation UnloadSceneAsync(Scene, UnloadSceneOptions) / static AsyncOperation UnloadSceneAsync(string) / static AsyncOperation UnloadSceneAsync(string, UnloadSceneOptions) / static AsyncOperation UnloadSceneAsync(int) / static AsyncOperation UnloadSceneAsync(int, UnloadSceneOptions)"
+SceneManagement.SceneManager,activeSceneChanged,"static event HelixAction<Scene, Scene> activeSceneChanged"
+SceneManagement.SceneManager,loadedSceneCount,static int loadedSceneCount { get; }
+SceneManagement.SceneManager,sceneCount,static int sceneCount { get; }
+SceneManagement.SceneManager,sceneCountInBuildSettings,static int sceneCountInBuildSettings { get; }
+SceneManagement.SceneManager,sceneLoaded,"static event HelixAction<Scene, LoadSceneMode> sceneLoaded"
+SceneManagement.SceneManager,sceneUnloaded,static event HelixAction<Scene> sceneUnloaded
+SceneManagement.UnloadSceneOptions,None,SceneManagement.UnloadSceneOptions.None = 0
+SceneManagement.UnloadSceneOptions,UnloadAllEmbeddedSceneObjects,SceneManagement.UnloadSceneOptions.UnloadAllEmbeddedSceneObjects = 1
+Screen,.ctor,Screen()
+Screen,SetMSAASamples,static void SetMSAASamples(int)
+Screen,SetResolution,"static void SetResolution(int, int, FullScreenMode, RefreshRate) / static void SetResolution(int, int, FullScreenMode) / static void SetResolution(int, int, bool)"
+Screen,autorotateToLandscapeLeft,static bool autorotateToLandscapeLeft { get; set; }
+Screen,autorotateToLandscapeRight,static bool autorotateToLandscapeRight { get; set; }
+Screen,autorotateToPortrait,static bool autorotateToPortrait { get; set; }
+Screen,autorotateToPortraitUpsideDown,static bool autorotateToPortraitUpsideDown { get; set; }
+Screen,brightness,static float brightness { get; set; }
+Screen,currentResolution,static Resolution currentResolution { get; }
+Screen,dpi,static float dpi { get; }
+Screen,fullScreen,static bool fullScreen { get; set; }
+Screen,fullScreenMode,static FullScreenMode fullScreenMode { get; set; }
+Screen,height,static int height { get; }
+Screen,mainWindowPosition,static Vector2Int mainWindowPosition { get; }
+Screen,msaaSamples,static int msaaSamples { get; }
+Screen,orientation,static ScreenOrientation orientation { get; set; }
+Screen,safeArea,static Rect safeArea { get; }
+Screen,sleepTimeout,static int sleepTimeout { get; set; }
+Screen,width,static int width { get; }
+ScreenOrientation,AutoRotation,ScreenOrientation.AutoRotation = 5
+ScreenOrientation,LandscapeLeft,ScreenOrientation.LandscapeLeft = 3
+ScreenOrientation,LandscapeRight,ScreenOrientation.LandscapeRight = 4
+ScreenOrientation,Portrait,ScreenOrientation.Portrait = 1
+ScreenOrientation,PortraitUpsideDown,ScreenOrientation.PortraitUpsideDown = 2
+SendMessageOptions,DontRequireReceiver,SendMessageOptions.DontRequireReceiver = 1
+SendMessageOptions,RequireReceiver,SendMessageOptions.RequireReceiver = 0
+Space,Self,Space.Self = 1
+Space,World,Space.World = 0
+ThreadPriority,BelowNormal,ThreadPriority.BelowNormal = 1
+ThreadPriority,High,ThreadPriority.High = 4
+ThreadPriority,Low,ThreadPriority.Low = 0
+ThreadPriority,Normal,ThreadPriority.Normal = 2
+Time,.ctor,Time()
+Time,captureDeltaTime,static float captureDeltaTime { get; set; }
+Time,captureFramerate,static int captureFramerate { get; set; }
+Time,deltaTime,static float deltaTime { get; }
+Time,fixedDeltaTime,static float fixedDeltaTime { get; set; }
+Time,fixedTime,static float fixedTime { get; }
+Time,fixedTimeAsDouble,static double fixedTimeAsDouble { get; }
+Time,fixedUnscaledDeltaTime,static float fixedUnscaledDeltaTime { get; }
+Time,fixedUnscaledTime,static float fixedUnscaledTime { get; }
+Time,fixedUnscaledTimeAsDouble,static double fixedUnscaledTimeAsDouble { get; }
+Time,frameCount,static int frameCount { get; }
+Time,inFixedTimeStep,static bool inFixedTimeStep { get; }
+Time,maximumDeltaTime,static float maximumDeltaTime { get; set; }
+Time,maximumParticleDeltaTime,static float maximumParticleDeltaTime { get; set; }
+Time,realtimeSinceStartup,static float realtimeSinceStartup { get; }
+Time,realtimeSinceStartupAsDouble,static double realtimeSinceStartupAsDouble { get; }
+Time,smoothDeltaTime,static float smoothDeltaTime { get; }
+Time,time,static float time { get; }
+Time,timeAsDouble,static double timeAsDouble { get; }
+Time,timeScale,static float timeScale { get; set; }
+Time,timeSinceLevelLoad,static float timeSinceLevelLoad { get; }
+Time,timeSinceLevelLoadAsDouble,static double timeSinceLevelLoadAsDouble { get; }
+Time,unscaledDeltaTime,static float unscaledDeltaTime { get; }
+Time,unscaledTime,static float unscaledTime { get; }
+Time,unscaledTimeAsDouble,static double unscaledTimeAsDouble { get; }
+Transform,DetachChildren,void DetachChildren()
+Transform,Find,Transform Find(string)
+Transform,GetChild,Transform GetChild(int)
+Transform,GetLocalPositionAndRotation,"void GetLocalPositionAndRotation(out Vector3, out Quaternion)"
+Transform,GetPositionAndRotation,"void GetPositionAndRotation(out Vector3, out Quaternion)"
+Transform,GetSiblingIndex,int GetSiblingIndex()
+Transform,InverseTransformDirection,Vector3 InverseTransformDirection(Vector3)
+Transform,InverseTransformPoint,Vector3 InverseTransformPoint(Vector3)
+Transform,InverseTransformVector,Vector3 InverseTransformVector(Vector3)
+Transform,IsChildOf,bool IsChildOf(Transform)
+Transform,LookAt,"void LookAt(Vector3, Vector3) / void LookAt(Vector3) / void LookAt(Transform, Vector3) / void LookAt(Transform)"
+Transform,Rotate,"void Rotate(Vector3, Space = Self) / void Rotate(float, float, float, Space = Self) / void Rotate(Vector3, float, Space)"
+Transform,RotateAround,"void RotateAround(Vector3, Vector3, float)"
+Transform,SetAsFirstSibling,void SetAsFirstSibling()
+Transform,SetAsLastSibling,void SetAsLastSibling()
+Transform,SetLocalPositionAndRotation,"void SetLocalPositionAndRotation(Vector3, Quaternion)"
+Transform,SetParent,"void SetParent(Transform) / void SetParent(Transform, bool)"
+Transform,SetPositionAndRotation,"void SetPositionAndRotation(Vector3, Quaternion)"
+Transform,SetSiblingIndex,void SetSiblingIndex(int)
+Transform,TransformDirection,Vector3 TransformDirection(Vector3)
+Transform,TransformPoint,Vector3 TransformPoint(Vector3)
+Transform,TransformVector,Vector3 TransformVector(Vector3)
+Transform,Translate,"void Translate(Vector3, Space = Self) / void Translate(float, float, float, Space = Self) / void Translate(Vector3, Transform) / void Translate(float, float, float, Transform)"
+Transform,childCount,int childCount { get; }
+Transform,eulerAngles,Vector3 eulerAngles { get; set; }
+Transform,forward,Vector3 forward { get; set; }
+Transform,hasChanged,bool hasChanged { get; set; }
+Transform,hierarchyCapacity,int hierarchyCapacity { get; set; }
+Transform,hierarchyCount,int hierarchyCount { get; }
+Transform,localEulerAngles,Vector3 localEulerAngles { get; set; }
+Transform,localPosition,Vector3 localPosition { get; set; }
+Transform,localRotation,Quaternion localRotation { get; set; }
+Transform,localScale,Vector3 localScale { get; set; }
+Transform,localToWorldMatrix,Matrix4x4 localToWorldMatrix { get; }
+Transform,lossyScale,Vector3 lossyScale { get; }
+Transform,parent,Transform parent { get; set; }
+Transform,position,Vector3 position { get; set; }
+Transform,right,Vector3 right { get; set; }
+Transform,root,Transform root { get; }
+Transform,rotation,Quaternion rotation { get; set; }
+Transform,up,Vector3 up { get; set; }
+Transform,worldToLocalMatrix,Matrix4x4 worldToLocalMatrix { get; }
+Vector2,.ctor,"Vector2(float, float)"
+Vector2,Angle,"static float Angle(Vector2, Vector2)"
+Vector2,ClampMagnitude,"static Vector2 ClampMagnitude(Vector2, float)"
+Vector2,Distance,"static float Distance(Vector2, Vector2)"
+Vector2,Dot,"static float Dot(Vector2, Vector2)"
+Vector2,Lerp,"static Vector2 Lerp(Vector2, Vector2, float)"
+Vector2,LerpUnclamped,"static Vector2 LerpUnclamped(Vector2, Vector2, float)"
+Vector2,Max,"static Vector2 Max(Vector2, Vector2)"
+Vector2,Min,"static Vector2 Min(Vector2, Vector2)"
+Vector2,MoveTowards,"static Vector2 MoveTowards(Vector2, Vector2, float)"
+Vector2,Normalize,void Normalize() / static Vector2 Normalize(Vector2)
+Vector2,Perpendicular,static Vector2 Perpendicular(Vector2)
+Vector2,Reflect,"static Vector2 Reflect(Vector2, Vector2)"
+Vector2,Scale,"void Scale(Vector2) / static Vector2 Scale(Vector2, Vector2)"
+Vector2,Set,"void Set(float, float)"
+Vector2,SignedAngle,"static float SignedAngle(Vector2, Vector2)"
+Vector2,SmoothDamp,"static Vector2 SmoothDamp(Vector2, Vector2, ref Vector2, float) / static Vector2 SmoothDamp(Vector2, Vector2, ref Vector2, float, float) / static Vector2 SmoothDamp(Vector2, Vector2, ref Vector2, float, float, float)"
+Vector2,ToString,"string ToString() / string ToString(string) / string ToString(string, IFormatProvider)"
+Vector2,down,static Vector2 down { get; }
+Vector2,kEpsilon,const float kEpsilon
+Vector2,kEpsilonNormalSqrt,const float kEpsilonNormalSqrt
+Vector2,left,static Vector2 left { get; }
+Vector2,magnitude,float magnitude { get; }
+Vector2,negativeInfinity,static Vector2 negativeInfinity { get; }
+Vector2,normalized,Vector2 normalized { get; }
+Vector2,one,static Vector2 one { get; }
+Vector2,operators,"Addition(Vector2, Vector2) / Subtraction(Vector2, Vector2) / UnaryNegation(Vector2) / Multiply(Vector2, Vector2) / Division(Vector2, Vector2) / Multiply(Vector2, float) / Multiply(float, Vector2) / Division(Vector2, float) / Equality(Vector2, Vector2) / Inequality(Vector2, Vector2) / Implicit(Vector3) / Implicit(Vector2)"
+Vector2,positiveInfinity,static Vector2 positiveInfinity { get; }
+Vector2,right,static Vector2 right { get; }
+Vector2,sqrMagnitude,float sqrMagnitude { get; }
+Vector2,this[],float this[][int] { get; set; }
+Vector2,up,static Vector2 up { get; }
+Vector2,x,float x
+Vector2,y,float y
+Vector2,zero,static Vector2 zero { get; }
+Vector2Int,.ctor,"Vector2Int(int, int)"
+Vector2Int,CeilToInt,static Vector2Int CeilToInt(Vector2)
+Vector2Int,Clamp,"void Clamp(Vector2Int, Vector2Int)"
+Vector2Int,Distance,"static float Distance(Vector2Int, Vector2Int)"
+Vector2Int,FloorToInt,static Vector2Int FloorToInt(Vector2)
+Vector2Int,Max,"static Vector2Int Max(Vector2Int, Vector2Int)"
+Vector2Int,Min,"static Vector2Int Min(Vector2Int, Vector2Int)"
+Vector2Int,RoundToInt,static Vector2Int RoundToInt(Vector2)
+Vector2Int,Scale,"void Scale(Vector2Int) / static Vector2Int Scale(Vector2Int, Vector2Int)"
+Vector2Int,Set,"void Set(int, int)"
+Vector2Int,ToString,"string ToString() / string ToString(string) / string ToString(string, IFormatProvider)"
+Vector2Int,down,static Vector2Int down { get; }
+Vector2Int,left,static Vector2Int left { get; }
+Vector2Int,magnitude,float magnitude { get; }
+Vector2Int,one,static Vector2Int one { get; }
+Vector2Int,operators,"UnaryNegation(Vector2Int) / Addition(Vector2Int, Vector2Int) / Subtraction(Vector2Int, Vector2Int) / Multiply(Vector2Int, Vector2Int) / Multiply(int, Vector2Int) / Multiply(Vector2Int, int) / Division(Vector2Int, int) / Equality(Vector2Int, Vector2Int) / Inequality(Vector2Int, Vector2Int) / Implicit(Vector2Int) / Explicit(Vector2Int)"
+Vector2Int,right,static Vector2Int right { get; }
+Vector2Int,sqrMagnitude,int sqrMagnitude { get; }
+Vector2Int,this[],int this[][int] { get; set; }
+Vector2Int,up,static Vector2Int up { get; }
+Vector2Int,x,int x { get; set; }
+Vector2Int,y,int y { get; set; }
+Vector2Int,zero,static Vector2Int zero { get; }
+Vector3,.ctor,"Vector3(float, float, float) / Vector3(float, float)"
+Vector3,Angle,"static float Angle(Vector3, Vector3)"
+Vector3,ClampMagnitude,"static Vector3 ClampMagnitude(Vector3, float)"
+Vector3,Cross,"static Vector3 Cross(Vector3, Vector3)"
+Vector3,Distance,"static float Distance(Vector3, Vector3)"
+Vector3,Dot,"static float Dot(Vector3, Vector3)"
+Vector3,Lerp,"static Vector3 Lerp(Vector3, Vector3, float)"
+Vector3,LerpUnclamped,"static Vector3 LerpUnclamped(Vector3, Vector3, float)"
+Vector3,Magnitude,static float Magnitude(Vector3)
+Vector3,Max,"static Vector3 Max(Vector3, Vector3)"
+Vector3,Min,"static Vector3 Min(Vector3, Vector3)"
+Vector3,MoveTowards,"static Vector3 MoveTowards(Vector3, Vector3, float)"
+Vector3,Normalize,void Normalize() / static Vector3 Normalize(Vector3)
+Vector3,OrthoNormalize,"static void OrthoNormalize(ref Vector3, ref Vector3) / static void OrthoNormalize(ref Vector3, ref Vector3, ref Vector3)"
+Vector3,Project,"static Vector3 Project(Vector3, Vector3)"
+Vector3,ProjectOnPlane,"static Vector3 ProjectOnPlane(Vector3, Vector3)"
+Vector3,Reflect,"static Vector3 Reflect(Vector3, Vector3)"
+Vector3,RotateTowards,"static Vector3 RotateTowards(Vector3, Vector3, float, float)"
+Vector3,Scale,"void Scale(Vector3) / static Vector3 Scale(Vector3, Vector3)"
+Vector3,Set,"void Set(float, float, float)"
+Vector3,SignedAngle,"static float SignedAngle(Vector3, Vector3, Vector3)"
+Vector3,Slerp,"static Vector3 Slerp(Vector3, Vector3, float)"
+Vector3,SlerpUnclamped,"static Vector3 SlerpUnclamped(Vector3, Vector3, float)"
+Vector3,SmoothDamp,"static Vector3 SmoothDamp(Vector3, Vector3, ref Vector3, float) / static Vector3 SmoothDamp(Vector3, Vector3, ref Vector3, float, float) / static Vector3 SmoothDamp(Vector3, Vector3, ref Vector3, float, float, float)"
+Vector3,SqrMagnitude,static float SqrMagnitude(Vector3)
+Vector3,ToString,"string ToString() / string ToString(string) / string ToString(string, IFormatProvider)"
+Vector3,back,static Vector3 back { get; }
+Vector3,down,static Vector3 down { get; }
+Vector3,forward,static Vector3 forward { get; }
+Vector3,kEpsilon,const float kEpsilon
+Vector3,kEpsilonNormalSqrt,const float kEpsilonNormalSqrt
+Vector3,left,static Vector3 left { get; }
+Vector3,magnitude,float magnitude { get; }
+Vector3,negativeInfinity,static Vector3 negativeInfinity { get; }
+Vector3,normalized,Vector3 normalized { get; }
+Vector3,one,static Vector3 one { get; }
+Vector3,operators,"Addition(Vector3, Vector3) / Subtraction(Vector3, Vector3) / UnaryNegation(Vector3) / Multiply(Vector3, float) / Multiply(float, Vector3) / Division(Vector3, float) / Equality(Vector3, Vector3) / Inequality(Vector3, Vector3)"
+Vector3,positiveInfinity,static Vector3 positiveInfinity { get; }
+Vector3,right,static Vector3 right { get; }
+Vector3,sqrMagnitude,float sqrMagnitude { get; }
+Vector3,this[],float this[][int] { get; set; }
+Vector3,up,static Vector3 up { get; }
+Vector3,x,float x
+Vector3,y,float y
+Vector3,z,float z
+Vector3,zero,static Vector3 zero { get; }
+Vector3Int,.ctor,"Vector3Int(int, int, int) / Vector3Int(int, int)"
+Vector3Int,CeilToInt,static Vector3Int CeilToInt(Vector3)
+Vector3Int,Clamp,"void Clamp(Vector3Int, Vector3Int)"
+Vector3Int,Distance,"static float Distance(Vector3Int, Vector3Int)"
+Vector3Int,FloorToInt,static Vector3Int FloorToInt(Vector3)
+Vector3Int,Max,"static Vector3Int Max(Vector3Int, Vector3Int)"
+Vector3Int,Min,"static Vector3Int Min(Vector3Int, Vector3Int)"
+Vector3Int,RoundToInt,static Vector3Int RoundToInt(Vector3)
+Vector3Int,Scale,"void Scale(Vector3Int) / static Vector3Int Scale(Vector3Int, Vector3Int)"
+Vector3Int,Set,"void Set(int, int, int)"
+Vector3Int,ToString,"string ToString() / string ToString(string) / string ToString(string, IFormatProvider)"
+Vector3Int,back,static Vector3Int back { get; }
+Vector3Int,down,static Vector3Int down { get; }
+Vector3Int,forward,static Vector3Int forward { get; }
+Vector3Int,left,static Vector3Int left { get; }
+Vector3Int,magnitude,float magnitude { get; }
+Vector3Int,one,static Vector3Int one { get; }
+Vector3Int,operators,"UnaryNegation(Vector3Int) / Addition(Vector3Int, Vector3Int) / Subtraction(Vector3Int, Vector3Int) / Multiply(Vector3Int, Vector3Int) / Multiply(int, Vector3Int) / Multiply(Vector3Int, int) / Division(Vector3Int, int) / Equality(Vector3Int, Vector3Int) / Inequality(Vector3Int, Vector3Int) / Implicit(Vector3Int) / Explicit(Vector3Int)"
+Vector3Int,right,static Vector3Int right { get; }
+Vector3Int,sqrMagnitude,int sqrMagnitude { get; }
+Vector3Int,this[],int this[][int] { get; set; }
+Vector3Int,up,static Vector3Int up { get; }
+Vector3Int,x,int x { get; set; }
+Vector3Int,y,int y { get; set; }
+Vector3Int,z,int z { get; set; }
+Vector3Int,zero,static Vector3Int zero { get; }
+Vector4,.ctor,"Vector4(float, float, float, float) / Vector4(float, float, float) / Vector4(float, float)"
+Vector4,Distance,"static float Distance(Vector4, Vector4)"
+Vector4,Dot,"static float Dot(Vector4, Vector4)"
+Vector4,Lerp,"static Vector4 Lerp(Vector4, Vector4, float)"
+Vector4,LerpUnclamped,"static Vector4 LerpUnclamped(Vector4, Vector4, float)"
+Vector4,Max,"static Vector4 Max(Vector4, Vector4)"
+Vector4,Min,"static Vector4 Min(Vector4, Vector4)"
+Vector4,MoveTowards,"static Vector4 MoveTowards(Vector4, Vector4, float)"
+Vector4,Normalize,void Normalize() / static Vector4 Normalize(Vector4)
+Vector4,Project,"static Vector4 Project(Vector4, Vector4)"
+Vector4,Scale,"void Scale(Vector4) / static Vector4 Scale(Vector4, Vector4)"
+Vector4,Set,"void Set(float, float, float, float)"
+Vector4,ToString,"string ToString() / string ToString(string) / string ToString(string, IFormatProvider)"
+Vector4,kEpsilon,const float kEpsilon
+Vector4,magnitude,float magnitude { get; }
+Vector4,negativeInfinity,static Vector4 negativeInfinity { get; }
+Vector4,normalized,Vector4 normalized { get; }
+Vector4,one,static Vector4 one { get; }
+Vector4,operators,"Addition(Vector4, Vector4) / Subtraction(Vector4, Vector4) / UnaryNegation(Vector4) / Multiply(Vector4, float) / Multiply(float, Vector4) / Division(Vector4, float) / Equality(Vector4, Vector4) / Inequality(Vector4, Vector4) / Implicit(Vector3) / Implicit(Vector4) / Implicit(Vector2) / Implicit(Vector4)"
+Vector4,positiveInfinity,static Vector4 positiveInfinity { get; }
+Vector4,sqrMagnitude,float sqrMagnitude { get; }
+Vector4,this[],float this[][int] { get; set; }
+Vector4,w,float w
+Vector4,x,float x
+Vector4,y,float y
+Vector4,z,float z
+Vector4,zero,static Vector4 zero { get; }
