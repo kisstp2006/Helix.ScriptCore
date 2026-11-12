@@ -75,7 +75,7 @@ namespace HelixEngine
 {
     // An operation in progress (a scene or asset load, an unload); completed is raised once it is done (at once for a
     // handler added after that).
-    public class AsyncOperation
+    public class AsyncOperation : YieldInstruction
     {
         internal readonly uint m_Id;
         Action<AsyncOperation> m_Completed;

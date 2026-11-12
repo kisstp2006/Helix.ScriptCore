@@ -11,6 +11,15 @@ namespace Tests
     {
         static delegate* unmanaged[Cdecl]<byte*, int, void> s_Note;
 
+        public static void NoteRaw(string message)
+        {
+            if (s_Note == null)
+                s_Note = (delegate* unmanaged[Cdecl]<byte*, int, void>)Host.FindExport("ScriptCoreTests.Note");
+            byte[] bytes = Encoding.UTF8.GetBytes(message);
+            fixed (byte* p = bytes)
+                s_Note(p, bytes.Length);
+        }
+
         public static void Note(GameBehaviour b, string message)
         {
             if (s_Note == null)
@@ -406,6 +415,202 @@ namespace Tests
         {
             Notes.Note(this, string.Join(",", Log) + ";derived=" + derived);
             Log.Clear();
+        }
+    }
+}
+
+namespace Tests
+{
+    // C# coroutines: every yield instruction, nested coroutines, the stop rules (the C++ Routines' twin).
+    public class CsRoutines : GameBehaviour
+    {
+        public bool ready;
+        public bool trace = true;
+        Coroutine m_Running;
+        static CsRoutines s_Remembered;
+
+        void Start()
+        {
+            if (trace)
+                m_Running = StartCoroutine(Trace());
+        }
+        void FixedUpdate() => Notes.Note(this, "FixedUpdate");
+        void Update() => Notes.Note(this, "Update");
+        void LateUpdate() => Notes.Note(this, "LateUpdate");
+
+        System.Collections.IEnumerator Trace()
+        {
+            Notes.Note(this, "co.start");
+            yield return null;
+            Notes.Note(this, "co.frame");
+            yield return new WaitForFixedUpdate();
+            Notes.Note(this, "co.fixed");
+            yield return new WaitForEndOfFrame();
+            Notes.Note(this, "co.end");
+            yield return new WaitUntil(() => ready);
+            Notes.Note(this, "co.ready");
+            yield return Inner();
+            Notes.Note(this, "co.done");
+        }
+
+        System.Collections.IEnumerator Inner()
+        {
+            Notes.Note(this, "inner.start");
+            yield return null;
+            Notes.Note(this, "inner.end");
+        }
+
+        System.Collections.IEnumerator Forever()
+        {
+            for (;;)
+            {
+                Notes.Note(this, "tick");
+                yield return null;
+            }
+        }
+
+        System.Collections.IEnumerator Seconds(float s)
+        {
+            yield return new WaitForSeconds(s);
+            Notes.Note(this, "seconds");
+            yield return new WaitForSecondsRealtime(s);
+            Notes.Note(this, "realtime");
+        }
+
+        System.Collections.IEnumerator Timeout()
+        {
+            yield return new WaitUntil(() => false, TimeSpan.FromSeconds(0.1), () => Notes.Note(this, "timeout"), WaitTimeoutMode.InGameTime);
+            Notes.Note(this, "after.timeout");
+            yield return new WaitWhile(() => !ready);
+            Notes.Note(this, "after.while");
+        }
+
+        System.Collections.IEnumerator Ends()
+        {
+            yield break;
+        }
+
+        System.Collections.IEnumerator Throws()
+        {
+            Notes.Note(this, "throws");
+            yield return null;
+            throw new InvalidOperationException("coroutine failure");
+        }
+
+        // Entry points for the test program (SendMessage).
+        void NoTrace() => trace = false;
+        void Ready() => ready = true;
+        void StartForever() => m_Running = StartCoroutine(Forever());
+        void StartForeverByName() => StartCoroutine("Forever");
+        void StopForeverByName() => StopCoroutine("Forever");
+        void StopRunning() => StopCoroutine(m_Running);
+        void StopAll() => StopAllCoroutines();
+        void StartSeconds() => StartCoroutine(Seconds(0.2f));
+        void StartTimeout() => StartCoroutine(Timeout());
+        void StartEnds() => Notes.Note(this, StartCoroutine(Ends()) == null ? "ends.null" : "ends.set");
+        void StartThrows() => StartCoroutine(Throws());
+        void Remember() => s_Remembered = this;
+        void StartOnRemembered() => Notes.Note(this, s_Remembered.StartCoroutine(Forever()) == null ? "remembered.null" : "remembered.set");
+        void WatchDestroy() => destroyCancellationToken.Register(() => Notes.NoteRaw("destroyed.token"));
+    }
+}
+
+namespace Tests
+{
+    // Awaitables: every wait, thread switches, results, completion sources, cancellation, Tasks, order.
+    public class CsAwaits : GameBehaviour
+    {
+        static int s_Main;
+        readonly AwaitableCompletionSource m_Source = new AwaitableCompletionSource();
+
+        void Awake() => s_Main = Environment.CurrentManagedThreadId;
+
+        async void StartSequence()
+        {
+            await Sequence();
+            Notes.Note(this, "seq.done");
+        }
+
+        async Awaitable Sequence()
+        {
+            Notes.Note(this, "a.start");
+            await Awaitable.NextFrameAsync();
+            Notes.Note(this, "a.frame");
+            await Awaitable.FixedUpdateAsync();
+            Notes.Note(this, "a.fixed");
+            await Awaitable.EndOfFrameAsync();
+            Notes.Note(this, "a.end");
+            int v = await Compute();
+            Notes.Note(this, "a.result=" + v);
+            await Awaitable.BackgroundThreadAsync();
+            bool background = Environment.CurrentManagedThreadId != s_Main;
+            await Awaitable.MainThreadAsync();
+            Notes.Note(this, "a.main bg=" + background + " main=" + (Environment.CurrentManagedThreadId == s_Main));
+            await m_Source.Awaitable;
+            Notes.Note(this, "a.source");
+        }
+
+        async Awaitable<int> Compute()
+        {
+            await Awaitable.NextFrameAsync();
+            return 7;
+        }
+
+        void Complete() => m_Source.SetResult();
+
+        async void StartCancel()
+        {
+            Awaitable a = Awaitable.WaitForSecondsAsync(10);
+            a.Cancel();
+            try
+            {
+                await a;
+                Notes.Note(this, "not canceled");
+            }
+            catch (OperationCanceledException)
+            {
+                Notes.Note(this, "canceled");
+            }
+            var cts = new System.Threading.CancellationTokenSource();
+            Awaitable b = Awaitable.NextFrameAsync(cts.Token);
+            cts.Cancel();
+            try
+            {
+                await b;
+            }
+            catch (OperationCanceledException)
+            {
+                Notes.Note(this, "token");
+            }
+            var source = new AwaitableCompletionSource<string>();
+            source.SetResult("value");
+            Notes.Note(this, "source=" + await source.Awaitable + " again=" + source.TrySetResult("x"));
+        }
+
+        async void StartTask()
+        {
+            await System.Threading.Tasks.Task.Yield();
+            Notes.Note(this, "task");
+        }
+
+        void StartCoroutineAwait() => StartCoroutine(CoAwait());
+
+        System.Collections.IEnumerator CoAwait()
+        {
+            yield return Awaitable.WaitForSecondsAsync(0.1f);
+            Notes.Note(this, "co.awaited");
+        }
+
+        void StartOrder()
+        {
+            _ = Order("x");
+            _ = Order("y");
+        }
+
+        async Awaitable Order(string name)
+        {
+            await Awaitable.NextFrameAsync();
+            Notes.Note(this, "order." + name);
         }
     }
 }

@@ -7,6 +7,7 @@ Application,companyName,static string companyName { get; }
 Application,consoleLogPath,static string consoleLogPath { get; }
 Application,dataPath,static string dataPath { get; }
 Application,deepLinkActivated,static event Action<string> deepLinkActivated
+Application,exitCancellationToken,static CancellationToken exitCancellationToken { get; }
 Application,focusChanged,static event Action<bool> focusChanged
 Application,helixVersion,static string helixVersion { get; }
 Application,identifier,static string identifier { get; }
@@ -38,6 +39,37 @@ AsyncOperation,completed,event Action<AsyncOperation> completed
 AsyncOperation,isDone,bool isDone { get; }
 AsyncOperation,priority,int priority { get; set; }
 AsyncOperation,progress,float progress { get; }
+Awaitable,BackgroundThreadAsync,static Awaitable BackgroundThreadAsync()
+Awaitable,Cancel,void Cancel() / void Cancel()
+Awaitable,EndOfFrameAsync,static Awaitable EndOfFrameAsync(CancellationToken = null)
+Awaitable,FixedUpdateAsync,static Awaitable FixedUpdateAsync(CancellationToken = null)
+Awaitable,FromAsyncOperation,"static Awaitable FromAsyncOperation(AsyncOperation, CancellationToken = null)"
+Awaitable,GetAwaiter,Awaitable.Awaiter GetAwaiter() / Awaitable.Awaiter<T> GetAwaiter()
+Awaitable,IsCompleted,bool IsCompleted { get; } / bool IsCompleted { get; }
+Awaitable,MainThreadAsync,static Awaitable MainThreadAsync()
+Awaitable,NextFrameAsync,static Awaitable NextFrameAsync(CancellationToken = null)
+Awaitable,WaitForSecondsAsync,"static Awaitable WaitForSecondsAsync(float, CancellationToken = null)"
+Awaitable.AwaitableAsyncMethodBuilder,AwaitOnCompleted,"void AwaitOnCompleted<TAwaiter, TStateMachine>(ref TAwaiter, ref TStateMachine) / void AwaitOnCompleted<TAwaiter, TStateMachine>(ref TAwaiter, ref TStateMachine)"
+Awaitable.AwaitableAsyncMethodBuilder,AwaitUnsafeOnCompleted,"void AwaitUnsafeOnCompleted<TAwaiter, TStateMachine>(ref TAwaiter, ref TStateMachine) / void AwaitUnsafeOnCompleted<TAwaiter, TStateMachine>(ref TAwaiter, ref TStateMachine)"
+Awaitable.AwaitableAsyncMethodBuilder,Create,static Awaitable.AwaitableAsyncMethodBuilder Create() / static Awaitable.AwaitableAsyncMethodBuilder Create()
+Awaitable.AwaitableAsyncMethodBuilder,SetException,void SetException(Exception) / void SetException(Exception)
+Awaitable.AwaitableAsyncMethodBuilder,SetResult,void SetResult() / void SetResult(T)
+Awaitable.AwaitableAsyncMethodBuilder,SetStateMachine,void SetStateMachine(IAsyncStateMachine) / void SetStateMachine(IAsyncStateMachine)
+Awaitable.AwaitableAsyncMethodBuilder,Start,void Start<TStateMachine>(ref TStateMachine) / void Start<TStateMachine>(ref TStateMachine)
+Awaitable.AwaitableAsyncMethodBuilder,Task,Awaitable Task { get; } / Awaitable<T> Task { get; }
+Awaitable.Awaiter,GetResult,void GetResult() / T GetResult()
+Awaitable.Awaiter,IsCompleted,bool IsCompleted { get; } / bool IsCompleted { get; }
+Awaitable.Awaiter,OnCompleted,void OnCompleted(Action) / void OnCompleted(Action)
+Awaitable.Awaiter,UnsafeOnCompleted,void UnsafeOnCompleted(Action) / void UnsafeOnCompleted(Action)
+AwaitableCompletionSource,.ctor,AwaitableCompletionSource() / AwaitableCompletionSource()
+AwaitableCompletionSource,Awaitable,Awaitable Awaitable { get; } / Awaitable<T> Awaitable { get; }
+AwaitableCompletionSource,Reset,void Reset() / void Reset()
+AwaitableCompletionSource,SetCanceled,void SetCanceled() / void SetCanceled()
+AwaitableCompletionSource,SetException,void SetException(Exception) / void SetException(Exception)
+AwaitableCompletionSource,SetResult,void SetResult() / void SetResult(T)
+AwaitableCompletionSource,TrySetCanceled,bool TrySetCanceled() / bool TrySetCanceled()
+AwaitableCompletionSource,TrySetException,bool TrySetException(Exception) / bool TrySetException(Exception)
+AwaitableCompletionSource,TrySetResult,bool TrySetResult() / bool TrySetResult(T)
 Behaviour,enabled,bool enabled { get; set; }
 Behaviour,isActiveAndEnabled,bool isActiveAndEnabled { get; }
 Bounds,.ctor,"Bounds(Vector3, Vector3)"
@@ -254,6 +286,10 @@ Component,TryGetComponent,"bool TryGetComponent(Type, out Component) / bool TryG
 Component,gameObject,GameObject gameObject { get; }
 Component,tag,string tag { get; set; }
 Component,transform,Transform transform { get; }
+CustomYieldInstruction,Current,object Current { get; }
+CustomYieldInstruction,MoveNext,bool MoveNext()
+CustomYieldInstruction,Reset,void Reset()
+CustomYieldInstruction,keepWaiting,bool keepWaiting { get; }
 Debug,.ctor,Debug()
 Debug,Assert,"static void Assert(bool, object) / static void Assert(bool, object, Object) / static void Assert(bool) / static void Assert(bool, string) / static void Assert(bool, string, Object) / static void Assert(bool, Object)"
 Debug,AssertFormat,"static void AssertFormat(bool, string, params object[]) / static void AssertFormat(bool, Object, string, params object[])"
@@ -288,6 +324,10 @@ FullScreenMode,ExclusiveFullScreen,FullScreenMode.ExclusiveFullScreen = 0
 FullScreenMode,FullScreenWindow,FullScreenMode.FullScreenWindow = 1
 FullScreenMode,MaximizedWindow,FullScreenMode.MaximizedWindow = 2
 FullScreenMode,Windowed,FullScreenMode.Windowed = 3
+GameBehaviour,StartCoroutine,"Coroutine StartCoroutine(IEnumerator) / Coroutine StartCoroutine(string, object = null)"
+GameBehaviour,StopAllCoroutines,void StopAllCoroutines()
+GameBehaviour,StopCoroutine,void StopCoroutine(IEnumerator) / void StopCoroutine(Coroutine) / void StopCoroutine(string)
+GameBehaviour,destroyCancellationToken,CancellationToken destroyCancellationToken { get; }
 GameObject,.ctor,GameObject(string = GameObject)
 GameObject,AddComponent,Component AddComponent(Type) / T AddComponent<T>()
 GameObject,BroadcastMessage,"void BroadcastMessage(string) / void BroadcastMessage(string, object) / void BroadcastMessage(string, object, SendMessageOptions) / void BroadcastMessage(string, SendMessageOptions)"
@@ -884,3 +924,17 @@ Vector4,x,float x
 Vector4,y,float y
 Vector4,z,float z
 Vector4,zero,static Vector4 zero { get; }
+WaitForEndOfFrame,.ctor,WaitForEndOfFrame()
+WaitForFixedUpdate,.ctor,WaitForFixedUpdate()
+WaitForSeconds,.ctor,WaitForSeconds(float)
+WaitForSecondsRealtime,.ctor,WaitForSecondsRealtime(float)
+WaitForSecondsRealtime,Reset,void Reset()
+WaitForSecondsRealtime,keepWaiting,bool keepWaiting { get; }
+WaitForSecondsRealtime,waitTime,float waitTime { get; set; }
+WaitTimeoutMode,InGameTime,WaitTimeoutMode.InGameTime = 1
+WaitTimeoutMode,Realtime,WaitTimeoutMode.Realtime = 0
+WaitUntil,.ctor,"WaitUntil(Func<bool>) / WaitUntil(Func<bool>, TimeSpan, Action, WaitTimeoutMode = Realtime)"
+WaitUntil,keepWaiting,bool keepWaiting { get; }
+WaitWhile,.ctor,"WaitWhile(Func<bool>) / WaitWhile(Func<bool>, TimeSpan, Action, WaitTimeoutMode = Realtime)"
+WaitWhile,keepWaiting,bool keepWaiting { get; }
+YieldInstruction,.ctor,YieldInstruction()

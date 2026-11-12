@@ -58,6 +58,8 @@ namespace HelixEngine.Internal
                 s_Log = (delegate* unmanaged[Cdecl]<int, byte*, int, void>)Export("HxEngine_Log");
                 s_RegisterClass = (delegate* unmanaged[Cdecl]<byte*, int, byte*, int, byte*, int, uint, uint, int, byte, uint*, uint>)Export("HxEngineScripts_RegisterClass");
                 SerializedFields.Start(Export);
+                CoroutineRunner.Start(Export);
+                AwaitableScheduler.Start(Export);
                 Native.MakeException = (status, what) => status switch
                 {
                     Native.MissingObject => new MissingReferenceException($"{what}: the object was destroyed; check it against null before using it"),
@@ -68,13 +70,14 @@ namespace HelixEngine.Internal
                 var setManaged = (delegate* unmanaged[Cdecl]<void**, uint, byte>)Export("HxEngineScripts_SetManaged");
                 if (setManaged == null || s_RegisterClass == null)
                     return 2;
-                void** table = (void**)NativeMemory.Alloc((nuint)(5 * sizeof(void*)));
+                void** table = (void**)NativeMemory.Alloc((nuint)(6 * sizeof(void*)));
                 table[0] = (void*)(delegate* unmanaged[Cdecl]<ulong, uint, ulong*, int>)&Create;
                 table[1] = (void*)(delegate* unmanaged[Cdecl]<uint, ulong*, uint*, byte*, int, void>)&RunBatch;
                 table[2] = (void*)(delegate* unmanaged[Cdecl]<ulong, uint, byte, void>)&RunOne;
                 table[3] = (void*)(delegate* unmanaged[Cdecl]<ulong, byte*, int, MessageValue*, byte>)&Messages.Receive;
                 table[4] = (void*)(delegate* unmanaged[Cdecl]<ulong, void*, void>)&TransferFields;
-                if (setManaged(table, 5) == 0)
+                table[5] = (void*)(delegate* unmanaged[Cdecl]<ulong, void>)&Destroyed;
+                if (setManaged(table, 6) == 0)
                     return 3;
                 s_Started = true;
                 return 0;
@@ -203,6 +206,37 @@ namespace HelixEngine.Internal
         }
 
         internal static void Warn(string text) => Log(3, text);
+        internal static void Error(string text) => Log(4, text);
+
+        // An exception of a coroutine, with its script and GameObject.
+        internal static void ReportCoroutine(object script, Exception e)
+        {
+            string where = script?.GetType().FullName ?? "a coroutine";
+            try
+            {
+                if (script is Component c && c.gameObject is GameObject g)
+                    where += " on '" + g.name + "'";
+            }
+            catch (Exception)
+            {
+            }
+            Log(4, $"{e}\n  in a coroutine of {where}");
+        }
+
+        // A C# script's native GameBehaviour was destroyed.
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+        static void Destroyed(ulong handle)
+        {
+            try
+            {
+                if (handle != 0 && GCHandle.FromIntPtr((IntPtr)handle).Target is GameBehaviour b)
+                    CoroutineRunner.Destroyed(b);
+            }
+            catch (Exception e)
+            {
+                Host.Report(e);
+            }
+        }
 
         // A C# script's serialized fields through a native visitor.
         [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]

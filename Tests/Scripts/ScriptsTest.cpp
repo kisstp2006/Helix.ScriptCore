@@ -5,6 +5,9 @@
 #include <Helix/Engine/Asset/Asset.h>
 #include <Helix/Engine/GameObject/Lifecycle.h>
 #include <Helix/Engine/Prefab/Prefab.h>
+#include <Helix/Engine/PlayerLoop/PlayerLoop.h>
+#include <Helix/Engine/Script/Coroutines.h>
+#include <Helix/Engine/Time/Time.h>
 #include <Helix/Engine/Scene/SceneFile.h>
 #include <Helix/Engine/Scene/SceneManager.h>
 #include <Helix/Testing/Test.h>
@@ -12,6 +15,8 @@
 #include <Helix/Math/Random.h>
 
 #include <bit>
+#include <chrono>
+#include <thread>
 #include <cstring>
 #include <initializer_list>
 
@@ -704,4 +709,237 @@ HX_TEST(Scripts, CSharpScriptFieldsInPrefabs)
     DestroyImmediate(prefab, true);
     ForgetSceneScripts();
     Calls().Clear();
+}
+
+namespace
+{
+    // Frames by hand: 1/16 s each, one fixed step of 1/16 s per frame.
+    struct CoroutineFrames
+    {
+        struct Clock final : TimeClock
+        {
+            double now = 10;
+            double Now() override { return now; }
+        } clock;
+
+        CoroutineFrames()
+        {
+            Time::SetClock(&clock);
+            Time::Reset();
+            Time::SetFixedDeltaTime(0.0625f);
+            PlayerLoop::SetPlayerLoop(PlayerLoop::GetDefaultPlayerLoop());
+            PlayerLoop::RunFrame();
+            Calls().Clear();
+        }
+        ~CoroutineFrames()
+        {
+            Time::SetClock(nullptr);
+            Time::Reset();
+            Calls().Clear();
+        }
+        void Frame()
+        {
+            clock.now += 0.0625;
+            PlayerLoop::RunFrame();
+        }
+    };
+
+    GameObject* WithRoutines(const char* name, bool trace)
+    {
+        GameObject* g = GameObject::Create(name);
+        g->AddComponent(CSharp("CsRoutines").type);
+        if (!trace)
+            SendScriptMessage(g, "NoTrace");
+        return g;
+    }
+}
+
+HX_TEST(Scripts, CSharpCoroutinesResumeAtTheReferencesPoints)
+{
+    HX_REQUIRE(StartScripts());
+    CoroutineFrames frames;
+    GameObject* g = WithRoutines("C", true);
+    frames.Frame();
+    // The same trace as the C++ Routines.
+    HX_CHECK(Expect({"C:co.start", "C:FixedUpdate", "C:Update", "C:LateUpdate"}));
+    frames.Frame();
+    HX_CHECK(Expect({"C:FixedUpdate", "C:Update", "C:co.frame", "C:LateUpdate"}));
+    frames.Frame();
+    HX_CHECK(Expect({"C:FixedUpdate", "C:co.fixed", "C:Update", "C:LateUpdate", "C:co.end"}));
+    frames.Frame();
+    HX_CHECK(Expect({"C:FixedUpdate", "C:Update", "C:LateUpdate"}));
+    SendScriptMessage(g, "Ready");
+    frames.Frame();
+    HX_CHECK(Expect({"C:FixedUpdate", "C:Update", "C:co.ready", "C:inner.start", "C:LateUpdate"}));
+    frames.Frame();
+    HX_CHECK(Expect({"C:FixedUpdate", "C:Update", "C:inner.end", "C:co.done", "C:LateUpdate"}));
+    DestroyImmediate(g);
+    HX_CHECK(CoroutineCount() == 0);
+}
+
+HX_TEST(Scripts, CSharpCoroutinesStopByTheReferencesRules)
+{
+    HX_REQUIRE(StartScripts());
+    CoroutineFrames frames;
+    GameObject* g = WithRoutines("S", false);
+    frames.Frame();
+    auto* b = static_cast<GameBehaviour*>(g->GetComponent(CSharp("CsRoutines").type));
+    Calls().Clear();
+    auto ticks = [&] {
+        Array<String> left;
+        for (const String& c : Calls())
+            if (!c.View().EndsWith("Update"))
+                left.Push(c);
+        Calls() = Move(left);
+    };
+    // Disabling the behaviour does not stop its coroutines; StopCoroutine(Coroutine) does.
+    SendScriptMessage(g, "StartForever");
+    b->SetEnabled(false);
+    frames.Frame();
+    ticks();
+    HX_CHECK(Expect({"S:tick", "S:tick"}));
+    b->SetEnabled(true);
+    SendScriptMessage(g, "StopRunning");
+    frames.Frame();
+    ticks();
+    HX_CHECK(Expect({}));
+    // By name; StopAllCoroutines; an inactive GameObject stops the others.
+    SendScriptMessage(g, "StartForeverByName");
+    SendScriptMessage(g, "StopForeverByName");
+    frames.Frame();
+    ticks();
+    HX_CHECK(Expect({"S:tick"}));
+    SendScriptMessage(g, "StartForever");
+    SendScriptMessage(g, "StartForever");
+    SendScriptMessage(g, "StopAll");
+    HX_CHECK(CoroutineCount() == 0);
+    SendScriptMessage(g, "StartForever");
+    HX_CHECK(CoroutineCount() == 1);
+    g->SetActive(false);
+    HX_CHECK(CoroutineCount() == 0);
+    // Started on an inactive GameObject: the reference's error, null.
+    g->SetActive(true);
+    SendScriptMessage(g, "Remember");
+    g->SetActive(false);
+    GameObject* other = WithRoutines("O", false);
+    Errors errors;
+    AddLogSink(&CountErrors, &errors);
+    Calls().Clear();
+    SendScriptMessage(other, "StartOnRemembered");
+    RemoveLogSink(&CountErrors, &errors);
+    HX_CHECK(Expect({"O:remembered.null"}));
+    HX_CHECK(errors.texts.Size() == 1 && errors.texts[0].View().Contains("Coroutine couldn't be started because the the game object 'S' is inactive!"));
+    g->SetActive(true);
+    // A coroutine that ends without yielding answers null; an exception ends it and is logged.
+    Calls().Clear();
+    SendScriptMessage(g, "StartEnds");
+    HX_CHECK(Expect({"S:ends.null"}));
+    AddLogSink(&CountErrors, &errors);
+    errors.texts.Clear();
+    SendScriptMessage(g, "StartThrows");
+    frames.Frame();
+    RemoveLogSink(&CountErrors, &errors);
+    ticks();
+    HX_CHECK(Expect({"S:throws"}) && errors.texts.Size() == 1 && errors.texts[0].View().Contains("coroutine failure") && CoroutineCount() == 0);
+    // Destroying the behaviour stops its coroutines and cancels its destroyCancellationToken.
+    SendScriptMessage(g, "StartForever");
+    SendScriptMessage(g, "WatchDestroy");
+    Calls().Clear();
+    DestroyImmediate(b);
+    HX_CHECK(CoroutineCount() == 0 && Expect({"destroyed.token"}));
+    DestroyImmediate(g);
+    DestroyImmediate(other);
+}
+
+HX_TEST(Scripts, CSharpCoroutinesWaitForTimeAndPredicates)
+{
+    HX_REQUIRE(StartScripts());
+    CoroutineFrames frames;
+    GameObject* g = WithRoutines("T", false);
+    frames.Frame();
+    Calls().Clear();
+    SendScriptMessage(g, "StartSeconds");
+    SendScriptMessage(g, "StartTimeout");
+    String text;
+    for (int i = 0; i < 12; i++)
+    {
+        frames.Frame();
+        for (const String& c : Calls())
+            if (!c.View().EndsWith("Update"))
+                text.Append(Format("{}:{} ", i, c));
+        Calls().Clear();
+        if (i == 6)
+            SendScriptMessage(g, "Ready");
+    }
+    // The C++ Routines' timeline.
+    HX_CHECK(text == StringView("1:T:timeout 1:T:after.timeout 3:T:seconds 7:T:after.while 7:T:realtime "));
+    if (text != StringView("1:T:timeout 1:T:after.timeout 3:T:seconds 7:T:after.while 7:T:realtime "))
+        std::printf("    %s\n", text.CStr());
+    DestroyImmediate(g);
+}
+
+HX_TEST(Scripts, AwaitablesResumeAtTheReferencesPoints)
+{
+    HX_REQUIRE(StartScripts());
+    CoroutineFrames frames;
+    GameObject* g = GameObject::Create("A");
+    g->AddComponent(CSharp("CsAwaits").type);
+    Calls().Clear();
+    SendScriptMessage(g, "StartSequence");
+    HX_CHECK(Expect({"A:a.start"}));
+    frames.Frame();
+    HX_CHECK(Expect({"A:a.frame"}));
+    frames.Frame();
+    HX_CHECK(Expect({"A:a.fixed", "A:a.end"}));
+    frames.Frame();
+    HX_CHECK(Expect({"A:a.result=7"}));
+    // To a thread pool thread and back: the main thread takes it in a later frame's Update.
+    for (int i = 0; i < 400 && Calls().Empty(); i++)
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        frames.Frame();
+    }
+    HX_CHECK(Expect({"A:a.main bg=True main=True"}));
+    SendScriptMessage(g, "Complete");
+    HX_CHECK(Expect({"A:a.source", "A:seq.done"}));
+    // Cancellation (Cancel and a token) and a completion source with a result.
+    SendScriptMessage(g, "StartCancel");
+    HX_CHECK(Expect({"A:canceled", "A:token", "A:source=value again=False"}));
+    HX_CHECK(CoroutineCount() == 0);
+    // A Task continues through the main thread's context in the next frame's Update; awaitables of one point in the
+    // order they were awaited; a coroutine yields an awaitable.
+    SendScriptMessage(g, "StartTask");
+    SendScriptMessage(g, "StartOrder");
+    SendScriptMessage(g, "StartCoroutineAwait");
+    HX_CHECK(Expect({}));
+    frames.Frame();
+    HX_CHECK(Expect({"A:order.x", "A:order.y", "A:task"}));
+    frames.Frame();
+    HX_CHECK(Expect({"A:co.awaited"}));
+    DestroyImmediate(g);
+    HX_CHECK(CoroutineCount() == 0);
+}
+
+HX_TEST(Scripts, CppApiCoroutinesGiveTheCSharpTrace)
+{
+    HX_REQUIRE(StartScripts());
+    CoroutineFrames frames;
+    GameObject* g = GameObject::Create("C");
+    HX_REQUIRE(AddScript(g, Cpp("CppApiRoutines")) != nullptr);
+    frames.Frame();
+    // CSharpCoroutinesResumeAtTheReferencesPoints' trace.
+    HX_CHECK(Expect({"C:co.start", "C:FixedUpdate", "C:Update", "C:LateUpdate"}));
+    frames.Frame();
+    HX_CHECK(Expect({"C:FixedUpdate", "C:Update", "C:co.frame", "C:LateUpdate"}));
+    frames.Frame();
+    HX_CHECK(Expect({"C:FixedUpdate", "C:co.fixed", "C:Update", "C:LateUpdate", "C:co.end"}));
+    frames.Frame();
+    HX_CHECK(Expect({"C:FixedUpdate", "C:Update", "C:LateUpdate"}));
+    SendScriptMessage(g, "Ready");
+    frames.Frame();
+    HX_CHECK(Expect({"C:FixedUpdate", "C:Update", "C:co.ready", "C:inner.start", "C:LateUpdate"}));
+    frames.Frame();
+    HX_CHECK(Expect({"C:FixedUpdate", "C:Update", "C:inner.end", "C:co.done", "C:LateUpdate"}));
+    DestroyImmediate(g);
+    HX_CHECK(CoroutineCount() == 0);
 }

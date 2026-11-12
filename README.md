@@ -43,6 +43,16 @@ repo; scripts are classes deriving from `GameBehaviour`.
 - `ISerializationCallbackReceiver`: `OnBeforeSerialize` before an object is written, `OnAfterDeserialize` after it is
   read (the host's, then the objects it holds).
 
+- Coroutines: `StartCoroutine` (an enumerator or a method name), `StopCoroutine` (three kinds), `StopAllCoroutines`,
+  `destroyCancellationToken`, and the yield instructions (`WaitForSeconds`, `WaitForSecondsRealtime`,
+  `WaitForFixedUpdate`, `WaitForEndOfFrame`, `WaitUntil` and `WaitWhile` with their timeouts, custom instructions,
+  nested enumerators and coroutines, `AsyncOperation`, `Awaitable`), stepped in C# and resumed by the engine's
+  scheduler at the same points as C++ coroutines.
+- `Awaitable` and `Awaitable<T>`: pooled, `async` methods may return them; `NextFrameAsync`, `WaitForSecondsAsync`,
+  `FixedUpdateAsync`, `EndOfFrameAsync`, `FromAsyncOperation` on the scheduler's points, `BackgroundThreadAsync` and
+  `MainThreadAsync`, cancellation, `AwaitableCompletionSource`; the main thread's SynchronizationContext runs posted
+  continuations (Tasks') in the Update phase; `Application.exitCancellationToken`.
+
 Release, Ryzen 7 3750H:
 
 | Benchmark | Result |

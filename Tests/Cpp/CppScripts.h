@@ -31,6 +31,43 @@ namespace helix::scriptcore::testing
         void Ping() { Note(this, "cpp.Ping"); }
         void Toggle(bool on) { Note(this, on ? "cpp.Toggle(true)" : "cpp.Toggle(false)"); }
     };
+    // CsRoutines' trace on the C++ script API.
+    HX_CLASS(Namespace = "ScriptCoreTests")
+    class CppApiRoutines : public ::HelixEngine::GameBehaviour
+    {
+    public:
+        bool ready = false;
+
+        void Start() { StartCoroutine(Trace()); }
+        void FixedUpdate() { Note(this, "FixedUpdate"); }
+        void Update() { Note(this, "Update"); }
+        void LateUpdate() { Note(this, "LateUpdate"); }
+        void Ready() { ready = true; }
+
+        ::HelixEngine::Coroutine Trace()
+        {
+            using namespace ::HelixEngine;
+            Note(this, "co.start");
+            co_await NextFrame();
+            Note(this, "co.frame");
+            co_await WaitForFixedUpdate();
+            Note(this, "co.fixed");
+            co_await WaitForEndOfFrame();
+            Note(this, "co.end");
+            co_await WaitUntil([this] { return ready; });
+            Note(this, "co.ready");
+            co_await Inner();
+            Note(this, "co.done");
+        }
+
+        ::HelixEngine::Coroutine Inner()
+        {
+            Note(this, "inner.start");
+            co_await ::HelixEngine::NextFrame();
+            Note(this, "inner.end");
+        }
+    };
+
     // The scenario of CsScenario on the C++ script API: value handles, properties as in C#.
     HX_CLASS(Namespace = "ScriptCoreTests")
     class CppScenario : public ::HelixEngine::GameBehaviour
