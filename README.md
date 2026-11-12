@@ -30,6 +30,19 @@ repo; scripts are classes deriving from `GameBehaviour`.
   `Debug::Log(...)`. Both languages call the same functions of the engine, so they give the same results; the value
   types are Helix.Math's in C++ and their C# structs share the layout; `Random` is one generator for both.
 
+- Serialized fields, by the reference's rules: public fields and those with `SerializeField` that are not static,
+  const, readonly or `NonSerialized`; numbers, bools, chars, enums of 32 bits or less, strings, `Object` references,
+  the value types of HelixEngine, `[Serializable]` classes and structs inline (null becomes an object with default
+  fields; nesting stops at depth 10 with the reference's warning), fixed size buffers, and one dimensional arrays and
+  `List<T>` of those. Each class's fields are found once by reflection and compiled to one delegate over
+  Helix.Serialization's C ABI, so C# fields reach every visitor of the engine as C++ fields do.
+- `SerializeReference` fields (classes, abstract classes, interfaces, object, and arrays and lists of them) hold
+  references to objects of `[Serializable]` classes: null, derived types, one object in several fields and cycles,
+  within one host object, in the reference's layout (`rid` fields, a `references` section of version 2 after the
+  fields); objects keep their rid across writes.
+- `ISerializationCallbackReceiver`: `OnBeforeSerialize` before an object is written, `OnAfterDeserialize` after it is
+  read (the host's, then the objects it holds).
+
 Release, Ryzen 7 3750H:
 
 | Benchmark | Result |

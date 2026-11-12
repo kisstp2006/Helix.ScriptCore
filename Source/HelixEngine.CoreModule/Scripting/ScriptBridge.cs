@@ -32,6 +32,8 @@ namespace HelixEngine.Internal
             public uint Index;
             public Action<object>[] Calls = new Action<object>[s_Messages.Length];
             public Action<object, bool>[] BoolCalls = new Action<object, bool>[s_Messages.Length];
+            // Its serialized fields (its C# bases' too), null without any.
+            public Action<object, IntPtr> Fields;
         }
 
         static readonly Dictionary<uint, ScriptType> s_ByIndex = new();
@@ -39,7 +41,7 @@ namespace HelixEngine.Internal
         static ScriptType[] s_Indexed = new ScriptType[64];
         static readonly Dictionary<Type, ScriptType> s_ByType = new();
         static delegate* unmanaged[Cdecl]<int, byte*, int, void> s_Log;
-        static delegate* unmanaged[Cdecl]<byte*, int, byte*, int, byte*, int, uint, uint, int, uint*, uint> s_RegisterClass;
+        static delegate* unmanaged[Cdecl]<byte*, int, byte*, int, byte*, int, uint, uint, int, byte, uint*, uint> s_RegisterClass;
         static bool s_Started;
 
         static IntPtr Export(string name) => (IntPtr)Host.FindExport(name);
@@ -54,7 +56,8 @@ namespace HelixEngine.Internal
                     return 0;
                 HxModule_HelixEngine.Load(Export);
                 s_Log = (delegate* unmanaged[Cdecl]<int, byte*, int, void>)Export("HxEngine_Log");
-                s_RegisterClass = (delegate* unmanaged[Cdecl]<byte*, int, byte*, int, byte*, int, uint, uint, int, uint*, uint>)Export("HxEngineScripts_RegisterClass");
+                s_RegisterClass = (delegate* unmanaged[Cdecl]<byte*, int, byte*, int, byte*, int, uint, uint, int, byte, uint*, uint>)Export("HxEngineScripts_RegisterClass");
+                SerializedFields.Start(Export);
                 Native.MakeException = (status, what) => status switch
                 {
                     Native.MissingObject => new MissingReferenceException($"{what}: the object was destroyed; check it against null before using it"),
@@ -65,12 +68,13 @@ namespace HelixEngine.Internal
                 var setManaged = (delegate* unmanaged[Cdecl]<void**, uint, byte>)Export("HxEngineScripts_SetManaged");
                 if (setManaged == null || s_RegisterClass == null)
                     return 2;
-                void** table = (void**)NativeMemory.Alloc((nuint)(4 * sizeof(void*)));
+                void** table = (void**)NativeMemory.Alloc((nuint)(5 * sizeof(void*)));
                 table[0] = (void*)(delegate* unmanaged[Cdecl]<ulong, uint, ulong*, int>)&Create;
                 table[1] = (void*)(delegate* unmanaged[Cdecl]<uint, ulong*, uint*, byte*, int, void>)&RunBatch;
                 table[2] = (void*)(delegate* unmanaged[Cdecl]<ulong, uint, byte, void>)&RunOne;
                 table[3] = (void*)(delegate* unmanaged[Cdecl]<ulong, byte*, int, MessageValue*, byte>)&Messages.Receive;
-                if (setManaged(table, 4) == 0)
+                table[4] = (void*)(delegate* unmanaged[Cdecl]<ulong, void*, void>)&TransferFields;
+                if (setManaged(table, 5) == 0)
                     return 3;
                 s_Started = true;
                 return 0;
@@ -141,6 +145,7 @@ namespace HelixEngine.Internal
                     st.Calls[m] = (Action<object>)s_Make.MakeGenericMethod(method.DeclaringType).Invoke(null, new object[] { method });
             }
             int order = t.GetCustomAttribute<DefaultExecutionOrder>()?.order ?? 0;
+            st.Fields = SerializedFields.ForScript(t);
             uint baseType = Types.OfObject(t.BaseType);
             uint typeId;
             byte[] asm = Encoding.UTF8.GetBytes(t.Assembly.GetName().Name ?? "");
@@ -148,7 +153,7 @@ namespace HelixEngine.Internal
             byte[] name = Encoding.UTF8.GetBytes(t.Name);
             uint index;
             fixed (byte* a = asm, n = ns, c = name)
-                index = s_RegisterClass(a, asm.Length, n, ns.Length, c, name.Length, baseType, mask, order, &typeId);
+                index = s_RegisterClass(a, asm.Length, n, ns.Length, c, name.Length, baseType, mask, order, (byte)(st.Fields != null ? 1 : 0), &typeId);
             if (index == uint.MaxValue)
             {
                 Log(4, $"{t.FullName}: its script class could not be registered");
@@ -195,6 +200,24 @@ namespace HelixEngine.Internal
             var v = System.Linq.Expressions.Expression.Parameter(typeof(bool), "v");
             var call = System.Linq.Expressions.Expression.Call(System.Linq.Expressions.Expression.Convert(o, typeof(T)), m, v);
             return System.Linq.Expressions.Expression.Lambda<Action<object, bool>>(call, o, v).Compile();
+        }
+
+        internal static void Warn(string text) => Log(3, text);
+
+        // A C# script's serialized fields through a native visitor.
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+        static void TransferFields(ulong handle, void* visitor)
+        {
+            try
+            {
+                object o = handle != 0 ? GCHandle.FromIntPtr((IntPtr)handle).Target : null;
+                if (o != null && s_ByType.TryGetValue(o.GetType(), out ScriptType st) && st.Fields != null)
+                    SerializedFields.Transfer(o, st.Fields, (IntPtr)visitor);
+            }
+            catch (Exception e)
+            {
+                Host.Report(e);
+            }
         }
 
         static void Log(int level, string text)

@@ -324,6 +324,9 @@ HideFlags,HideInHierarchy,HideFlags.HideInHierarchy = 1
 HideFlags,HideInInspector,HideFlags.HideInInspector = 2
 HideFlags,None,HideFlags.None = 0
 HideFlags,NotEditable,HideFlags.NotEditable = 8
+HideInInspector,.ctor,HideInInspector()
+ISerializationCallbackReceiver,OnAfterDeserialize,void OnAfterDeserialize()
+ISerializationCallbackReceiver,OnBeforeSerialize,void OnBeforeSerialize()
 LogOption,NoStacktrace,LogOption.NoStacktrace = 1
 LogOption,None,LogOption.None = 0
 LogType,Assert,LogType.Assert = 1
@@ -649,6 +652,8 @@ ScreenOrientation,Portrait,ScreenOrientation.Portrait = 1
 ScreenOrientation,PortraitUpsideDown,ScreenOrientation.PortraitUpsideDown = 2
 SendMessageOptions,DontRequireReceiver,SendMessageOptions.DontRequireReceiver = 1
 SendMessageOptions,RequireReceiver,SendMessageOptions.RequireReceiver = 0
+SerializeField,.ctor,SerializeField()
+SerializeReference,.ctor,SerializeReference()
 Space,Self,Space.Self = 1
 Space,World,Space.World = 0
 ThreadPriority,BelowNormal,ThreadPriority.BelowNormal = 1

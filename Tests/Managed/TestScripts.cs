@@ -189,3 +189,223 @@ namespace Tests
         public int value;
     }
 }
+
+namespace Tests
+{
+    public enum CsPace
+    {
+        Slow,
+        Fast,
+    }
+
+    [Serializable]
+    public class CsWaypoint
+    {
+        public Vector3 position;
+        public int wait;
+        public System.Collections.Generic.List<int> marks = new System.Collections.Generic.List<int>();
+    }
+
+    [Serializable]
+    public struct CsPair
+    {
+        public int a;
+        public string b;
+    }
+
+    [Serializable]
+    public unsafe struct CsCorners
+    {
+        public fixed int corners[3];
+    }
+
+    // A Serializable class holding itself: the depth limit stops it.
+    [Serializable]
+    public class CsNode
+    {
+        public int value;
+        public CsNode next;
+    }
+
+    // Serialized fields of the kinds C# scripts have, and members that are not serialized.
+    public class CsFields : GameBehaviour
+    {
+        public int count = 3;
+        public float speed = 1.5f;
+        public bool on = true;
+        public CsPace pace = CsPace.Fast;
+        public string title = "fields";
+        public char letter = 'a';
+        public long big;
+        public double precise;
+        public int[] numbers;
+        public System.Collections.Generic.List<string> words;
+        public Vector3 offset;
+        public Color tint = Color.white;
+        public CsWaypoint home;
+        public System.Collections.Generic.List<CsWaypoint> route;
+        public CsPair pair;
+        public CsPair[] pairs;
+        public GameObject target;
+        public Transform[] points;
+        public System.Collections.Generic.List<Vector3> path;
+        public CsNode chain;
+        public CsCorners corner;
+        [SerializeField] int secret = 7;
+        [NonSerialized] public int scratch;
+        public readonly int fixedValue = 1;
+        public static int shared;
+        public int Property { get; set; }
+        [field: SerializeField] public int Backed { get; set; }
+        public System.Collections.Generic.Dictionary<int, int> map;
+        public int[,] grid;
+
+        static string Join<T>(System.Collections.Generic.IEnumerable<T> items, Func<T, string> text)
+        {
+            if (items == null)
+                return "null";
+            var parts = new System.Collections.Generic.List<string>();
+            foreach (T item in items)
+                parts.Add(text(item));
+            return string.Join("|", parts);
+        }
+
+        static string V(Vector3 v) => FormattableString.Invariant($"{v.x}/{v.y}/{v.z}");
+
+        static string Name(HelixEngine.Object o) => o == null ? "none" : o is Component c ? c.gameObject.name + "." + o.GetType().Name : o.name;
+
+        unsafe string Corners()
+        {
+            CsCorners c = corner;
+            return c.corners[0] + "/" + c.corners[1] + "/" + c.corners[2];
+        }
+
+        void Report()
+        {
+            int depth = 0;
+            for (CsNode n = chain; n != null; n = n.next)
+                depth++;
+            string line = FormattableString.Invariant(
+                $"{count},{speed},{on},{pace},{title},{letter},{big},{precise},{Join(numbers, x => x.ToString())},{Join(words, x => x)},{V(offset)},{tint.g}") +
+                $";home={(home == null ? "null" : V(home.position) + "/" + home.wait + "/" + Join(home.marks, x => x.ToString()))}" +
+                $";route={Join(route, w => V(w.position) + "/" + w.wait)};pair={pair.a}/{pair.b};pairs={Join(pairs, p => p.a + "/" + p.b)}" +
+                $";target={Name(target)};points={Join(points, p => Name(p))};path={Join(path, V)};chain={depth};corners={Corners()}" +
+                $";secret={secret};scratch={scratch};backed={Backed};property={Property}";
+            Notes.Note(this, line);
+        }
+
+        void Touch()
+        {
+            scratch = 99;
+            Property = 5;
+        }
+    }
+
+    // A derived script: its base's fields first.
+    public class CsMoreFields : CsFields
+    {
+        public int extra = 1;
+
+        void ReportExtra() => Notes.Note(this, "extra=" + extra);
+    }
+}
+
+namespace Tests
+{
+    public interface IAnimal
+    {
+        string Describe();
+    }
+
+    [Serializable]
+    public class CsDog : IAnimal
+    {
+        public string name = "dog";
+        [SerializeReference] public IAnimal friend;
+        public string Describe() => "dog:" + name;
+    }
+
+    [Serializable]
+    public class CsCat : IAnimal
+    {
+        public int lives = 9;
+        public string Describe() => "cat:" + lives;
+    }
+
+    // A Serializable class held inline: its reference belongs to the host.
+    [Serializable]
+    public class CsShelter
+    {
+        [SerializeReference] public IAnimal resident;
+    }
+
+    // SerializeReference fields: polymorphism, null, one object in several fields, a cycle.
+    public class CsRefs : GameBehaviour
+    {
+        [SerializeReference] public IAnimal pet;
+        [SerializeReference] public System.Collections.Generic.List<IAnimal> zoo;
+        [SerializeReference] public object any;
+        [SerializeReference] public IAnimal none;
+        public CsShelter shelter;
+
+        static object s_LastPet;
+
+        void Build()
+        {
+            var dog = new CsDog { name = "Rex" };
+            dog.friend = dog;
+            var cat = new CsCat { lives = 7 };
+            pet = dog;
+            zoo = new System.Collections.Generic.List<IAnimal> { dog, cat, null };
+            any = new CsCat { lives = 3 };
+            none = null;
+            shelter = new CsShelter { resident = cat };
+        }
+
+        void Report()
+        {
+            string zooText = zoo == null ? "null" : string.Join("|", zoo.ConvertAll(a => a == null ? "null" : a.Describe()));
+            bool shared = zoo != null && zoo.Count > 1 && ReferenceEquals(pet, zoo[0]) && ReferenceEquals(shelter?.resident, zoo[1]);
+            bool cycle = pet is CsDog d && ReferenceEquals(d.friend, d);
+            string line = $"pet={pet?.Describe()};zoo={zooText};any={(any as IAnimal)?.Describe()};none={(none == null ? "null" : "set")};shared={shared};cycle={cycle};" +
+                          $"same={ReferenceEquals(pet, s_LastPet)}";
+            s_LastPet = pet;
+            Notes.Note(this, line);
+        }
+    }
+}
+
+namespace Tests
+{
+    [Serializable]
+    public class CsHook : ISerializationCallbackReceiver
+    {
+        public string tag = "inline";
+        public void OnBeforeSerialize() => CsCallbacks.Log.Add("before:" + tag);
+        public void OnAfterDeserialize() => CsCallbacks.Log.Add("after:" + tag);
+    }
+
+    // ISerializationCallbackReceiver on the script, on a Serializable class inline and on a managed reference.
+    public class CsCallbacks : GameBehaviour, ISerializationCallbackReceiver
+    {
+        public static readonly System.Collections.Generic.List<string> Log = new System.Collections.Generic.List<string>();
+        public int value = 1;
+        public CsHook inline = new CsHook();
+        [SerializeReference] public object referenced = new CsHook { tag = "ref" };
+        [NonSerialized] public int derived;
+
+        public void OnBeforeSerialize() => Log.Add("before:host");
+
+        public void OnAfterDeserialize()
+        {
+            derived = value * 10;
+            Log.Add("after:host");
+        }
+
+        void Report()
+        {
+            Notes.Note(this, string.Join(",", Log) + ";derived=" + derived);
+            Log.Clear();
+        }
+    }
+}

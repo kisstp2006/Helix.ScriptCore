@@ -74,7 +74,7 @@ if(TARGET helix_scriptcore_tests OR TARGET helix_scriptcore_bench)
     endforeach()
     if(TARGET helix_scriptcore_tests)
         helix_bindgen(helix_scriptcore_tests MODULE ScriptCoreTests NAMESPACE ScriptCoreTests KIND NativeGame
-                      HEADERS "${tests_dir}/Cpp/CppScripts.h" REFERENCES ${engine_binding_headers} INCLUDE_ROOTS "${tests_dir}" "${engine_source}")
+                      HEADERS "${tests_dir}/Cpp/CppScripts.h" REFERENCES ${engine_binding_headers} REFERENCE_NAMESPACE HelixEngine INCLUDE_ROOTS "${tests_dir}" "${engine_source}")
         # A game module loaded at run time: its file name is its module name.
         add_library(helix_scriptcore_test_module SHARED "${tests_dir}/Module/ModuleScripts.h")
         set_target_properties(helix_scriptcore_test_module PROPERTIES OUTPUT_NAME ScriptCoreModule PREFIX "" LINKER_LANGUAGE CXX)
@@ -82,7 +82,7 @@ if(TARGET helix_scriptcore_tests OR TARGET helix_scriptcore_bench)
         target_include_directories(helix_scriptcore_test_module PRIVATE "${tests_dir}")
         helix_apply_options(helix_scriptcore_test_module)
         helix_bindgen(helix_scriptcore_test_module MODULE ScriptCoreModule NAMESPACE ScriptCoreModule KIND NativeGame
-                      HEADERS "${tests_dir}/Module/ModuleScripts.h" REFERENCES ${engine_binding_headers} INCLUDE_ROOTS "${tests_dir}" "${engine_source}")
+                      HEADERS "${tests_dir}/Module/ModuleScripts.h" REFERENCES ${engine_binding_headers} REFERENCE_NAMESPACE HelixEngine INCLUDE_ROOTS "${tests_dir}" "${engine_source}")
         add_dependencies(helix_scriptcore_tests helix_scriptcore_test_module)
         target_compile_definitions(helix_scriptcore_tests PRIVATE "HX_TEST_MODULE=\"$<TARGET_FILE:helix_scriptcore_test_module>\"")
     endif()
