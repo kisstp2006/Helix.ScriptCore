@@ -127,6 +127,7 @@ namespace HelixEngine.Internal
 
         static delegate* unmanaged[Cdecl]<byte*, int, uint, DynamicStruct*> s_ValueType;
         static delegate* unmanaged[Cdecl]<ulong, uint> s_ObjectType;
+        static delegate* unmanaged[Cdecl]<ulong, uint, byte> s_ObjectIsA;
         static DynamicString* s_StringType;
         static DynamicReference* s_ReferenceType;
         static byte* s_Zeros;
@@ -151,6 +152,7 @@ namespace HelixEngine.Internal
         {
             s_ValueType = (delegate* unmanaged[Cdecl]<byte*, int, uint, DynamicStruct*>)export("HxEngineScripts_ValueType");
             s_ObjectType = (delegate* unmanaged[Cdecl]<ulong, uint>)export("HxEngineScripts_ObjectType");
+            s_ObjectIsA = (delegate* unmanaged[Cdecl]<ulong, uint, byte>)export("HxEngineScripts_ObjectIsA");
             s_StringType = (DynamicString*)NativeMemory.AllocZeroed((nuint)sizeof(DynamicString));
             s_StringType->Get = &StringGet;
             s_StringType->Set = &StringSet;
@@ -639,7 +641,13 @@ namespace HelixEngine.Internal
             if (id == 0 || s_ObjectType == null)
                 return null;
             uint type = s_ObjectType(id);
-            return type == 0 ? null : Objects.Wrap<Object>(id, type) as T;
+            if (type == 0)
+                return null;
+            if (Objects.Wrap<Object>(id, type) is T known)
+                return known;
+            // An object of a type C# has no class for (a C++ script): wrapped as the field's type when it is one.
+            uint wanted = Types.Of(typeof(T));
+            return wanted != 0 && s_ObjectIsA != null && s_ObjectIsA(id, wanted) != 0 ? Objects.Wrap<T>(id, 0) : null;
         }
 
         internal static int Push(object o)
