@@ -14,7 +14,9 @@ find_program(HELIX_DOTNET NAMES dotnet HINTS "$ENV{HELIX_DOTNET_ROOT}" "$ENV{DOT
 set(scriptcore_artifacts "${CMAKE_BINARY_DIR}/HelixScriptCore")
 set(core_module_dir "${CMAKE_CURRENT_SOURCE_DIR}/Source/HelixEngine.CoreModule")
 set(core_module_dll "${scriptcore_artifacts}/bin/HelixEngine.CoreModule/release/HelixEngine.CoreModule.dll")
-file(GLOB_RECURSE core_module_sources CONFIGURE_DEPENDS "${core_module_dir}/*.cs" "${core_module_dir}/*.csproj")
+helix_dependency_dir(mathematics_dir Mathematics)
+file(GLOB_RECURSE core_module_sources CONFIGURE_DEPENDS "${core_module_dir}/*.cs" "${core_module_dir}/*.csproj" "${mathematics_dir}/Source/*.cs"
+     "${mathematics_dir}/Source/*.csproj")
 list(FILTER core_module_sources EXCLUDE REGEX "/(bin|obj)/")
 helix_dependency_dir(engine_dir Engine)
 file(GLOB_RECURSE engine_headers CONFIGURE_DEPENDS "${engine_dir}/Source/Helix/Engine/*.h")
@@ -25,6 +27,7 @@ add_custom_command(
     OUTPUT "${core_module_dll}"
     COMMAND "${HELIX_DOTNET}" build "${core_module_dir}/HelixEngine.CoreModule.csproj" -c Release --artifacts-path "${scriptcore_artifacts}"
             --nologo -v quiet "-p:HelixEngineBindings=${HELIX_ENGINE_BINDINGS_CS}" "-p:HelixInteropFile=${HELIX_BINDGEN_RUNTIME}" ${runtime_arguments}
+            "-p:HelixMathematicsDir=${mathematics_dir}"
     DEPENDS ${core_module_sources} ${engine_headers} "${HELIX_BINDGEN_RUNTIME}"
     COMMENT "Building HelixEngine.CoreModule")
 add_custom_target(helix_core_module ALL DEPENDS "${core_module_dll}")
@@ -34,6 +37,9 @@ if(TARGET helix_scripting_runtime)
     add_dependencies(helix_core_module helix_scripting_runtime)
 endif()
 set(HELIX_CORE_MODULE "${core_module_dll}" CACHE INTERNAL "")
+# The assemblies HelixEngine.CoreModule references, next to it.
+get_filename_component(core_module_bin "${core_module_dll}" DIRECTORY)
+set(HELIX_CORE_MODULE_REFERENCES "${core_module_bin}/Helix.Mathematics.dll" CACHE INTERNAL "")
 # Helix::ScriptCore for the repos that take the assembly (HELIX_CORE_MODULE): linking it builds the assembly first.
 add_library(helix_scriptcore INTERFACE)
 add_library(Helix::ScriptCore ALIAS helix_scriptcore)
@@ -120,7 +126,8 @@ endif()
 
 # The public surface of HelixEngine.CoreModule against the inventory (Tests/Api/HelixEngine.csv): a member without a
 # row, or a row without its member, fails. Tools/ApiInventory --write rewrites the inventory from the assembly.
-if(HELIX_BUILD_TESTS AND PROJECT_IS_TOP_LEVEL)
+# The tool is built for repos above too (their own inventories); its test of this assembly runs here.
+if(HELIX_BUILD_TESTS)
     set(inventory_dir "${CMAKE_CURRENT_SOURCE_DIR}/Tools/ApiInventory")
     set(inventory_dll "${scriptcore_artifacts}/bin/ApiInventory/release/HelixApiInventory.dll")
     file(GLOB inventory_sources CONFIGURE_DEPENDS "${inventory_dir}/*.cs" "${inventory_dir}/*.csproj")
@@ -131,8 +138,14 @@ if(HELIX_BUILD_TESTS AND PROJECT_IS_TOP_LEVEL)
         COMMENT "Building the API inventory tool")
     add_custom_target(helix_api_inventory ALL DEPENDS "${inventory_dll}")
     add_dependencies(helix_api_inventory helix_core_module)
+    set(HELIX_API_INVENTORY "${inventory_dll}" CACHE INTERNAL "")
+endif()
+if(HELIX_BUILD_TESTS AND PROJECT_IS_TOP_LEVEL)
     add_test(NAME helix_scriptcore_api COMMAND "${HELIX_DOTNET}" "${inventory_dll}" --assembly "${core_module_dll}" --reference "${HELIX_SCRIPTING_RUNTIME}"
              --inventory "${CMAKE_CURRENT_SOURCE_DIR}/Tests/Api/HelixEngine.csv")
+    # Helix.Mathematics (built with the core module) against its inventory.
+    add_test(NAME helix_scriptcore_api_mathematics COMMAND "${HELIX_DOTNET}" "${inventory_dll}" --assembly "${core_module_bin}/Helix.Mathematics.dll"
+             --inventory "${CMAKE_CURRENT_SOURCE_DIR}/Tests/Api/Helix.Mathematics.csv")
 endif()
 
 # The .NET runtime is never unloaded: LeakSanitizer is told about its modules (as in Helix.Scripting's tests).

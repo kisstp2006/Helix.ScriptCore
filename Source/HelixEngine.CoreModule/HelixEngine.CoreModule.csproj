@@ -15,7 +15,11 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
+  <PropertyGroup>
+    <HelixMathematicsDir Condition="'$(HelixMathematicsDir)' == ''">$(MSBuildThisFileDirectory)../../External/Helix.Mathematics</HelixMathematicsDir>
+  </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="$(HelixMathematicsDir)/Source/Helix.Mathematics/Helix.Mathematics.csproj" />
     <Compile Include="$(HelixEngineBindings)" />
     <Compile Include="$(HelixInteropFile)" />
     <!-- The host's managed side: loaded by the host itself (the default load context), not copied. -->

@@ -436,6 +436,195 @@ GeometryUtility,TestPlanesAABB,"static bool TestPlanesAABB(Plane[], Bounds)"
 GeometryUtility,TryCreatePlaneFromPolygon,"static bool TryCreatePlaneFromPolygon(Vector3[], out Plane)"
 Graphics,DrawMesh,"static void DrawMesh(Mesh, Vector3, Quaternion, Material, int, Camera = null, int = 0, MaterialPropertyBlock = null, bool = True, bool = True, bool = True) / static void DrawMesh(Mesh, Vector3, Quaternion, Material, int, Camera, int, MaterialPropertyBlock, ShadowCastingMode, bool = True, Transform = null, bool = True) / static void DrawMesh(Mesh, Matrix4x4, Material, int, Camera = null, int = 0, MaterialPropertyBlock = null, bool = True, bool = True, bool = True) / static void DrawMesh(Mesh, Matrix4x4, Material, int, Camera, int, MaterialPropertyBlock, ShadowCastingMode, bool = True, Transform = null, bool = True)"
 Graphics,RenderMesh,"static void RenderMesh(ref RenderParams, Mesh, int, Matrix4x4, Nullable<Matrix4x4> = null)"
+Helix.Collections.Allocator,AudioKernel,Helix.Collections.Allocator.AudioKernel = 5
+Helix.Collections.Allocator,Domain,Helix.Collections.Allocator.Domain = 6
+Helix.Collections.Allocator,FirstUserIndex,Helix.Collections.Allocator.FirstUserIndex = 64
+Helix.Collections.Allocator,Invalid,Helix.Collections.Allocator.Invalid = 0
+Helix.Collections.Allocator,None,Helix.Collections.Allocator.None = 1
+Helix.Collections.Allocator,Persistent,Helix.Collections.Allocator.Persistent = 4
+Helix.Collections.Allocator,Temp,Helix.Collections.Allocator.Temp = 2
+Helix.Collections.Allocator,TempJob,Helix.Collections.Allocator.TempJob = 3
+Helix.Collections.DeallocateOnJobCompletionAttribute,.ctor,DeallocateOnJobCompletionAttribute()
+Helix.Collections.LowLevel.Unsafe.AtomicSafetyErrorType,Deallocated,Helix.Collections.LowLevel.Unsafe.AtomicSafetyErrorType.Deallocated = 0
+Helix.Collections.LowLevel.Unsafe.AtomicSafetyErrorType,DeallocatedFromJob,Helix.Collections.LowLevel.Unsafe.AtomicSafetyErrorType.DeallocatedFromJob = 1
+Helix.Collections.LowLevel.Unsafe.AtomicSafetyErrorType,NotAllocatedFromJob,Helix.Collections.LowLevel.Unsafe.AtomicSafetyErrorType.NotAllocatedFromJob = 2
+Helix.Collections.LowLevel.Unsafe.AtomicSafetyHandle,CheckDeallocateAndThrow,static void CheckDeallocateAndThrow(ref AtomicSafetyHandle)
+Helix.Collections.LowLevel.Unsafe.AtomicSafetyHandle,CheckExistsAndThrow,static void CheckExistsAndThrow(ref AtomicSafetyHandle)
+Helix.Collections.LowLevel.Unsafe.AtomicSafetyHandle,CheckGetSecondaryDataPointerAndThrow,static void CheckGetSecondaryDataPointerAndThrow(ref AtomicSafetyHandle)
+Helix.Collections.LowLevel.Unsafe.AtomicSafetyHandle,CheckReadAndThrow,static void CheckReadAndThrow(ref AtomicSafetyHandle)
+Helix.Collections.LowLevel.Unsafe.AtomicSafetyHandle,CheckWriteAndBumpSecondaryVersion,static void CheckWriteAndBumpSecondaryVersion(ref AtomicSafetyHandle)
+Helix.Collections.LowLevel.Unsafe.AtomicSafetyHandle,CheckWriteAndThrow,static void CheckWriteAndThrow(ref AtomicSafetyHandle)
+Helix.Collections.LowLevel.Unsafe.AtomicSafetyHandle,Create,static AtomicSafetyHandle Create()
+Helix.Collections.LowLevel.Unsafe.AtomicSafetyHandle,EnforceAllBufferJobsHaveCompleted,static JobHandle EnforceAllBufferJobsHaveCompleted(AtomicSafetyHandle)
+Helix.Collections.LowLevel.Unsafe.AtomicSafetyHandle,EnforceAllBufferJobsHaveCompletedAndDisableReadWrite,static JobHandle EnforceAllBufferJobsHaveCompletedAndDisableReadWrite(AtomicSafetyHandle)
+Helix.Collections.LowLevel.Unsafe.AtomicSafetyHandle,EnforceAllBufferJobsHaveCompletedAndRelease,static JobHandle EnforceAllBufferJobsHaveCompletedAndRelease(AtomicSafetyHandle)
+Helix.Collections.LowLevel.Unsafe.AtomicSafetyHandle,GetAllowReadOrWriteAccess,static bool GetAllowReadOrWriteAccess(AtomicSafetyHandle)
+Helix.Collections.LowLevel.Unsafe.AtomicSafetyHandle,GetNestedContainer,static bool GetNestedContainer(AtomicSafetyHandle)
+Helix.Collections.LowLevel.Unsafe.AtomicSafetyHandle,GetReaderArray,"static int GetReaderArray(AtomicSafetyHandle, int, IntPtr)"
+Helix.Collections.LowLevel.Unsafe.AtomicSafetyHandle,GetReaderName,"static string GetReaderName(AtomicSafetyHandle, int)"
+Helix.Collections.LowLevel.Unsafe.AtomicSafetyHandle,GetTempMemoryHandle,static AtomicSafetyHandle GetTempMemoryHandle()
+Helix.Collections.LowLevel.Unsafe.AtomicSafetyHandle,GetTempUnsafePtrSliceHandle,static AtomicSafetyHandle GetTempUnsafePtrSliceHandle()
+Helix.Collections.LowLevel.Unsafe.AtomicSafetyHandle,GetWriter,static JobHandle GetWriter(AtomicSafetyHandle)
+Helix.Collections.LowLevel.Unsafe.AtomicSafetyHandle,GetWriterName,static string GetWriterName(AtomicSafetyHandle)
+Helix.Collections.LowLevel.Unsafe.AtomicSafetyHandle,IsDefaultValue,static bool IsDefaultValue(ref AtomicSafetyHandle)
+Helix.Collections.LowLevel.Unsafe.AtomicSafetyHandle,IsHandleValid,static bool IsHandleValid(ref AtomicSafetyHandle)
+Helix.Collections.LowLevel.Unsafe.AtomicSafetyHandle,IsTempMemoryHandle,static bool IsTempMemoryHandle(AtomicSafetyHandle)
+Helix.Collections.LowLevel.Unsafe.AtomicSafetyHandle,IsValidNonDefaultHandle,static bool IsValidNonDefaultHandle(ref AtomicSafetyHandle)
+Helix.Collections.LowLevel.Unsafe.AtomicSafetyHandle,NewStaticSafetyId,"static int NewStaticSafetyId<T>() / static int NewStaticSafetyId(Byte*, int)"
+Helix.Collections.LowLevel.Unsafe.AtomicSafetyHandle,PrepareUndisposable,static void PrepareUndisposable(ref AtomicSafetyHandle)
+Helix.Collections.LowLevel.Unsafe.AtomicSafetyHandle,Release,static void Release(AtomicSafetyHandle)
+Helix.Collections.LowLevel.Unsafe.AtomicSafetyHandle,SetAllowReadOrWriteAccess,"static void SetAllowReadOrWriteAccess(AtomicSafetyHandle, bool)"
+Helix.Collections.LowLevel.Unsafe.AtomicSafetyHandle,SetAllowSecondaryVersionWriting,"static void SetAllowSecondaryVersionWriting(AtomicSafetyHandle, bool)"
+Helix.Collections.LowLevel.Unsafe.AtomicSafetyHandle,SetBumpSecondaryVersionOnScheduleWrite,"static void SetBumpSecondaryVersionOnScheduleWrite(AtomicSafetyHandle, bool)"
+Helix.Collections.LowLevel.Unsafe.AtomicSafetyHandle,SetCustomErrorMessage,"static void SetCustomErrorMessage(int, AtomicSafetyErrorType, Byte*, int)"
+Helix.Collections.LowLevel.Unsafe.AtomicSafetyHandle,SetNestedContainer,"static void SetNestedContainer(AtomicSafetyHandle, bool)"
+Helix.Collections.LowLevel.Unsafe.AtomicSafetyHandle,SetStaticSafetyId,"static void SetStaticSafetyId(ref AtomicSafetyHandle, int)"
+Helix.Collections.LowLevel.Unsafe.AtomicSafetyHandle,UseSecondaryVersion,static void UseSecondaryVersion(ref AtomicSafetyHandle)
+Helix.Collections.LowLevel.Unsafe.AtomicSafetyHandle,ValidateNonDefaultHandle,static void ValidateNonDefaultHandle(ref AtomicSafetyHandle)
+Helix.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility,ConvertExistingDataToNativeArray,"static NativeArray<T> ConvertExistingDataToNativeArray<T>(Void*, int, Allocator)"
+Helix.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility,GetAtomicSafetyHandle,static AtomicSafetyHandle GetAtomicSafetyHandle<T>(NativeArray<T>)
+Helix.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility,GetUnsafeBufferPointerWithoutChecks,static Void* GetUnsafeBufferPointerWithoutChecks<T>(NativeArray<T>)
+Helix.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility,GetUnsafePtr,static Void* GetUnsafePtr<T>(NativeArray<T>)
+Helix.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility,GetUnsafeReadOnlyPtr,static Void* GetUnsafeReadOnlyPtr<T>(NativeArray<T>) / static Void* GetUnsafeReadOnlyPtr<T>(NativeArray.ReadOnly<T>)
+Helix.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility,SetAtomicSafetyHandle,"static void SetAtomicSafetyHandle<T>(ref NativeArray<T>, AtomicSafetyHandle)"
+Helix.Collections.LowLevel.Unsafe.NativeContainerAttribute,.ctor,NativeContainerAttribute()
+Helix.Collections.LowLevel.Unsafe.NativeContainerIsAtomicWriteOnlyAttribute,.ctor,NativeContainerIsAtomicWriteOnlyAttribute()
+Helix.Collections.LowLevel.Unsafe.NativeContainerIsReadOnlyAttribute,.ctor,NativeContainerIsReadOnlyAttribute()
+Helix.Collections.LowLevel.Unsafe.NativeContainerSupportsDeallocateOnJobCompletionAttribute,.ctor,NativeContainerSupportsDeallocateOnJobCompletionAttribute()
+Helix.Collections.LowLevel.Unsafe.NativeContainerSupportsDeferredConvertListToArray,.ctor,NativeContainerSupportsDeferredConvertListToArray()
+Helix.Collections.LowLevel.Unsafe.NativeContainerSupportsDynamicIndexingAttribute,.ctor,NativeContainerSupportsDynamicIndexingAttribute()
+Helix.Collections.LowLevel.Unsafe.NativeContainerSupportsMinMaxWriteRestrictionAttribute,.ctor,NativeContainerSupportsMinMaxWriteRestrictionAttribute()
+Helix.Collections.LowLevel.Unsafe.NativeDisableContainerSafetyRestrictionAttribute,.ctor,NativeDisableContainerSafetyRestrictionAttribute()
+Helix.Collections.LowLevel.Unsafe.NativeDisableUnsafePtrRestrictionAttribute,.ctor,NativeDisableUnsafePtrRestrictionAttribute()
+Helix.Collections.LowLevel.Unsafe.NativeSetClassTypeToNullOnScheduleAttribute,.ctor,NativeSetClassTypeToNullOnScheduleAttribute()
+Helix.Collections.LowLevel.Unsafe.NativeSetThreadIndexAttribute,.ctor,NativeSetThreadIndexAttribute()
+Helix.Collections.LowLevel.Unsafe.NativeSliceUnsafeUtility,ConvertExistingDataToNativeSlice,"static NativeSlice<T> ConvertExistingDataToNativeSlice<T>(Void*, int, int)"
+Helix.Collections.LowLevel.Unsafe.NativeSliceUnsafeUtility,GetAtomicSafetyHandle,static AtomicSafetyHandle GetAtomicSafetyHandle<T>(NativeSlice<T>)
+Helix.Collections.LowLevel.Unsafe.NativeSliceUnsafeUtility,GetUnsafePtr,static Void* GetUnsafePtr<T>(NativeSlice<T>)
+Helix.Collections.LowLevel.Unsafe.NativeSliceUnsafeUtility,GetUnsafeReadOnlyPtr,static Void* GetUnsafeReadOnlyPtr<T>(NativeSlice<T>)
+Helix.Collections.LowLevel.Unsafe.NativeSliceUnsafeUtility,SetAtomicSafetyHandle,"static void SetAtomicSafetyHandle<T>(ref NativeSlice<T>, AtomicSafetyHandle)"
+Helix.Collections.LowLevel.Unsafe.UnsafeUtility,AddressOf,static Void* AddressOf<T>(ref T)
+Helix.Collections.LowLevel.Unsafe.UnsafeUtility,AlignOf,static int AlignOf<T>()
+Helix.Collections.LowLevel.Unsafe.UnsafeUtility,ArrayElementAsRef,"static T ArrayElementAsRef<T>(Void*, int)"
+Helix.Collections.LowLevel.Unsafe.UnsafeUtility,As,"static U As<T, U>(ref T)"
+Helix.Collections.LowLevel.Unsafe.UnsafeUtility,AsRef,static T AsRef<T>(Void*)
+Helix.Collections.LowLevel.Unsafe.UnsafeUtility,CopyPtrToStructure,"static void CopyPtrToStructure<T>(Void*, out T)"
+Helix.Collections.LowLevel.Unsafe.UnsafeUtility,CopyStructureToPtr,"static void CopyStructureToPtr<T>(ref T, Void*)"
+Helix.Collections.LowLevel.Unsafe.UnsafeUtility,EnumToInt,static int EnumToInt<T>(T)
+Helix.Collections.LowLevel.Unsafe.UnsafeUtility,Free,"static void Free(Void*, Allocator)"
+Helix.Collections.LowLevel.Unsafe.UnsafeUtility,IsBlittable,static bool IsBlittable<T>() / static bool IsBlittable(Type)
+Helix.Collections.LowLevel.Unsafe.UnsafeUtility,IsUnmanaged,static bool IsUnmanaged<T>() / static bool IsUnmanaged(Type)
+Helix.Collections.LowLevel.Unsafe.UnsafeUtility,IsValidAllocator,static bool IsValidAllocator(Allocator)
+Helix.Collections.LowLevel.Unsafe.UnsafeUtility,Malloc,"static Void* Malloc(long, int, Allocator)"
+Helix.Collections.LowLevel.Unsafe.UnsafeUtility,MemClear,"static void MemClear(Void*, long)"
+Helix.Collections.LowLevel.Unsafe.UnsafeUtility,MemCmp,"static int MemCmp(Void*, Void*, long)"
+Helix.Collections.LowLevel.Unsafe.UnsafeUtility,MemCpy,"static void MemCpy(Void*, Void*, long)"
+Helix.Collections.LowLevel.Unsafe.UnsafeUtility,MemCpyReplicate,"static void MemCpyReplicate(Void*, Void*, int, int)"
+Helix.Collections.LowLevel.Unsafe.UnsafeUtility,MemCpyStride,"static void MemCpyStride(Void*, int, Void*, int, int, int)"
+Helix.Collections.LowLevel.Unsafe.UnsafeUtility,MemMove,"static void MemMove(Void*, Void*, long)"
+Helix.Collections.LowLevel.Unsafe.UnsafeUtility,MemSet,"static void MemSet(Void*, byte, long)"
+Helix.Collections.LowLevel.Unsafe.UnsafeUtility,PinGCArrayAndGetDataAddress,"static Void* PinGCArrayAndGetDataAddress(Array, out ulong)"
+Helix.Collections.LowLevel.Unsafe.UnsafeUtility,PinGCObjectAndGetAddress,"static Void* PinGCObjectAndGetAddress(object, out ulong)"
+Helix.Collections.LowLevel.Unsafe.UnsafeUtility,ReadArrayElement,"static T ReadArrayElement<T>(Void*, int)"
+Helix.Collections.LowLevel.Unsafe.UnsafeUtility,ReadArrayElementWithStride,"static T ReadArrayElementWithStride<T>(Void*, int, int)"
+Helix.Collections.LowLevel.Unsafe.UnsafeUtility,ReleaseGCObject,static void ReleaseGCObject(ulong)
+Helix.Collections.LowLevel.Unsafe.UnsafeUtility,SizeOf,static int SizeOf<T>() / static int SizeOf(Type)
+Helix.Collections.LowLevel.Unsafe.UnsafeUtility,WriteArrayElement,"static void WriteArrayElement<T>(Void*, int, T)"
+Helix.Collections.LowLevel.Unsafe.UnsafeUtility,WriteArrayElementWithStride,"static void WriteArrayElementWithStride<T>(Void*, int, int, T)"
+Helix.Collections.LowLevel.Unsafe.WriteAccessRequiredAttribute,.ctor,WriteAccessRequiredAttribute()
+Helix.Collections.NativeArray,.ctor,"NativeArray(int, Allocator, NativeArrayOptions = ClearMemory) / NativeArray(T[], Allocator) / NativeArray(NativeArray, Allocator)"
+Helix.Collections.NativeArray,AsReadOnly,NativeArray.ReadOnly<T> AsReadOnly()
+Helix.Collections.NativeArray,AsReadOnlySpan,ReadOnlySpan<T> AsReadOnlySpan()
+Helix.Collections.NativeArray,AsSpan,Span<T> AsSpan()
+Helix.Collections.NativeArray,Copy,"static void Copy(NativeArray, NativeArray) / static void Copy(NativeArray.ReadOnly<T>, NativeArray) / static void Copy(T[], NativeArray) / static void Copy(NativeArray, T[]) / static void Copy(NativeArray.ReadOnly<T>, T[]) / static void Copy(NativeArray, NativeArray, int) / static void Copy(NativeArray.ReadOnly<T>, NativeArray, int) / static void Copy(T[], NativeArray, int) / static void Copy(NativeArray, T[], int) / static void Copy(NativeArray.ReadOnly<T>, T[], int) / static void Copy(NativeArray, int, NativeArray, int, int) / static void Copy(NativeArray.ReadOnly<T>, int, NativeArray, int, int) / static void Copy(T[], int, NativeArray, int, int) / static void Copy(NativeArray, int, T[], int, int) / static void Copy(NativeArray.ReadOnly<T>, int, T[], int, int)"
+Helix.Collections.NativeArray,CopyFrom,void CopyFrom(T[]) / void CopyFrom(NativeArray)
+Helix.Collections.NativeArray,CopyTo,void CopyTo(T[]) / void CopyTo(NativeArray)
+Helix.Collections.NativeArray,Dispose,void Dispose() / JobHandle Dispose(JobHandle)
+Helix.Collections.NativeArray,GetEnumerator,NativeArray.Enumerator<T> GetEnumerator()
+Helix.Collections.NativeArray,GetSubArray,"NativeArray GetSubArray(int, int)"
+Helix.Collections.NativeArray,IsCreated,bool IsCreated { get; }
+Helix.Collections.NativeArray,Length,int Length { get; }
+Helix.Collections.NativeArray,Reinterpret,NativeArray<U> Reinterpret<U>() / NativeArray<U> Reinterpret<U>(int)
+Helix.Collections.NativeArray,ReinterpretLoad,U ReinterpretLoad<U>(int)
+Helix.Collections.NativeArray,ReinterpretStore,"void ReinterpretStore<U>(int, U)"
+Helix.Collections.NativeArray,ToArray,T[] ToArray()
+Helix.Collections.NativeArray,operators,"Equality(NativeArray, NativeArray) / Inequality(NativeArray, NativeArray)"
+Helix.Collections.NativeArray,this[],T this[][int] { get; set; }
+Helix.Collections.NativeArray.Enumerator,.ctor,Enumerator(ref NativeArray<T>)
+Helix.Collections.NativeArray.Enumerator,Current,T Current { get; }
+Helix.Collections.NativeArray.Enumerator,Dispose,void Dispose()
+Helix.Collections.NativeArray.Enumerator,MoveNext,bool MoveNext()
+Helix.Collections.NativeArray.Enumerator,Reset,void Reset()
+Helix.Collections.NativeArray.ReadOnly,AsReadOnlySpan,ReadOnlySpan<T> AsReadOnlySpan()
+Helix.Collections.NativeArray.ReadOnly,CopyTo,void CopyTo(T[]) / void CopyTo(NativeArray<T>)
+Helix.Collections.NativeArray.ReadOnly,GetEnumerator,NativeArray.Enumerator<T> GetEnumerator()
+Helix.Collections.NativeArray.ReadOnly,IsCreated,bool IsCreated { get; }
+Helix.Collections.NativeArray.ReadOnly,Length,int Length { get; }
+Helix.Collections.NativeArray.ReadOnly,Reinterpret,NativeArray.ReadOnly<U> Reinterpret<U>()
+Helix.Collections.NativeArray.ReadOnly,ReinterpretLoad,U ReinterpretLoad<U>(int)
+Helix.Collections.NativeArray.ReadOnly,ToArray,T[] ToArray()
+Helix.Collections.NativeArray.ReadOnly,this[],T this[][int] { get; }
+Helix.Collections.NativeArrayOptions,ClearMemory,Helix.Collections.NativeArrayOptions.ClearMemory = 1
+Helix.Collections.NativeArrayOptions,UninitializedMemory,Helix.Collections.NativeArrayOptions.UninitializedMemory = 0
+Helix.Collections.NativeDisableParallelForRestrictionAttribute,.ctor,NativeDisableParallelForRestrictionAttribute()
+Helix.Collections.NativeFixedLengthAttribute,.ctor,NativeFixedLengthAttribute(int)
+Helix.Collections.NativeFixedLengthAttribute,FixedLength,int FixedLength
+Helix.Collections.NativeLeakDetection,Mode,static NativeLeakDetectionMode Mode { get; set; }
+Helix.Collections.NativeLeakDetectionMode,Disabled,Helix.Collections.NativeLeakDetectionMode.Disabled = 1
+Helix.Collections.NativeLeakDetectionMode,Enabled,Helix.Collections.NativeLeakDetectionMode.Enabled = 2
+Helix.Collections.NativeLeakDetectionMode,EnabledWithStackTrace,Helix.Collections.NativeLeakDetectionMode.EnabledWithStackTrace = 3
+Helix.Collections.NativeMatchesParallelForLengthAttribute,.ctor,NativeMatchesParallelForLengthAttribute()
+Helix.Collections.NativeSlice,.ctor,"NativeSlice(NativeSlice, int) / NativeSlice(NativeSlice, int, int) / NativeSlice(NativeArray<T>) / NativeSlice(NativeArray<T>, int) / NativeSlice(NativeArray<T>, int, int)"
+Helix.Collections.NativeSlice,CopyFrom,void CopyFrom(NativeSlice) / void CopyFrom(T[])
+Helix.Collections.NativeSlice,CopyTo,void CopyTo(NativeArray<T>) / void CopyTo(T[])
+Helix.Collections.NativeSlice,GetEnumerator,NativeSlice.Enumerator<T> GetEnumerator()
+Helix.Collections.NativeSlice,Length,int Length { get; }
+Helix.Collections.NativeSlice,SliceConvert,NativeSlice<U> SliceConvert<U>()
+Helix.Collections.NativeSlice,SliceWithStride,NativeSlice<U> SliceWithStride<U>(int) / NativeSlice<U> SliceWithStride<U>()
+Helix.Collections.NativeSlice,Stride,int Stride { get; }
+Helix.Collections.NativeSlice,ToArray,T[] ToArray()
+Helix.Collections.NativeSlice,operators,"Implicit(NativeArray<T>) / Equality(NativeSlice, NativeSlice) / Inequality(NativeSlice, NativeSlice)"
+Helix.Collections.NativeSlice,this[],T this[][int] { get; set; }
+Helix.Collections.NativeSlice.Enumerator,.ctor,Enumerator(ref NativeSlice<T>)
+Helix.Collections.NativeSlice.Enumerator,Current,T Current { get; }
+Helix.Collections.NativeSlice.Enumerator,Dispose,void Dispose()
+Helix.Collections.NativeSlice.Enumerator,MoveNext,bool MoveNext()
+Helix.Collections.NativeSlice.Enumerator,Reset,void Reset()
+Helix.Collections.NativeSliceExtensions,Slice,"static NativeSlice<T> Slice<T>(NativeArray<T>) / static NativeSlice<T> Slice<T>(NativeArray<T>, int) / static NativeSlice<T> Slice<T>(NativeArray<T>, int, int) / static NativeSlice<T> Slice<T>(NativeSlice<T>) / static NativeSlice<T> Slice<T>(NativeSlice<T>, int) / static NativeSlice<T> Slice<T>(NativeSlice<T>, int, int)"
+Helix.Collections.ReadOnlyAttribute,.ctor,ReadOnlyAttribute()
+Helix.Collections.WriteOnlyAttribute,.ctor,WriteOnlyAttribute()
+Helix.Jobs.IJob,Execute,void Execute()
+Helix.Jobs.IJobExtensions,EarlyJobInit,static void EarlyJobInit<T>()
+Helix.Jobs.IJobExtensions,Run,static void Run<T>(T)
+Helix.Jobs.IJobExtensions,RunByRef,static void RunByRef<T>(ref T)
+Helix.Jobs.IJobExtensions,Schedule,"static JobHandle Schedule<T>(T, JobHandle = null)"
+Helix.Jobs.IJobExtensions,ScheduleByRef,"static JobHandle ScheduleByRef<T>(ref T, JobHandle = null)"
+Helix.Jobs.IJobFor,Execute,void Execute(int)
+Helix.Jobs.IJobForExtensions,EarlyJobInit,static void EarlyJobInit<T>()
+Helix.Jobs.IJobForExtensions,Run,"static void Run<T>(T, int)"
+Helix.Jobs.IJobForExtensions,RunByRef,"static void RunByRef<T>(ref T, int)"
+Helix.Jobs.IJobForExtensions,Schedule,"static JobHandle Schedule<T>(T, int, JobHandle)"
+Helix.Jobs.IJobForExtensions,ScheduleByRef,"static JobHandle ScheduleByRef<T>(ref T, int, JobHandle)"
+Helix.Jobs.IJobForExtensions,ScheduleParallel,"static JobHandle ScheduleParallel<T>(T, int, int, JobHandle)"
+Helix.Jobs.IJobForExtensions,ScheduleParallelByRef,"static JobHandle ScheduleParallelByRef<T>(ref T, int, int, JobHandle)"
+Helix.Jobs.IJobParallelFor,Execute,void Execute(int)
+Helix.Jobs.IJobParallelForExtensions,EarlyJobInit,static void EarlyJobInit<T>()
+Helix.Jobs.IJobParallelForExtensions,Run,"static void Run<T>(T, int)"
+Helix.Jobs.IJobParallelForExtensions,RunByRef,"static void RunByRef<T>(ref T, int)"
+Helix.Jobs.IJobParallelForExtensions,Schedule,"static JobHandle Schedule<T>(T, int, int, JobHandle = null)"
+Helix.Jobs.IJobParallelForExtensions,ScheduleByRef,"static JobHandle ScheduleByRef<T>(ref T, int, int, JobHandle = null)"
+Helix.Jobs.JobHandle,CheckFenceIsDependencyOrDidSyncFence,"static bool CheckFenceIsDependencyOrDidSyncFence(JobHandle, JobHandle)"
+Helix.Jobs.JobHandle,CombineDependencies,"static JobHandle CombineDependencies(JobHandle, JobHandle) / static JobHandle CombineDependencies(JobHandle, JobHandle, JobHandle) / static JobHandle CombineDependencies(NativeArray<JobHandle>) / static JobHandle CombineDependencies(NativeSlice<JobHandle>)"
+Helix.Jobs.JobHandle,Complete,void Complete()
+Helix.Jobs.JobHandle,CompleteAll,"static void CompleteAll(ref JobHandle, ref JobHandle) / static void CompleteAll(ref JobHandle, ref JobHandle, ref JobHandle) / static void CompleteAll(NativeArray<JobHandle>)"
+Helix.Jobs.JobHandle,IsCompleted,bool IsCompleted { get; }
+Helix.Jobs.JobHandle,ScheduleBatchedJobs,static void ScheduleBatchedJobs()
+Helix.Jobs.LowLevel.Unsafe.JobsUtility,IsExecutingJob,static bool IsExecutingJob { get; }
+Helix.Jobs.LowLevel.Unsafe.JobsUtility,JobWorkerCount,static int JobWorkerCount { get; set; }
+Helix.Jobs.LowLevel.Unsafe.JobsUtility,JobWorkerMaximumCount,static int JobWorkerMaximumCount { get; }
+Helix.Jobs.LowLevel.Unsafe.JobsUtility,MaxJobThreadCount,const int MaxJobThreadCount
+Helix.Jobs.LowLevel.Unsafe.JobsUtility,ThreadIndex,static int ThreadIndex { get; }
+Helix.Jobs.LowLevel.Unsafe.JobsUtility,ThreadIndexCount,static int ThreadIndexCount { get; }
 HideFlags,DontSave,HideFlags.DontSave = 52
 HideFlags,DontSaveInBuild,HideFlags.DontSaveInBuild = 16
 HideFlags,DontSaveInEditor,HideFlags.DontSaveInEditor = 4
@@ -448,6 +637,36 @@ HideFlags,NotEditable,HideFlags.NotEditable = 8
 HideInInspector,.ctor,HideInInspector()
 ISerializationCallbackReceiver,OnAfterDeserialize,void OnAfterDeserialize()
 ISerializationCallbackReceiver,OnBeforeSerialize,void OnBeforeSerialize()
+Jobs.IJobParallelForTransform,Execute,"void Execute(int, TransformAccess)"
+Jobs.IJobParallelForTransformExtensions,EarlyJobInit,static void EarlyJobInit<T>()
+Jobs.IJobParallelForTransformExtensions,RunReadOnly,"static void RunReadOnly<T>(T, TransformAccessArray)"
+Jobs.IJobParallelForTransformExtensions,RunReadOnlyByRef,"static void RunReadOnlyByRef<T>(ref T, TransformAccessArray)"
+Jobs.IJobParallelForTransformExtensions,Schedule,"static JobHandle Schedule<T>(T, TransformAccessArray, JobHandle = null)"
+Jobs.IJobParallelForTransformExtensions,ScheduleByRef,"static JobHandle ScheduleByRef<T>(ref T, TransformAccessArray, JobHandle = null)"
+Jobs.IJobParallelForTransformExtensions,ScheduleReadOnly,"static JobHandle ScheduleReadOnly<T>(T, TransformAccessArray, int, JobHandle = null)"
+Jobs.IJobParallelForTransformExtensions,ScheduleReadOnlyByRef,"static JobHandle ScheduleReadOnlyByRef<T>(ref T, TransformAccessArray, int, JobHandle = null)"
+Jobs.TransformAccess,GetLocalPositionAndRotation,"void GetLocalPositionAndRotation(out Vector3, out Quaternion)"
+Jobs.TransformAccess,GetPositionAndRotation,"void GetPositionAndRotation(out Vector3, out Quaternion)"
+Jobs.TransformAccess,SetLocalPositionAndRotation,"void SetLocalPositionAndRotation(Vector3, Quaternion)"
+Jobs.TransformAccess,SetPositionAndRotation,"void SetPositionAndRotation(Vector3, Quaternion)"
+Jobs.TransformAccess,isValid,bool isValid { get; }
+Jobs.TransformAccess,localPosition,Vector3 localPosition { get; set; }
+Jobs.TransformAccess,localRotation,Quaternion localRotation { get; set; }
+Jobs.TransformAccess,localScale,Vector3 localScale { get; set; }
+Jobs.TransformAccess,localToWorldMatrix,Matrix4x4 localToWorldMatrix { get; }
+Jobs.TransformAccess,position,Vector3 position { get; set; }
+Jobs.TransformAccess,rotation,Quaternion rotation { get; set; }
+Jobs.TransformAccess,worldToLocalMatrix,Matrix4x4 worldToLocalMatrix { get; }
+Jobs.TransformAccessArray,.ctor,"TransformAccessArray(int, int = -1) / TransformAccessArray(Transform[], int = -1)"
+Jobs.TransformAccessArray,Add,void Add(Transform) / void Add(EntityId)
+Jobs.TransformAccessArray,Allocate,"static void Allocate(int, int, out TransformAccessArray)"
+Jobs.TransformAccessArray,Dispose,void Dispose()
+Jobs.TransformAccessArray,RemoveAtSwapBack,void RemoveAtSwapBack(int)
+Jobs.TransformAccessArray,SetTransforms,void SetTransforms(Transform[])
+Jobs.TransformAccessArray,capacity,int capacity { get; set; }
+Jobs.TransformAccessArray,isCreated,bool isCreated { get; }
+Jobs.TransformAccessArray,length,int length { get; }
+Jobs.TransformAccessArray,this[],Transform this[][int] { get; set; }
 Light,Reset,void Reset()
 Light,bounceIntensity,float bounceIntensity { get; set; }
 Light,color,Color color { get; set; }
@@ -695,12 +914,15 @@ Matrix4x4,m30,float m30
 Matrix4x4,m31,float m31
 Matrix4x4,m32,float m32
 Matrix4x4,m33,float m33
-Matrix4x4,operators,"Multiply(Matrix4x4, Matrix4x4) / Multiply(Matrix4x4, Vector4) / Equality(Matrix4x4, Matrix4x4) / Inequality(Matrix4x4, Matrix4x4)"
+Matrix4x4,operators,"Implicit(Matrix4x4) / Implicit(float4x4) / Multiply(Matrix4x4, Matrix4x4) / Multiply(Matrix4x4, Vector4) / Equality(Matrix4x4, Matrix4x4) / Inequality(Matrix4x4, Matrix4x4)"
 Matrix4x4,rotation,Quaternion rotation { get; }
 Matrix4x4,this[],"float this[][int, int] { get; set; } / float this[][int] { get; set; }"
 Matrix4x4,transpose,Matrix4x4 transpose { get; }
 Matrix4x4,zero,static Matrix4x4 zero { get; }
 Mesh,.ctor,Mesh()
+Mesh,AcquireReadOnlyMeshData,static Mesh.MeshDataArray AcquireReadOnlyMeshData(Mesh) / static Mesh.MeshDataArray AcquireReadOnlyMeshData(Mesh[]) / static Mesh.MeshDataArray AcquireReadOnlyMeshData(List<Mesh>)
+Mesh,AllocateWritableMeshData,static Mesh.MeshDataArray AllocateWritableMeshData(int)
+Mesh,ApplyAndDisposeWritableMeshData,"static void ApplyAndDisposeWritableMeshData(Mesh.MeshDataArray, Mesh, MeshUpdateFlags = Default) / static void ApplyAndDisposeWritableMeshData(Mesh.MeshDataArray, Mesh[], MeshUpdateFlags = Default) / static void ApplyAndDisposeWritableMeshData(Mesh.MeshDataArray, List<Mesh>, MeshUpdateFlags = Default)"
 Mesh,Clear,void Clear(bool = True)
 Mesh,GetBaseVertex,uint GetBaseVertex(int)
 Mesh,GetColors,void GetColors(List<Color>) / void GetColors(List<Color32>)
@@ -727,19 +949,19 @@ Mesh,MarkModified,void MarkModified()
 Mesh,RecalculateBounds,void RecalculateBounds(MeshUpdateFlags = Default)
 Mesh,RecalculateNormals,void RecalculateNormals(MeshUpdateFlags = Default)
 Mesh,RecalculateTangents,void RecalculateTangents(MeshUpdateFlags = Default)
-Mesh,SetColors,"void SetColors(List<Color>) / void SetColors(Color[], int, int, MeshUpdateFlags = Default) / void SetColors(List<Color>, int, int, MeshUpdateFlags = Default) / void SetColors(List<Color32>) / void SetColors(Color32[], int, int, MeshUpdateFlags = Default) / void SetColors(List<Color32>, int, int, MeshUpdateFlags = Default) / void SetColors(Color[]) / void SetColors(Color32[])"
-Mesh,SetIndexBufferData,"void SetIndexBufferData<T>(T[], int, int, int, MeshUpdateFlags = Default) / void SetIndexBufferData<T>(List<T>, int, int, int, MeshUpdateFlags = Default)"
+Mesh,SetColors,"void SetColors<T>(NativeArray<T>) / void SetColors<T>(NativeArray<T>, int, int, MeshUpdateFlags = Default) / void SetColors(List<Color>) / void SetColors(Color[], int, int, MeshUpdateFlags = Default) / void SetColors(List<Color>, int, int, MeshUpdateFlags = Default) / void SetColors(List<Color32>) / void SetColors(Color32[], int, int, MeshUpdateFlags = Default) / void SetColors(List<Color32>, int, int, MeshUpdateFlags = Default) / void SetColors(Color[]) / void SetColors(Color32[])"
+Mesh,SetIndexBufferData,"void SetIndexBufferData<T>(NativeArray<T>, int, int, int, MeshUpdateFlags = Default) / void SetIndexBufferData<T>(T[], int, int, int, MeshUpdateFlags = Default) / void SetIndexBufferData<T>(List<T>, int, int, int, MeshUpdateFlags = Default)"
 Mesh,SetIndexBufferParams,"void SetIndexBufferParams(int, IndexFormat)"
-Mesh,SetIndices,"void SetIndices(int[], int, int, MeshTopology, int, bool = True, int = 0) / void SetIndices(List<int>, MeshTopology, int, bool = True, int = 0) / void SetIndices(List<int>, int, int, MeshTopology, int, bool = True, int = 0) / void SetIndices(ushort[], MeshTopology, int, bool = True, int = 0) / void SetIndices(ushort[], int, int, MeshTopology, int, bool = True, int = 0) / void SetIndices(List<ushort>, MeshTopology, int, bool = True, int = 0) / void SetIndices(List<ushort>, int, int, MeshTopology, int, bool = True, int = 0) / void SetIndices(int[], MeshTopology, int, bool = True, int = 0)"
-Mesh,SetNormals,"void SetNormals(List<Vector3>) / void SetNormals(Vector3[], int, int, MeshUpdateFlags = Default) / void SetNormals(List<Vector3>, int, int, MeshUpdateFlags = Default) / void SetNormals(Vector3[])"
+Mesh,SetIndices,"void SetIndices<T>(NativeArray<T>, MeshTopology, int, bool = True, int = 0) / void SetIndices<T>(NativeArray<T>, int, int, MeshTopology, int, bool = True, int = 0) / void SetIndices(int[], int, int, MeshTopology, int, bool = True, int = 0) / void SetIndices(List<int>, MeshTopology, int, bool = True, int = 0) / void SetIndices(List<int>, int, int, MeshTopology, int, bool = True, int = 0) / void SetIndices(ushort[], MeshTopology, int, bool = True, int = 0) / void SetIndices(ushort[], int, int, MeshTopology, int, bool = True, int = 0) / void SetIndices(List<ushort>, MeshTopology, int, bool = True, int = 0) / void SetIndices(List<ushort>, int, int, MeshTopology, int, bool = True, int = 0) / void SetIndices(int[], MeshTopology, int, bool = True, int = 0)"
+Mesh,SetNormals,"void SetNormals<T>(NativeArray<T>) / void SetNormals<T>(NativeArray<T>, int, int, MeshUpdateFlags = Default) / void SetNormals(List<Vector3>) / void SetNormals(Vector3[], int, int, MeshUpdateFlags = Default) / void SetNormals(List<Vector3>, int, int, MeshUpdateFlags = Default) / void SetNormals(Vector3[])"
 Mesh,SetSubMesh,"void SetSubMesh(int, SubMeshDescriptor, MeshUpdateFlags = Default)"
-Mesh,SetSubMeshes,"void SetSubMeshes(List<SubMeshDescriptor>, MeshUpdateFlags = Default) / void SetSubMeshes(SubMeshDescriptor[], int, int, MeshUpdateFlags = Default) / void SetSubMeshes(List<SubMeshDescriptor>, int, int, MeshUpdateFlags = Default) / void SetSubMeshes(SubMeshDescriptor[], MeshUpdateFlags = Default)"
-Mesh,SetTangents,"void SetTangents(List<Vector4>) / void SetTangents(Vector4[], int, int, MeshUpdateFlags = Default) / void SetTangents(List<Vector4>, int, int, MeshUpdateFlags = Default) / void SetTangents(Vector4[])"
+Mesh,SetSubMeshes,"void SetSubMeshes<T>(NativeArray<T>, MeshUpdateFlags = Default) / void SetSubMeshes<T>(NativeArray<T>, int, int, MeshUpdateFlags = Default) / void SetSubMeshes(List<SubMeshDescriptor>, MeshUpdateFlags = Default) / void SetSubMeshes(SubMeshDescriptor[], int, int, MeshUpdateFlags = Default) / void SetSubMeshes(List<SubMeshDescriptor>, int, int, MeshUpdateFlags = Default) / void SetSubMeshes(SubMeshDescriptor[], MeshUpdateFlags = Default)"
+Mesh,SetTangents,"void SetTangents<T>(NativeArray<T>) / void SetTangents<T>(NativeArray<T>, int, int, MeshUpdateFlags = Default) / void SetTangents(List<Vector4>) / void SetTangents(Vector4[], int, int, MeshUpdateFlags = Default) / void SetTangents(List<Vector4>, int, int, MeshUpdateFlags = Default) / void SetTangents(Vector4[])"
 Mesh,SetTriangles,"void SetTriangles(List<int>, int, bool = True, int = 0) / void SetTriangles(int[], int, int, int, bool = True, int = 0) / void SetTriangles(List<int>, int, int, int, bool = True, int = 0) / void SetTriangles(ushort[], int, bool = True, int = 0) / void SetTriangles(List<ushort>, int, bool = True, int = 0) / void SetTriangles(ushort[], int, int, int, bool = True, int = 0) / void SetTriangles(List<ushort>, int, int, int, bool = True, int = 0) / void SetTriangles(int[]) / void SetTriangles(int[], int, bool = True, int = 0)"
-Mesh,SetUVs,"void SetUVs(int, List<Vector2>) / void SetUVs(int, List<Vector3>) / void SetUVs(int, List<Vector4>) / void SetUVs(int, Vector2[], int, int, MeshUpdateFlags = Default) / void SetUVs(int, Vector3[], int, int, MeshUpdateFlags = Default) / void SetUVs(int, Vector4[], int, int, MeshUpdateFlags = Default) / void SetUVs(int, List<Vector2>, int, int, MeshUpdateFlags = Default) / void SetUVs(int, List<Vector3>, int, int, MeshUpdateFlags = Default) / void SetUVs(int, List<Vector4>, int, int, MeshUpdateFlags = Default) / void SetUVs(int, Vector2[]) / void SetUVs(int, Vector3[]) / void SetUVs(int, Vector4[])"
-Mesh,SetVertexBufferData,"void SetVertexBufferData<T>(T[], int, int, int, int = 0, MeshUpdateFlags = Default) / void SetVertexBufferData<T>(List<T>, int, int, int, int = 0, MeshUpdateFlags = Default)"
-Mesh,SetVertexBufferParams,"void SetVertexBufferParams(int, params VertexAttributeDescriptor[])"
-Mesh,SetVertices,"void SetVertices(List<Vector3>) / void SetVertices(Vector3[], int, int, MeshUpdateFlags = Default) / void SetVertices(List<Vector3>, int, int, MeshUpdateFlags = Default) / void SetVertices(Vector3[])"
+Mesh,SetUVs,"void SetUVs<T>(int, NativeArray<T>) / void SetUVs<T>(int, NativeArray<T>, int, int, MeshUpdateFlags = Default) / void SetUVs(int, List<Vector2>) / void SetUVs(int, List<Vector3>) / void SetUVs(int, List<Vector4>) / void SetUVs(int, Vector2[], int, int, MeshUpdateFlags = Default) / void SetUVs(int, Vector3[], int, int, MeshUpdateFlags = Default) / void SetUVs(int, Vector4[], int, int, MeshUpdateFlags = Default) / void SetUVs(int, List<Vector2>, int, int, MeshUpdateFlags = Default) / void SetUVs(int, List<Vector3>, int, int, MeshUpdateFlags = Default) / void SetUVs(int, List<Vector4>, int, int, MeshUpdateFlags = Default) / void SetUVs(int, Vector2[]) / void SetUVs(int, Vector3[]) / void SetUVs(int, Vector4[])"
+Mesh,SetVertexBufferData,"void SetVertexBufferData<T>(NativeArray<T>, int, int, int, int = 0, MeshUpdateFlags = Default) / void SetVertexBufferData<T>(T[], int, int, int, int = 0, MeshUpdateFlags = Default) / void SetVertexBufferData<T>(List<T>, int, int, int, int = 0, MeshUpdateFlags = Default)"
+Mesh,SetVertexBufferParams,"void SetVertexBufferParams(int, NativeArray<VertexAttributeDescriptor>) / void SetVertexBufferParams(int, params VertexAttributeDescriptor[])"
+Mesh,SetVertices,"void SetVertices<T>(NativeArray<T>) / void SetVertices<T>(NativeArray<T>, int, int, MeshUpdateFlags = Default) / void SetVertices(List<Vector3>) / void SetVertices(Vector3[], int, int, MeshUpdateFlags = Default) / void SetVertices(List<Vector3>, int, int, MeshUpdateFlags = Default) / void SetVertices(Vector3[])"
 Mesh,UploadMeshData,void UploadMeshData(bool)
 Mesh,bounds,Bounds bounds { get; set; }
 Mesh,colors,Color[] colors { get; set; }
@@ -762,6 +984,31 @@ Mesh,vertexAttributeCount,int vertexAttributeCount { get; }
 Mesh,vertexBufferCount,int vertexBufferCount { get; }
 Mesh,vertexCount,int vertexCount { get; }
 Mesh,vertices,Vector3[] vertices { get; set; }
+Mesh.MeshData,GetColors,void GetColors(NativeArray<Color>) / void GetColors(NativeArray<Color32>)
+Mesh.MeshData,GetIndexData,NativeArray<T> GetIndexData<T>()
+Mesh.MeshData,GetIndices,"void GetIndices(NativeArray<ushort>, int, bool = True) / void GetIndices(NativeArray<int>, int, bool = True)"
+Mesh.MeshData,GetNormals,void GetNormals(NativeArray<Vector3>)
+Mesh.MeshData,GetSubMesh,SubMeshDescriptor GetSubMesh(int)
+Mesh.MeshData,GetTangents,void GetTangents(NativeArray<Vector4>)
+Mesh.MeshData,GetUVs,"void GetUVs(int, NativeArray<Vector2>) / void GetUVs(int, NativeArray<Vector3>) / void GetUVs(int, NativeArray<Vector4>)"
+Mesh.MeshData,GetVertexAttributeDimension,int GetVertexAttributeDimension(VertexAttribute)
+Mesh.MeshData,GetVertexAttributeFormat,VertexAttributeFormat GetVertexAttributeFormat(VertexAttribute)
+Mesh.MeshData,GetVertexAttributeOffset,int GetVertexAttributeOffset(VertexAttribute)
+Mesh.MeshData,GetVertexAttributeStream,int GetVertexAttributeStream(VertexAttribute)
+Mesh.MeshData,GetVertexBufferStride,int GetVertexBufferStride(int)
+Mesh.MeshData,GetVertexData,NativeArray<T> GetVertexData<T>(int = 0)
+Mesh.MeshData,GetVertices,void GetVertices(NativeArray<Vector3>)
+Mesh.MeshData,HasVertexAttribute,bool HasVertexAttribute(VertexAttribute)
+Mesh.MeshData,SetIndexBufferParams,"void SetIndexBufferParams(int, IndexFormat)"
+Mesh.MeshData,SetSubMesh,"void SetSubMesh(int, SubMeshDescriptor, MeshUpdateFlags = Default)"
+Mesh.MeshData,SetVertexBufferParams,"void SetVertexBufferParams(int, params VertexAttributeDescriptor[]) / void SetVertexBufferParams(int, NativeArray<VertexAttributeDescriptor>)"
+Mesh.MeshData,indexFormat,IndexFormat indexFormat { get; }
+Mesh.MeshData,subMeshCount,int subMeshCount { get; set; }
+Mesh.MeshData,vertexBufferCount,int vertexBufferCount { get; }
+Mesh.MeshData,vertexCount,int vertexCount { get; }
+Mesh.MeshDataArray,Dispose,void Dispose()
+Mesh.MeshDataArray,Length,int Length { get; }
+Mesh.MeshDataArray,this[],Mesh.MeshData this[][int] { get; }
 MeshFilter,mesh,Mesh mesh { get; set; }
 MeshFilter,sharedMesh,Mesh sharedMesh { get; set; }
 MeshTopology,LineStrip,MeshTopology.LineStrip = 4
@@ -822,7 +1069,7 @@ Quaternion,eulerAngles,Vector3 eulerAngles { get; set; }
 Quaternion,identity,static Quaternion identity { get; }
 Quaternion,kEpsilon,const float kEpsilon
 Quaternion,normalized,Quaternion normalized { get; }
-Quaternion,operators,"Multiply(Quaternion, Quaternion) / Multiply(Quaternion, Vector3) / Equality(Quaternion, Quaternion) / Inequality(Quaternion, Quaternion)"
+Quaternion,operators,"Implicit(Quaternion) / Implicit(quaternion) / Multiply(Quaternion, Quaternion) / Multiply(Quaternion, Vector3) / Equality(Quaternion, Quaternion) / Inequality(Quaternion, Quaternion)"
 Quaternion,this[],float this[][int] { get; set; }
 Quaternion,w,float w
 Quaternion,x,float x
@@ -1202,12 +1449,14 @@ Texture2D,.ctor,"Texture2D(int, int) / Texture2D(int, int, TextureFormat, bool) 
 Texture2D,Apply,"void Apply(bool = True, bool = False)"
 Texture2D,GetPixel,"Color GetPixel(int, int, int = 0)"
 Texture2D,GetPixelBilinear,"Color GetPixelBilinear(float, float, int = 0)"
+Texture2D,GetPixelData,NativeArray<T> GetPixelData<T>(int)
 Texture2D,GetPixels,"Color[] GetPixels(int = 0) / Color[] GetPixels(int, int, int, int, int = 0)"
 Texture2D,GetPixels32,Color32[] GetPixels32(int = 0)
-Texture2D,GetRawTextureData,byte[] GetRawTextureData()
-Texture2D,LoadRawTextureData,"void LoadRawTextureData(IntPtr, int) / void LoadRawTextureData(byte[])"
+Texture2D,GetRawTextureData,NativeArray<T> GetRawTextureData<T>() / byte[] GetRawTextureData()
+Texture2D,LoadRawTextureData,"void LoadRawTextureData(IntPtr, int) / void LoadRawTextureData<T>(NativeArray<T>) / void LoadRawTextureData(byte[])"
 Texture2D,Reinitialize,"bool Reinitialize(int, int) / bool Reinitialize(int, int, TextureFormat, bool)"
 Texture2D,SetPixel,"void SetPixel(int, int, Color, int = 0)"
+Texture2D,SetPixelData,"void SetPixelData<T>(T[], int, int = 0) / void SetPixelData<T>(NativeArray<T>, int, int = 0)"
 Texture2D,SetPixels,"void SetPixels(Color[], int = 0) / void SetPixels(int, int, int, int, Color[], int = 0)"
 Texture2D,SetPixels32,"void SetPixels32(Color32[], int = 0) / void SetPixels32(int, int, int, int, Color32[], int = 0)"
 Texture2D,blackTexture,static Texture2D blackTexture { get; }
@@ -1378,7 +1627,7 @@ Vector2,magnitude,float magnitude { get; }
 Vector2,negativeInfinity,static Vector2 negativeInfinity { get; }
 Vector2,normalized,Vector2 normalized { get; }
 Vector2,one,static Vector2 one { get; }
-Vector2,operators,"Addition(Vector2, Vector2) / Subtraction(Vector2, Vector2) / UnaryNegation(Vector2) / Multiply(Vector2, Vector2) / Division(Vector2, Vector2) / Multiply(Vector2, float) / Multiply(float, Vector2) / Division(Vector2, float) / Equality(Vector2, Vector2) / Inequality(Vector2, Vector2) / Implicit(Vector3) / Implicit(Vector2)"
+Vector2,operators,"Implicit(Vector2) / Implicit(float2) / Addition(Vector2, Vector2) / Subtraction(Vector2, Vector2) / UnaryNegation(Vector2) / Multiply(Vector2, Vector2) / Division(Vector2, Vector2) / Multiply(Vector2, float) / Multiply(float, Vector2) / Division(Vector2, float) / Equality(Vector2, Vector2) / Inequality(Vector2, Vector2) / Implicit(Vector3) / Implicit(Vector2)"
 Vector2,positiveInfinity,static Vector2 positiveInfinity { get; }
 Vector2,right,static Vector2 right { get; }
 Vector2,sqrMagnitude,float sqrMagnitude { get; }
@@ -1446,7 +1695,7 @@ Vector3,magnitude,float magnitude { get; }
 Vector3,negativeInfinity,static Vector3 negativeInfinity { get; }
 Vector3,normalized,Vector3 normalized { get; }
 Vector3,one,static Vector3 one { get; }
-Vector3,operators,"Addition(Vector3, Vector3) / Subtraction(Vector3, Vector3) / UnaryNegation(Vector3) / Multiply(Vector3, float) / Multiply(float, Vector3) / Division(Vector3, float) / Equality(Vector3, Vector3) / Inequality(Vector3, Vector3)"
+Vector3,operators,"Implicit(Vector3) / Implicit(float3) / Addition(Vector3, Vector3) / Subtraction(Vector3, Vector3) / UnaryNegation(Vector3) / Multiply(Vector3, float) / Multiply(float, Vector3) / Division(Vector3, float) / Equality(Vector3, Vector3) / Inequality(Vector3, Vector3)"
 Vector3,positiveInfinity,static Vector3 positiveInfinity { get; }
 Vector3,right,static Vector3 right { get; }
 Vector3,sqrMagnitude,float sqrMagnitude { get; }
@@ -1500,7 +1749,7 @@ Vector4,magnitude,float magnitude { get; }
 Vector4,negativeInfinity,static Vector4 negativeInfinity { get; }
 Vector4,normalized,Vector4 normalized { get; }
 Vector4,one,static Vector4 one { get; }
-Vector4,operators,"Addition(Vector4, Vector4) / Subtraction(Vector4, Vector4) / UnaryNegation(Vector4) / Multiply(Vector4, float) / Multiply(float, Vector4) / Division(Vector4, float) / Equality(Vector4, Vector4) / Inequality(Vector4, Vector4) / Implicit(Vector3) / Implicit(Vector4) / Implicit(Vector2) / Implicit(Vector4)"
+Vector4,operators,"Implicit(Vector4) / Implicit(float4) / Addition(Vector4, Vector4) / Subtraction(Vector4, Vector4) / UnaryNegation(Vector4) / Multiply(Vector4, float) / Multiply(float, Vector4) / Division(Vector4, float) / Equality(Vector4, Vector4) / Inequality(Vector4, Vector4) / Implicit(Vector3) / Implicit(Vector4) / Implicit(Vector2) / Implicit(Vector4)"
 Vector4,positiveInfinity,static Vector4 positiveInfinity { get; }
 Vector4,sqrMagnitude,float sqrMagnitude { get; }
 Vector4,this[],float this[][int] { get; set; }

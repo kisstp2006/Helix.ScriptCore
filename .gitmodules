@@ -52,3 +52,6 @@
 [submodule "External/Helix.Testing"]
 	path = External/Helix.Testing
 	url = https://github.com/kisstp2006/Helix.Testing
+[submodule "External/Helix.Mathematics"]
+	path = External/Helix.Mathematics
+	url = https://github.com/kisstp2006/Helix.Mathematics

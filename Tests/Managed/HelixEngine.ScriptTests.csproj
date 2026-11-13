@@ -9,7 +9,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <!-- Message methods are found by reflection: unused private members are expected. -->
-    <NoWarn>IDE0051;CS0169</NoWarn>
+    <NoWarn>IDE0051;CS0169;CS0649</NoWarn>
     <AssemblyName>HelixEngine.ScriptTests</AssemblyName>
     <InvariantGlobalization>true</InvariantGlobalization>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
@@ -17,6 +17,9 @@
   <ItemGroup>
     <Reference Include="HelixEngine.CoreModule">
       <HintPath>$(HelixCoreModule)</HintPath>
+    </Reference>
+    <Reference Include="Helix.Mathematics">
+      <HintPath>$([System.IO.Path]::GetDirectoryName($(HelixCoreModule)))/Helix.Mathematics.dll</HintPath>
     </Reference>
     <Reference Include="Helix.Scripting.Runtime">
       <HintPath>$(HelixScriptingRuntime)</HintPath>

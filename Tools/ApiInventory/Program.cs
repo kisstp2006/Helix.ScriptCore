@@ -90,13 +90,21 @@ public static class Program
         return context.LoadFromAssemblyPath(Path.GetFullPath(path));
     }
 
+    // HelixEngine and its namespaces, and the Helix namespaces of the script API (not the interop runtime's).
     static bool InSurface(Type t) =>
-        t.Namespace != null && (t.Namespace == "HelixEngine" || t.Namespace.StartsWith("HelixEngine.", StringComparison.Ordinal)) &&
+        t.Namespace != null &&
+        (t.Namespace == "HelixEngine" || t.Namespace.StartsWith("HelixEngine.", StringComparison.Ordinal) ||
+         (t.Namespace.StartsWith("Helix.", StringComparison.Ordinal) && !t.Namespace.StartsWith("Helix.Interop", StringComparison.Ordinal) &&
+          !t.Namespace.StartsWith("Helix.Scripting", StringComparison.Ordinal))) &&
         !t.Namespace.EndsWith(".Internal", StringComparison.Ordinal) && !t.Namespace.Contains(".Internal.", StringComparison.Ordinal);
 
     static bool Visible(Type t) => t.IsPublic || (t.IsNestedPublic && t.DeclaringType != null && Visible(t.DeclaringType));
 
-    static string TypeName(Type t) => t.IsNested ? TypeName(t.DeclaringType!) + "." + Strip(t.Name) : (t.Namespace!.Length > 11 ? t.Namespace[12..] + "." : "") + Strip(t.Name);
+    // HelixEngine's types without the namespace's first part; the Helix namespaces' types in full.
+    static string TypeName(Type t) =>
+        t.IsNested ? TypeName(t.DeclaringType!) + "." + Strip(t.Name)
+        : t.Namespace!.StartsWith("Helix.", StringComparison.Ordinal) ? t.Namespace + "." + Strip(t.Name)
+        : (t.Namespace!.Length > 11 ? t.Namespace[12..] + "." : "") + Strip(t.Name);
 
     static string Strip(string name) => name.Contains('`') ? name[..name.IndexOf('`')] : name;
 
