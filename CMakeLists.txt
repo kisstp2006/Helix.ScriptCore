@@ -23,12 +23,13 @@ file(GLOB_RECURSE engine_headers CONFIGURE_DEPENDS "${engine_dir}/Source/Helix/E
 if(TARGET helix_scripting_runtime)
     set(runtime_arguments "-p:HelixScriptingRuntime=${HELIX_SCRIPTING_RUNTIME}")
 endif()
+get_filename_component(core_module_bin "${core_module_dll}" DIRECTORY)
 add_custom_command(
-    OUTPUT "${core_module_dll}"
+    OUTPUT "${core_module_dll}" "${core_module_bin}/Helix.Mathematics.dll"
     COMMAND "${HELIX_DOTNET}" build "${core_module_dir}/HelixEngine.CoreModule.csproj" -c Release --artifacts-path "${scriptcore_artifacts}"
             --nologo -v quiet "-p:HelixEngineBindings=${HELIX_ENGINE_BINDINGS_CS}" "-p:HelixInteropFile=${HELIX_BINDGEN_RUNTIME}" ${runtime_arguments}
             "-p:HelixMathematicsDir=${mathematics_dir}"
-    DEPENDS ${core_module_sources} ${engine_headers} "${HELIX_BINDGEN_RUNTIME}"
+    DEPENDS ${core_module_sources} ${engine_headers} "${HELIX_BINDGEN_RUNTIME}" "${HELIX_ENGINE_BINDINGS_CS}"
     COMMENT "Building HelixEngine.CoreModule")
 add_custom_target(helix_core_module ALL DEPENDS "${core_module_dll}")
 # The engine library makes the generated C#; the host's managed side is referenced.
@@ -38,20 +39,21 @@ if(TARGET helix_scripting_runtime)
 endif()
 set(HELIX_CORE_MODULE "${core_module_dll}" CACHE INTERNAL "")
 # The assemblies HelixEngine.CoreModule references, next to it.
-get_filename_component(core_module_bin "${core_module_dll}" DIRECTORY)
 set(HELIX_CORE_MODULE_REFERENCES "${core_module_bin}/Helix.Mathematics.dll" CACHE INTERNAL "")
 # Helix::ScriptCore for the repos that take the assembly (HELIX_CORE_MODULE): linking it builds the assembly first.
 add_library(helix_scriptcore INTERFACE)
 add_library(Helix::ScriptCore ALIAS helix_scriptcore)
 add_dependencies(helix_scriptcore helix_core_module)
 
-# Tests: C# scripts (an assembly of test scripts) and C++ scripts (a game module of the test program) in one engine,
-# run by the .NET host of the desktop.
-# The .NET host is the desktop's (Android and the Web build the assemblies; their hosts come with their steps).
-# They link the shared engine, as the player does, and load a game module of their own (a shared library).
+# Tests: C# scripts (an assembly of test scripts) and C++ scripts (the test program's own game module) in one engine.
+# On the desktop they link the shared engine, as the player does, and load a game module of their own (a shared
+# library); on the Web they are a .NET web app run in node (no shared libraries: the loaded module is the desktop's
+# test). Android builds the assemblies only.
 if(HELIX_PLATFORM STREQUAL "windows" OR HELIX_PLATFORM STREQUAL "linux")
     helix_add_test_suite(helix_scriptcore_tests EXCLUDE "/(Managed|Module)/" DEPS Helix::EngineShared)
     helix_add_benchmark_suite(helix_scriptcore_bench DEPS Helix::EngineShared)
+elseif(HELIX_PLATFORM STREQUAL "web")
+    helix_add_test_suite(helix_scriptcore_tests DOTNET EXCLUDE "/(Managed|Module)/" DEPS Helix::Engine)
 endif()
 if(TARGET helix_scriptcore_tests OR TARGET helix_scriptcore_bench)
     include("${HELIX_BINDGEN_ROOT}/CMake/HelixBindgen.cmake")
@@ -80,8 +82,15 @@ if(TARGET helix_scriptcore_tests OR TARGET helix_scriptcore_bench)
         endif()
     endforeach()
     if(TARGET helix_scriptcore_tests)
+        # The app's assemblies on the Web.
+        set_property(TARGET helix_scriptcore_tests APPEND PROPERTY HELIX_DOTNET_ASSEMBLIES "${core_module_dll}" ${HELIX_CORE_MODULE_REFERENCES} "${script_tests_dll}")
+        if(TARGET helix_scriptcore_tests_web)
+            add_dependencies(helix_scriptcore_tests_web helix_scriptcore_test_scripts helix_core_module)
+        endif()
         helix_bindgen(helix_scriptcore_tests MODULE ScriptCoreTests NAMESPACE ScriptCoreTests KIND NativeGame
                       HEADERS "${tests_dir}/Cpp/CppScripts.h" "${tests_dir}/Cpp/CppRenderingScripts.h" REFERENCES ${engine_binding_headers} REFERENCE_NAMESPACE HelixEngine INCLUDE_ROOTS "${tests_dir}" "${engine_source}")
+    endif()
+    if(TARGET helix_scriptcore_tests AND TARGET helix_engine_shared)
         # A game module loaded at run time: its file name is its module name.
         add_library(helix_scriptcore_test_module SHARED "${tests_dir}/Module/ModuleScripts.h")
         set_target_properties(helix_scriptcore_test_module PROPERTIES OUTPUT_NAME ScriptCoreModule PREFIX "" LINKER_LANGUAGE CXX)
@@ -92,6 +101,8 @@ if(TARGET helix_scriptcore_tests OR TARGET helix_scriptcore_bench)
                       HEADERS "${tests_dir}/Module/ModuleScripts.h" REFERENCES ${engine_binding_headers} REFERENCE_NAMESPACE HelixEngine INCLUDE_ROOTS "${tests_dir}" "${engine_source}")
         add_dependencies(helix_scriptcore_tests helix_scriptcore_test_module)
         target_compile_definitions(helix_scriptcore_tests PRIVATE "HX_TEST_MODULE=\"$<TARGET_FILE:helix_scriptcore_test_module>\"")
+    endif()
+    if(TARGET helix_scriptcore_tests)
 
         # The engine's C# test shaders (its Tests/Shaders) built against this repo's Helix.Shaders and embedded as the
         # engine's tests embed them, so its Support/TestShaders.h and Support/Golden.h serve these tests too (golden
@@ -148,9 +159,20 @@ if(HELIX_BUILD_TESTS AND PROJECT_IS_TOP_LEVEL)
              --inventory "${CMAKE_CURRENT_SOURCE_DIR}/Tests/Api/Helix.Mathematics.csv")
 endif()
 
+# The script tests once more on the coreclr starter (the desktop's shared framework through coreclr_initialize, as
+# Android hosts it).
+if(TEST helix_scriptcore_tests AND (HELIX_PLATFORM STREQUAL "windows" OR HELIX_PLATFORM STREQUAL "linux"))
+    add_test(NAME helix_scriptcore_tests_coreclr COMMAND helix_scriptcore_tests)
+    set_tests_properties(helix_scriptcore_tests_coreclr PROPERTIES ENVIRONMENT "HELIX_DOTNET_RUNTIME=coreclr")
+endif()
+
 # The .NET runtime is never unloaded: LeakSanitizer is told about its modules (as in Helix.Scripting's tests).
 if(TEST helix_scriptcore_tests AND HELIX_ENABLE_ASAN AND HELIX_PLATFORM STREQUAL "linux")
     helix_dependency_dir(scripting_dir Scripting)
     set_tests_properties(helix_scriptcore_tests PROPERTIES
                          ENVIRONMENT "LSAN_OPTIONS=suppressions=${scripting_dir}/Tests/Support/LeakSuppressions.txt")
+    # The run on the coreclr starter keeps its starter and takes the suppressions too.
+    if(TEST helix_scriptcore_tests_coreclr)
+        set_tests_properties(helix_scriptcore_tests_coreclr PROPERTIES ENVIRONMENT "HELIX_DOTNET_RUNTIME=coreclr;LSAN_OPTIONS=suppressions=${scripting_dir}/Tests/Support/LeakSuppressions.txt")
+    endif()
 endif()

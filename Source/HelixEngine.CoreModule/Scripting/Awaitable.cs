@@ -217,7 +217,8 @@ namespace HelixEngine
         {
             Awaitable a = Rent();
             a.m_Resume = Resume.Background;
-            if (!AwaitableScheduler.IsMainThread)
+            // Without threads (the Web) there is no other thread to go to: it continues on the main thread at once.
+            if (!AwaitableScheduler.IsMainThread || !System.Runtime.CompilerServices.RuntimeFeature.IsMultithreadingSupported)
                 a.Complete(null);
             else
                 a.m_Switch = true;

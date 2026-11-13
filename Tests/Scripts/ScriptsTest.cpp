@@ -171,6 +171,10 @@ HX_TEST(Scripts, SendMessageAcrossTheLanguages)
 
 HX_TEST(Scripts, AGameModuleLoadsRunsAndUnloads)
 {
+#ifndef HX_TEST_MODULE
+    // No shared libraries (the Web): its modules are linked into the program.
+    return;
+#else
     HX_REQUIRE(StartScripts());
     Calls().Clear();
     // A shared library against the shared engine: its scripts beside the C# ones, its messages, its unload, again.
@@ -201,6 +205,7 @@ HX_TEST(Scripts, AGameModuleLoadsRunsAndUnloads)
         DestroyImmediate(k);
         Calls().Clear();
     }
+#endif
 }
 
 HX_TEST(Scripts, ASceneOfBothLanguagesLoadsAndUnloads)
@@ -892,6 +897,10 @@ HX_TEST(Scripts, AwaitablesResumeAtTheReferencesPoints)
     frames.Frame();
     HX_CHECK(Expect({"A:a.fixed", "A:a.end"}));
     frames.Frame();
+#if HX_PLATFORM_WEB
+    // The Web has no threads: BackgroundThreadAsync continues on the main thread at once.
+    HX_CHECK(Expect({"A:a.result=7", "A:a.main bg=False main=True"}));
+#else
     HX_CHECK(Expect({"A:a.result=7"}));
     // To a thread pool thread and back: the main thread takes it in a later frame's Update.
     for (int i = 0; i < 400 && Calls().Empty(); i++)
@@ -900,6 +909,7 @@ HX_TEST(Scripts, AwaitablesResumeAtTheReferencesPoints)
         frames.Frame();
     }
     HX_CHECK(Expect({"A:a.main bg=True main=True"}));
+#endif
     SendScriptMessage(g, "Complete");
     HX_CHECK(Expect({"A:a.source", "A:seq.done"}));
     // Cancellation (Cancel and a token) and a completion source with a result.

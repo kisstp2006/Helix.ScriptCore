@@ -97,7 +97,7 @@ namespace HelixEngine.Internal
             try
             {
                 string file = System.IO.Path.GetFullPath(Encoding.UTF8.GetString(path, size));
-                Assembly assembly = Host.Engine.LoadFromAssemblyPath(file);
+                Assembly assembly = Host.LoadEngineAssembly(file);
                 return RegisterAssembly(assembly);
             }
             catch (Exception e)

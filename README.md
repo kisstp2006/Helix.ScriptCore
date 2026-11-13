@@ -18,7 +18,7 @@ repo; scripts are classes deriving from `GameBehaviour` or `ScriptableObject`.
 | `Source/HelixEngine.CoreModule/Scripting/` | `Object` (ToString, generic `Instantiate`), `Debug` (object and format overloads, exceptions), `Scene`, `AsyncOperation`, `ResourceRequest`, the async operations of `SceneManager` and `Resources`, `Events.HelixAction`, `SendMessage` |
 | `Tools/ApiInventory/` | `HelixApiInventory`: the public surface of an assembly against its inventory: `Tests/Api/HelixEngine.csv`, `Tests/Api/Helix.Mathematics.csv` (tests; `--write` rewrites one); repos with assemblies of their own use it too |
 | `Source/HelixEngine.CoreModule/Scripting/ScriptBridge.cs` | The C# side of scripts: the start of the engine's C# side, script classes of assemblies registered with their messages, the C# objects of scripts, the loops of the phases |
-| `Tests/` | C# and C++ scripts in one engine under the .NET host (the tests link the shared engine): the order of messages, both languages on one GameObject, exceptions, `AddComponent<T>`, `SendMessage` both ways, a game module loaded, run and unloaded as a shared library, the value types' documented values, scenarios on the script API in both languages with the same results (objects, shaders and materials, meshes and textures, renderers, cameras and lights, ScriptableObjects), ScriptableObject assets read, written and copied, a golden image drawn through the script API on every device (each D3D11 adapter, OpenGL) with the camera messages; the engine's C# test shaders are built against this repo's Helix.Shaders |
+| `Tests/` | C# and C++ scripts in one engine under the .NET host (on the desktop the tests link the shared engine and run once more on the coreclr starter; on the Web they are a .NET web app in node): the order of messages, both languages on one GameObject, exceptions, `AddComponent<T>`, `SendMessage` both ways, a game module loaded, run and unloaded as a shared library, the value types' documented values, scenarios on the script API in both languages with the same results (objects, shaders and materials, meshes and textures, renderers, cameras and lights, ScriptableObjects), ScriptableObject assets read, written and copied, a golden image drawn through the script API on every device (each D3D11 adapter, OpenGL) with the camera messages; the engine's C# test shaders are built against this repo's Helix.Shaders |
 
 ## Scripts
 
@@ -58,7 +58,8 @@ repo; scripts are classes deriving from `GameBehaviour` or `ScriptableObject`.
   scheduler at the same points as C++ coroutines.
 - `Awaitable` and `Awaitable<T>`: pooled, `async` methods may return them; `NextFrameAsync`, `WaitForSecondsAsync`,
   `FixedUpdateAsync`, `EndOfFrameAsync`, `FromAsyncOperation` on the scheduler's points, `BackgroundThreadAsync` and
-  `MainThreadAsync`, cancellation, `AwaitableCompletionSource`; the main thread's SynchronizationContext runs posted
+  `MainThreadAsync` (without threads, on the Web, the background continues on the main thread), cancellation,
+  `AwaitableCompletionSource`; the main thread's SynchronizationContext runs posted
   continuations (Tasks') in the Update phase; `Application.exitCancellationToken`.
 
 ## Jobs and native containers
