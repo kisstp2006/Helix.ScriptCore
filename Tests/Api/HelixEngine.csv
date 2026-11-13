@@ -104,6 +104,7 @@ Camera,ResetWorldToCameraMatrix,void ResetWorldToCameraMatrix()
 Camera,ScreenPointToRay,"Ray ScreenPointToRay(Vector3, Camera.MonoOrStereoscopicEye) / Ray ScreenPointToRay(Vector3)"
 Camera,ScreenToViewportPoint,Vector3 ScreenToViewportPoint(Vector3)
 Camera,ScreenToWorldPoint,"Vector3 ScreenToWorldPoint(Vector3, Camera.MonoOrStereoscopicEye) / Vector3 ScreenToWorldPoint(Vector3)"
+Camera,TryGetCullingParameters,"bool TryGetCullingParameters(out ScriptableCullingParameters) / bool TryGetCullingParameters(bool, out ScriptableCullingParameters)"
 Camera,VerticalToHorizontalFieldOfView,"static float VerticalToHorizontalFieldOfView(float, float)"
 Camera,ViewportPointToRay,"Ray ViewportPointToRay(Vector3, Camera.MonoOrStereoscopicEye) / Ray ViewportPointToRay(Vector3)"
 Camera,ViewportToScreenPoint,Vector3 ViewportToScreenPoint(Vector3)
@@ -435,6 +436,7 @@ GeometryUtility,CalculateFrustumPlanes,"static void CalculateFrustumPlanes(Camer
 GeometryUtility,TestPlanesAABB,"static bool TestPlanesAABB(Plane[], Bounds)"
 GeometryUtility,TryCreatePlaneFromPolygon,"static bool TryCreatePlaneFromPolygon(Vector3[], out Plane)"
 Graphics,DrawMesh,"static void DrawMesh(Mesh, Vector3, Quaternion, Material, int, Camera = null, int = 0, MaterialPropertyBlock = null, bool = True, bool = True, bool = True) / static void DrawMesh(Mesh, Vector3, Quaternion, Material, int, Camera, int, MaterialPropertyBlock, ShadowCastingMode, bool = True, Transform = null, bool = True) / static void DrawMesh(Mesh, Matrix4x4, Material, int, Camera = null, int = 0, MaterialPropertyBlock = null, bool = True, bool = True, bool = True) / static void DrawMesh(Mesh, Matrix4x4, Material, int, Camera, int, MaterialPropertyBlock, ShadowCastingMode, bool = True, Transform = null, bool = True)"
+Graphics,ExecuteCommandBuffer,static void ExecuteCommandBuffer(CommandBuffer)
 Graphics,RenderMesh,"static void RenderMesh(ref RenderParams, Mesh, int, Matrix4x4, Nullable<Matrix4x4> = null)"
 Helix.Collections.Allocator,AudioKernel,Helix.Collections.Allocator.AudioKernel = 5
 Helix.Collections.Allocator,Domain,Helix.Collections.Allocator.Domain = 6
@@ -1046,6 +1048,8 @@ Plane,Translate,"void Translate(Vector3) / static Plane Translate(Plane, Vector3
 Plane,distance,float distance { get; set; }
 Plane,flipped,Plane flipped { get; }
 Plane,normal,Vector3 normal { get; set; }
+QualitySettings,GetRenderPipelineAssetAt,static RenderPipelineAsset GetRenderPipelineAssetAt(int)
+QualitySettings,renderPipeline,static RenderPipelineAsset renderPipeline { get; set; }
 Quaternion,.ctor,"Quaternion(float, float, float, float)"
 Quaternion,Angle,"static float Angle(Quaternion, Quaternion)"
 Quaternion,AngleAxis,"static Quaternion AngleAxis(float, Vector3)"
@@ -1180,10 +1184,160 @@ Renderer,sortingLayerID,int sortingLayerID { get; set; }
 Renderer,sortingOrder,int sortingOrder { get; set; }
 Renderer,staticShadowCaster,bool staticShadowCaster { get; set; }
 Renderer,worldToLocalMatrix,Matrix4x4 worldToLocalMatrix { get; }
+Rendering.BlendMode,DstAlpha,Rendering.BlendMode.DstAlpha = 7
+Rendering.BlendMode,DstColor,Rendering.BlendMode.DstColor = 2
+Rendering.BlendMode,One,Rendering.BlendMode.One = 1
+Rendering.BlendMode,OneMinusDstAlpha,Rendering.BlendMode.OneMinusDstAlpha = 8
+Rendering.BlendMode,OneMinusDstColor,Rendering.BlendMode.OneMinusDstColor = 4
+Rendering.BlendMode,OneMinusSrcAlpha,Rendering.BlendMode.OneMinusSrcAlpha = 10
+Rendering.BlendMode,OneMinusSrcColor,Rendering.BlendMode.OneMinusSrcColor = 6
+Rendering.BlendMode,SrcAlpha,Rendering.BlendMode.SrcAlpha = 5
+Rendering.BlendMode,SrcAlphaSaturate,Rendering.BlendMode.SrcAlphaSaturate = 9
+Rendering.BlendMode,SrcColor,Rendering.BlendMode.SrcColor = 3
+Rendering.BlendMode,Zero,Rendering.BlendMode.Zero = 0
+Rendering.BlendOp,Add,Rendering.BlendOp.Add = 0
+Rendering.BlendOp,ColorBurn,Rendering.BlendOp.ColorBurn = 27
+Rendering.BlendOp,ColorDodge,Rendering.BlendOp.ColorDodge = 26
+Rendering.BlendOp,Darken,Rendering.BlendOp.Darken = 24
+Rendering.BlendOp,Difference,Rendering.BlendOp.Difference = 30
+Rendering.BlendOp,Exclusion,Rendering.BlendOp.Exclusion = 31
+Rendering.BlendOp,HSLColor,Rendering.BlendOp.HSLColor = 34
+Rendering.BlendOp,HSLHue,Rendering.BlendOp.HSLHue = 32
+Rendering.BlendOp,HSLLuminosity,Rendering.BlendOp.HSLLuminosity = 35
+Rendering.BlendOp,HSLSaturation,Rendering.BlendOp.HSLSaturation = 33
+Rendering.BlendOp,HardLight,Rendering.BlendOp.HardLight = 28
+Rendering.BlendOp,Lighten,Rendering.BlendOp.Lighten = 25
+Rendering.BlendOp,LogicalAnd,Rendering.BlendOp.LogicalAnd = 11
+Rendering.BlendOp,LogicalAndInverted,Rendering.BlendOp.LogicalAndInverted = 18
+Rendering.BlendOp,LogicalAndReverse,Rendering.BlendOp.LogicalAndReverse = 17
+Rendering.BlendOp,LogicalClear,Rendering.BlendOp.LogicalClear = 5
+Rendering.BlendOp,LogicalCopy,Rendering.BlendOp.LogicalCopy = 7
+Rendering.BlendOp,LogicalCopyInverted,Rendering.BlendOp.LogicalCopyInverted = 8
+Rendering.BlendOp,LogicalEquivalence,Rendering.BlendOp.LogicalEquivalence = 16
+Rendering.BlendOp,LogicalInvert,Rendering.BlendOp.LogicalInvert = 10
+Rendering.BlendOp,LogicalNand,Rendering.BlendOp.LogicalNand = 12
+Rendering.BlendOp,LogicalNoop,Rendering.BlendOp.LogicalNoop = 9
+Rendering.BlendOp,LogicalNor,Rendering.BlendOp.LogicalNor = 14
+Rendering.BlendOp,LogicalOr,Rendering.BlendOp.LogicalOr = 13
+Rendering.BlendOp,LogicalOrInverted,Rendering.BlendOp.LogicalOrInverted = 20
+Rendering.BlendOp,LogicalOrReverse,Rendering.BlendOp.LogicalOrReverse = 19
+Rendering.BlendOp,LogicalSet,Rendering.BlendOp.LogicalSet = 6
+Rendering.BlendOp,LogicalXor,Rendering.BlendOp.LogicalXor = 15
+Rendering.BlendOp,Max,Rendering.BlendOp.Max = 4
+Rendering.BlendOp,Min,Rendering.BlendOp.Min = 3
+Rendering.BlendOp,Multiply,Rendering.BlendOp.Multiply = 21
+Rendering.BlendOp,Overlay,Rendering.BlendOp.Overlay = 23
+Rendering.BlendOp,ReverseSubtract,Rendering.BlendOp.ReverseSubtract = 2
+Rendering.BlendOp,Screen,Rendering.BlendOp.Screen = 22
+Rendering.BlendOp,SoftLight,Rendering.BlendOp.SoftLight = 29
+Rendering.BlendOp,Subtract,Rendering.BlendOp.Subtract = 1
+Rendering.BlendState,.ctor,"BlendState(bool = False, bool = False)"
+Rendering.BlendState,alphaToMask,bool alphaToMask { get; set; }
+Rendering.BlendState,blendState0,RenderTargetBlendState blendState0 { get; set; }
+Rendering.BlendState,blendState1,RenderTargetBlendState blendState1 { get; set; }
+Rendering.BlendState,blendState2,RenderTargetBlendState blendState2 { get; set; }
+Rendering.BlendState,blendState3,RenderTargetBlendState blendState3 { get; set; }
+Rendering.BlendState,blendState4,RenderTargetBlendState blendState4 { get; set; }
+Rendering.BlendState,blendState5,RenderTargetBlendState blendState5 { get; set; }
+Rendering.BlendState,blendState6,RenderTargetBlendState blendState6 { get; set; }
+Rendering.BlendState,blendState7,RenderTargetBlendState blendState7 { get; set; }
+Rendering.BlendState,defaultValue,static BlendState defaultValue { get; }
+Rendering.BlendState,operators,"Equality(BlendState, BlendState) / Inequality(BlendState, BlendState)"
+Rendering.BlendState,separateMRTBlendStates,bool separateMRTBlendStates { get; set; }
+Rendering.ColorWriteMask,All,Rendering.ColorWriteMask.All = 15
+Rendering.ColorWriteMask,Alpha,Rendering.ColorWriteMask.Alpha = 1
+Rendering.ColorWriteMask,Blue,Rendering.ColorWriteMask.Blue = 2
+Rendering.ColorWriteMask,Green,Rendering.ColorWriteMask.Green = 4
+Rendering.ColorWriteMask,Red,Rendering.ColorWriteMask.Red = 8
+Rendering.CommandBuffer,.ctor,CommandBuffer()
+Rendering.CommandBuffer,BeginSample,void BeginSample(string)
+Rendering.CommandBuffer,Clear,void Clear()
+Rendering.CommandBuffer,ClearRenderTarget,"void ClearRenderTarget(bool, bool, Color, float = 1)"
+Rendering.CommandBuffer,DisableKeyword,void DisableKeyword(ref GlobalKeyword)
+Rendering.CommandBuffer,DisableScissorRect,void DisableScissorRect()
+Rendering.CommandBuffer,DisableShaderKeyword,void DisableShaderKeyword(string)
+Rendering.CommandBuffer,Dispose,void Dispose()
+Rendering.CommandBuffer,DrawMesh,"void DrawMesh(Mesh, Matrix4x4, Material, int = 0, int = -1, MaterialPropertyBlock = null)"
+Rendering.CommandBuffer,DrawRenderer,"void DrawRenderer(Renderer, Material, int = 0, int = -1)"
+Rendering.CommandBuffer,EnableKeyword,void EnableKeyword(ref GlobalKeyword)
+Rendering.CommandBuffer,EnableScissorRect,void EnableScissorRect(Rect)
+Rendering.CommandBuffer,EnableShaderKeyword,void EnableShaderKeyword(string)
+Rendering.CommandBuffer,EndSample,void EndSample(string)
+Rendering.CommandBuffer,Release,void Release()
+Rendering.CommandBuffer,SetGlobalColor,"void SetGlobalColor(string, Color) / void SetGlobalColor(int, Color)"
+Rendering.CommandBuffer,SetGlobalFloat,"void SetGlobalFloat(string, float) / void SetGlobalFloat(int, float)"
+Rendering.CommandBuffer,SetGlobalInt,"void SetGlobalInt(string, int) / void SetGlobalInt(int, int)"
+Rendering.CommandBuffer,SetGlobalInteger,"void SetGlobalInteger(string, int) / void SetGlobalInteger(int, int)"
+Rendering.CommandBuffer,SetGlobalMatrix,"void SetGlobalMatrix(string, Matrix4x4) / void SetGlobalMatrix(int, Matrix4x4)"
+Rendering.CommandBuffer,SetGlobalTexture,"void SetGlobalTexture(string, Texture) / void SetGlobalTexture(int, Texture)"
+Rendering.CommandBuffer,SetGlobalVector,"void SetGlobalVector(string, Vector4) / void SetGlobalVector(int, Vector4)"
+Rendering.CommandBuffer,SetKeyword,"void SetKeyword(ref GlobalKeyword, bool)"
+Rendering.CommandBuffer,SetViewProjectionMatrices,"void SetViewProjectionMatrices(Matrix4x4, Matrix4x4)"
+Rendering.CommandBuffer,SetViewport,void SetViewport(Rect)
+Rendering.CommandBuffer,ToString,string ToString()
+Rendering.CommandBuffer,name,string name { get; set; }
+Rendering.CommandBuffer,sizeInBytes,int sizeInBytes { get; }
+Rendering.CompareFunction,Always,Rendering.CompareFunction.Always = 8
+Rendering.CompareFunction,Disabled,Rendering.CompareFunction.Disabled = 0
+Rendering.CompareFunction,Equal,Rendering.CompareFunction.Equal = 3
+Rendering.CompareFunction,Greater,Rendering.CompareFunction.Greater = 5
+Rendering.CompareFunction,GreaterEqual,Rendering.CompareFunction.GreaterEqual = 7
+Rendering.CompareFunction,Less,Rendering.CompareFunction.Less = 2
+Rendering.CompareFunction,LessEqual,Rendering.CompareFunction.LessEqual = 4
+Rendering.CompareFunction,Never,Rendering.CompareFunction.Never = 1
+Rendering.CompareFunction,NotEqual,Rendering.CompareFunction.NotEqual = 6
+Rendering.CullMode,Back,Rendering.CullMode.Back = 2
+Rendering.CullMode,Front,Rendering.CullMode.Front = 1
+Rendering.CullMode,Off,Rendering.CullMode.Off = 0
+Rendering.CullingOptions,DisablePerObjectCulling,Rendering.CullingOptions.DisablePerObjectCulling = 32
+Rendering.CullingOptions,ForceEvenIfCameraIsNotActive,Rendering.CullingOptions.ForceEvenIfCameraIsNotActive = 1
+Rendering.CullingOptions,NeedsLighting,Rendering.CullingOptions.NeedsLighting = 4
+Rendering.CullingOptions,NeedsReflectionProbes,Rendering.CullingOptions.NeedsReflectionProbes = 8
+Rendering.CullingOptions,None,Rendering.CullingOptions.None = 0
+Rendering.CullingOptions,OcclusionCull,Rendering.CullingOptions.OcclusionCull = 2
+Rendering.CullingOptions,ShadowCasters,Rendering.CullingOptions.ShadowCasters = 64
+Rendering.CullingOptions,Stereo,Rendering.CullingOptions.Stereo = 16
+Rendering.CullingResults,operators,"Equality(CullingResults, CullingResults) / Inequality(CullingResults, CullingResults)"
+Rendering.CullingResults,visibleLights,NativeArray<VisibleLight> visibleLights { get; }
+Rendering.DepthState,.ctor,"DepthState(bool = True, CompareFunction = Less)"
+Rendering.DepthState,compareFunction,CompareFunction compareFunction { get; set; }
+Rendering.DepthState,defaultValue,static DepthState defaultValue { get; }
+Rendering.DepthState,operators,"Equality(DepthState, DepthState) / Inequality(DepthState, DepthState)"
+Rendering.DepthState,writeEnabled,bool writeEnabled { get; set; }
+Rendering.DistanceMetric,CustomAxis,Rendering.DistanceMetric.CustomAxis = 2
+Rendering.DistanceMetric,Orthographic,Rendering.DistanceMetric.Orthographic = 1
+Rendering.DistanceMetric,Perspective,Rendering.DistanceMetric.Perspective = 0
+Rendering.DrawingSettings,.ctor,"DrawingSettings(ShaderTagId, SortingSettings)"
+Rendering.DrawingSettings,GetShaderPassName,ShaderTagId GetShaderPassName(int)
+Rendering.DrawingSettings,SetShaderPassName,"void SetShaderPassName(int, ShaderTagId)"
+Rendering.DrawingSettings,enableDynamicBatching,bool enableDynamicBatching { get; set; }
+Rendering.DrawingSettings,enableInstancing,bool enableInstancing { get; set; }
+Rendering.DrawingSettings,fallbackMaterial,Material fallbackMaterial { get; set; }
+Rendering.DrawingSettings,mainLightIndex,int mainLightIndex { get; set; }
+Rendering.DrawingSettings,maxShaderPasses,static int maxShaderPasses
+Rendering.DrawingSettings,operators,"Equality(DrawingSettings, DrawingSettings) / Inequality(DrawingSettings, DrawingSettings)"
+Rendering.DrawingSettings,overrideMaterial,Material overrideMaterial { get; set; }
+Rendering.DrawingSettings,overrideMaterialPassIndex,int overrideMaterialPassIndex { get; set; }
+Rendering.DrawingSettings,overrideShader,Shader overrideShader { get; set; }
+Rendering.DrawingSettings,overrideShaderPassIndex,int overrideShaderPassIndex { get; set; }
+Rendering.DrawingSettings,perObjectData,PerObjectData perObjectData { get; set; }
+Rendering.DrawingSettings,sortingSettings,SortingSettings sortingSettings { get; set; }
+Rendering.FilteringSettings,.ctor,"FilteringSettings(Nullable<RenderQueueRange> = null, int = -1, uint = 4294967295, int = 0)"
+Rendering.FilteringSettings,batchLayerMask,uint batchLayerMask { get; set; }
+Rendering.FilteringSettings,defaultValue,static FilteringSettings defaultValue { get; }
+Rendering.FilteringSettings,excludeMotionVectorObjects,bool excludeMotionVectorObjects { get; set; }
+Rendering.FilteringSettings,layerMask,int layerMask { get; set; }
+Rendering.FilteringSettings,operators,"Equality(FilteringSettings, FilteringSettings) / Inequality(FilteringSettings, FilteringSettings)"
+Rendering.FilteringSettings,renderQueueRange,RenderQueueRange renderQueueRange { get; set; }
+Rendering.FilteringSettings,renderingLayerMask,uint renderingLayerMask { get; set; }
 Rendering.GlobalKeyword,.ctor,GlobalKeyword(string)
 Rendering.GlobalKeyword,Create,static GlobalKeyword Create(string)
 Rendering.GlobalKeyword,ToString,string ToString()
 Rendering.GlobalKeyword,name,string name { get; }
+Rendering.GraphicsSettings,currentRenderPipeline,static RenderPipelineAsset currentRenderPipeline { get; }
+Rendering.GraphicsSettings,defaultRenderPipeline,static RenderPipelineAsset defaultRenderPipeline { get; set; }
+Rendering.GraphicsSettings,defaultRenderingLayerMask,static uint defaultRenderingLayerMask { get; set; }
+Rendering.GraphicsSettings,renderPipelineAsset,static RenderPipelineAsset renderPipelineAsset { get; set; }
 Rendering.IndexFormat,UInt16,Rendering.IndexFormat.UInt16 = 0
 Rendering.IndexFormat,UInt32,Rendering.IndexFormat.UInt32 = 1
 Rendering.LocalKeyword,.ctor,"LocalKeyword(Shader, string)"
@@ -1204,6 +1358,85 @@ Rendering.MeshUpdateFlags,DontNotifyMeshUsers,Rendering.MeshUpdateFlags.DontNoti
 Rendering.MeshUpdateFlags,DontRecalculateBounds,Rendering.MeshUpdateFlags.DontRecalculateBounds = 8
 Rendering.MeshUpdateFlags,DontResetBoneBounds,Rendering.MeshUpdateFlags.DontResetBoneBounds = 2
 Rendering.MeshUpdateFlags,DontValidateIndices,Rendering.MeshUpdateFlags.DontValidateIndices = 1
+Rendering.PerObjectData,LightData,Rendering.PerObjectData.LightData = 16
+Rendering.PerObjectData,LightIndices,Rendering.PerObjectData.LightIndices = 64
+Rendering.PerObjectData,LightProbe,Rendering.PerObjectData.LightProbe = 1
+Rendering.PerObjectData,LightProbeProxyVolume,Rendering.PerObjectData.LightProbeProxyVolume = 4
+Rendering.PerObjectData,Lightmaps,Rendering.PerObjectData.Lightmaps = 8
+Rendering.PerObjectData,MotionVectors,Rendering.PerObjectData.MotionVectors = 32
+Rendering.PerObjectData,None,Rendering.PerObjectData.None = 0
+Rendering.PerObjectData,OcclusionProbe,Rendering.PerObjectData.OcclusionProbe = 256
+Rendering.PerObjectData,OcclusionProbeProxyVolume,Rendering.PerObjectData.OcclusionProbeProxyVolume = 512
+Rendering.PerObjectData,ReflectionProbeData,Rendering.PerObjectData.ReflectionProbeData = 128
+Rendering.PerObjectData,ReflectionProbes,Rendering.PerObjectData.ReflectionProbes = 2
+Rendering.PerObjectData,ShadowMask,Rendering.PerObjectData.ShadowMask = 1024
+Rendering.RasterState,.ctor,"RasterState(CullMode = Back, int = 0, float = 0, bool = True)"
+Rendering.RasterState,conservative,bool conservative { get; set; }
+Rendering.RasterState,cullingMode,CullMode cullingMode { get; set; }
+Rendering.RasterState,defaultValue,static RasterState defaultValue { get; }
+Rendering.RasterState,depthClip,bool depthClip { get; set; }
+Rendering.RasterState,offsetFactor,float offsetFactor { get; set; }
+Rendering.RasterState,offsetUnits,int offsetUnits { get; set; }
+Rendering.RasterState,operators,"Equality(RasterState, RasterState) / Inequality(RasterState, RasterState)"
+Rendering.RenderPipeline,disposed,bool disposed { get; }
+Rendering.RenderPipelineManager,activeRenderPipelineAssetChanged,"static event Action<RenderPipelineAsset, RenderPipelineAsset> activeRenderPipelineAssetChanged"
+Rendering.RenderPipelineManager,activeRenderPipelineTypeChanged,static event Action activeRenderPipelineTypeChanged
+Rendering.RenderPipelineManager,beginCameraRendering,"static event Action<ScriptableRenderContext, Camera> beginCameraRendering"
+Rendering.RenderPipelineManager,beginContextRendering,"static event Action<ScriptableRenderContext, List<Camera>> beginContextRendering"
+Rendering.RenderPipelineManager,currentPipeline,static RenderPipeline currentPipeline { get; }
+Rendering.RenderPipelineManager,endCameraRendering,"static event Action<ScriptableRenderContext, Camera> endCameraRendering"
+Rendering.RenderPipelineManager,endContextRendering,"static event Action<ScriptableRenderContext, List<Camera>> endContextRendering"
+Rendering.RenderQueueRange,.ctor,"RenderQueueRange(int, int)"
+Rendering.RenderQueueRange,ToString,string ToString()
+Rendering.RenderQueueRange,all,static RenderQueueRange all { get; }
+Rendering.RenderQueueRange,lowerBound,int lowerBound { get; set; }
+Rendering.RenderQueueRange,maximumBound,static int maximumBound
+Rendering.RenderQueueRange,minimumBound,static int minimumBound
+Rendering.RenderQueueRange,opaque,static RenderQueueRange opaque { get; }
+Rendering.RenderQueueRange,operators,"Equality(RenderQueueRange, RenderQueueRange) / Inequality(RenderQueueRange, RenderQueueRange)"
+Rendering.RenderQueueRange,transparent,static RenderQueueRange transparent { get; }
+Rendering.RenderQueueRange,upperBound,int upperBound { get; set; }
+Rendering.RenderStateBlock,.ctor,RenderStateBlock(RenderStateMask)
+Rendering.RenderStateBlock,blendState,BlendState blendState { get; set; }
+Rendering.RenderStateBlock,depthState,DepthState depthState { get; set; }
+Rendering.RenderStateBlock,mask,RenderStateMask mask { get; set; }
+Rendering.RenderStateBlock,operators,"Equality(RenderStateBlock, RenderStateBlock) / Inequality(RenderStateBlock, RenderStateBlock)"
+Rendering.RenderStateBlock,rasterState,RasterState rasterState { get; set; }
+Rendering.RenderStateBlock,stencilReference,int stencilReference { get; set; }
+Rendering.RenderStateBlock,stencilState,StencilState stencilState { get; set; }
+Rendering.RenderStateMask,Blend,Rendering.RenderStateMask.Blend = 1
+Rendering.RenderStateMask,Depth,Rendering.RenderStateMask.Depth = 4
+Rendering.RenderStateMask,Everything,Rendering.RenderStateMask.Everything = 15
+Rendering.RenderStateMask,Nothing,Rendering.RenderStateMask.Nothing = 0
+Rendering.RenderStateMask,Raster,Rendering.RenderStateMask.Raster = 2
+Rendering.RenderStateMask,Stencil,Rendering.RenderStateMask.Stencil = 8
+Rendering.RenderTargetBlendState,.ctor,"RenderTargetBlendState(ColorWriteMask = All, BlendMode = One, BlendMode = Zero, BlendMode = One, BlendMode = Zero, BlendOp = Add, BlendOp = Add)"
+Rendering.RenderTargetBlendState,alphaBlendOperation,BlendOp alphaBlendOperation { get; set; }
+Rendering.RenderTargetBlendState,colorBlendOperation,BlendOp colorBlendOperation { get; set; }
+Rendering.RenderTargetBlendState,defaultValue,static RenderTargetBlendState defaultValue { get; }
+Rendering.RenderTargetBlendState,destinationAlphaBlendMode,BlendMode destinationAlphaBlendMode { get; set; }
+Rendering.RenderTargetBlendState,destinationColorBlendMode,BlendMode destinationColorBlendMode { get; set; }
+Rendering.RenderTargetBlendState,operators,"Equality(RenderTargetBlendState, RenderTargetBlendState) / Inequality(RenderTargetBlendState, RenderTargetBlendState)"
+Rendering.RenderTargetBlendState,sourceAlphaBlendMode,BlendMode sourceAlphaBlendMode { get; set; }
+Rendering.RenderTargetBlendState,sourceColorBlendMode,BlendMode sourceColorBlendMode { get; set; }
+Rendering.RenderTargetBlendState,writeMask,ColorWriteMask writeMask { get; set; }
+Rendering.ScriptableCullingParameters,GetCullingPlane,Plane GetCullingPlane(int)
+Rendering.ScriptableCullingParameters,SetCullingPlane,"void SetCullingPlane(int, Plane)"
+Rendering.ScriptableCullingParameters,cullingMask,uint cullingMask { get; set; }
+Rendering.ScriptableCullingParameters,cullingMatrix,Matrix4x4 cullingMatrix { get; set; }
+Rendering.ScriptableCullingParameters,cullingOptions,CullingOptions cullingOptions { get; set; }
+Rendering.ScriptableCullingParameters,cullingPlaneCount,int cullingPlaneCount { get; set; }
+Rendering.ScriptableCullingParameters,isOrthographic,bool isOrthographic { get; set; }
+Rendering.ScriptableCullingParameters,maximumCullingPlaneCount,static int maximumCullingPlaneCount
+Rendering.ScriptableCullingParameters,operators,"Equality(ScriptableCullingParameters, ScriptableCullingParameters) / Inequality(ScriptableCullingParameters, ScriptableCullingParameters)"
+Rendering.ScriptableCullingParameters,origin,Vector3 origin { get; set; }
+Rendering.ScriptableRenderContext,Cull,CullingResults Cull(ref ScriptableCullingParameters)
+Rendering.ScriptableRenderContext,DrawRenderers,"void DrawRenderers(CullingResults, ref DrawingSettings, ref FilteringSettings) / void DrawRenderers(CullingResults, ref DrawingSettings, ref FilteringSettings, ref RenderStateBlock)"
+Rendering.ScriptableRenderContext,ExecuteCommandBuffer,void ExecuteCommandBuffer(CommandBuffer)
+Rendering.ScriptableRenderContext,InvokeOnRenderObjectCallback,void InvokeOnRenderObjectCallback()
+Rendering.ScriptableRenderContext,SetupCameraProperties,"void SetupCameraProperties(Camera, bool = False)"
+Rendering.ScriptableRenderContext,Submit,void Submit()
+Rendering.ScriptableRenderContext,operators,"Equality(ScriptableRenderContext, ScriptableRenderContext) / Inequality(ScriptableRenderContext, ScriptableRenderContext)"
 Rendering.ShaderKeywordType,BuiltinAutoStripped,Rendering.ShaderKeywordType.BuiltinAutoStripped = 10
 Rendering.ShaderKeywordType,BuiltinDefault,Rendering.ShaderKeywordType.BuiltinDefault = 2
 Rendering.ShaderKeywordType,BuiltinExtra,Rendering.ShaderKeywordType.BuiltinExtra = 6
@@ -1234,6 +1467,49 @@ Rendering.ShadowCastingMode,Off,Rendering.ShadowCastingMode.Off = 0
 Rendering.ShadowCastingMode,On,Rendering.ShadowCastingMode.On = 1
 Rendering.ShadowCastingMode,ShadowsOnly,Rendering.ShadowCastingMode.ShadowsOnly = 3
 Rendering.ShadowCastingMode,TwoSided,Rendering.ShadowCastingMode.TwoSided = 2
+Rendering.SortingCriteria,BackToFront,Rendering.SortingCriteria.BackToFront = 4
+Rendering.SortingCriteria,CanvasOrder,Rendering.SortingCriteria.CanvasOrder = 32
+Rendering.SortingCriteria,CommonOpaque,Rendering.SortingCriteria.CommonOpaque = 59
+Rendering.SortingCriteria,CommonTransparent,Rendering.SortingCriteria.CommonTransparent = 23
+Rendering.SortingCriteria,None,Rendering.SortingCriteria.None = 0
+Rendering.SortingCriteria,OptimizeStateChanges,Rendering.SortingCriteria.OptimizeStateChanges = 16
+Rendering.SortingCriteria,QuantizedFrontToBack,Rendering.SortingCriteria.QuantizedFrontToBack = 8
+Rendering.SortingCriteria,RenderQueue,Rendering.SortingCriteria.RenderQueue = 2
+Rendering.SortingCriteria,RendererPriority,Rendering.SortingCriteria.RendererPriority = 64
+Rendering.SortingCriteria,SortingLayer,Rendering.SortingCriteria.SortingLayer = 1
+Rendering.SortingSettings,.ctor,SortingSettings(Camera)
+Rendering.SortingSettings,cameraPosition,Vector3 cameraPosition { get; set; }
+Rendering.SortingSettings,criteria,SortingCriteria criteria { get; set; }
+Rendering.SortingSettings,customAxis,Vector3 customAxis { get; set; }
+Rendering.SortingSettings,distanceMetric,DistanceMetric distanceMetric { get; set; }
+Rendering.SortingSettings,operators,"Equality(SortingSettings, SortingSettings) / Inequality(SortingSettings, SortingSettings)"
+Rendering.SortingSettings,worldToCameraMatrix,Matrix4x4 worldToCameraMatrix { get; set; }
+Rendering.StencilOp,DecrementSaturate,Rendering.StencilOp.DecrementSaturate = 4
+Rendering.StencilOp,DecrementWrap,Rendering.StencilOp.DecrementWrap = 7
+Rendering.StencilOp,IncrementSaturate,Rendering.StencilOp.IncrementSaturate = 3
+Rendering.StencilOp,IncrementWrap,Rendering.StencilOp.IncrementWrap = 6
+Rendering.StencilOp,Invert,Rendering.StencilOp.Invert = 5
+Rendering.StencilOp,Keep,Rendering.StencilOp.Keep = 0
+Rendering.StencilOp,Replace,Rendering.StencilOp.Replace = 2
+Rendering.StencilOp,Zero,Rendering.StencilOp.Zero = 1
+Rendering.StencilState,.ctor,"StencilState(bool = True, byte = 255, byte = 255, CompareFunction = Always, StencilOp = Keep, StencilOp = Keep, StencilOp = Keep) / StencilState(bool, byte, byte, CompareFunction, StencilOp, StencilOp, StencilOp, CompareFunction, StencilOp, StencilOp, StencilOp)"
+Rendering.StencilState,SetCompareFunction,void SetCompareFunction(CompareFunction)
+Rendering.StencilState,SetFailOperation,void SetFailOperation(StencilOp)
+Rendering.StencilState,SetPassOperation,void SetPassOperation(StencilOp)
+Rendering.StencilState,SetZFailOperation,void SetZFailOperation(StencilOp)
+Rendering.StencilState,compareFunctionBack,CompareFunction compareFunctionBack { get; set; }
+Rendering.StencilState,compareFunctionFront,CompareFunction compareFunctionFront { get; set; }
+Rendering.StencilState,defaultValue,static StencilState defaultValue { get; }
+Rendering.StencilState,enabled,bool enabled { get; set; }
+Rendering.StencilState,failOperationBack,StencilOp failOperationBack { get; set; }
+Rendering.StencilState,failOperationFront,StencilOp failOperationFront { get; set; }
+Rendering.StencilState,operators,"Equality(StencilState, StencilState) / Inequality(StencilState, StencilState)"
+Rendering.StencilState,passOperationBack,StencilOp passOperationBack { get; set; }
+Rendering.StencilState,passOperationFront,StencilOp passOperationFront { get; set; }
+Rendering.StencilState,readMask,byte readMask { get; set; }
+Rendering.StencilState,writeMask,byte writeMask { get; set; }
+Rendering.StencilState,zFailOperationBack,StencilOp zFailOperationBack { get; set; }
+Rendering.StencilState,zFailOperationFront,StencilOp zFailOperationFront { get; set; }
 Rendering.SubMeshDescriptor,.ctor,"SubMeshDescriptor(int, int, MeshTopology = Triangles)"
 Rendering.SubMeshDescriptor,ToString,string ToString()
 Rendering.SubMeshDescriptor,baseVertex,int baseVertex
@@ -1284,6 +1560,16 @@ Rendering.VertexAttributeFormat,UInt32,Rendering.VertexAttributeFormat.UInt32 = 
 Rendering.VertexAttributeFormat,UInt8,Rendering.VertexAttributeFormat.UInt8 = 6
 Rendering.VertexAttributeFormat,UNorm16,Rendering.VertexAttributeFormat.UNorm16 = 4
 Rendering.VertexAttributeFormat,UNorm8,Rendering.VertexAttributeFormat.UNorm8 = 2
+Rendering.VisibleLight,finalColor,Color finalColor { get; set; }
+Rendering.VisibleLight,intersectsFarPlane,bool intersectsFarPlane { get; set; }
+Rendering.VisibleLight,intersectsNearPlane,bool intersectsNearPlane { get; set; }
+Rendering.VisibleLight,light,Light light { get; }
+Rendering.VisibleLight,lightType,LightType lightType { get; set; }
+Rendering.VisibleLight,localToWorldMatrix,Matrix4x4 localToWorldMatrix { get; set; }
+Rendering.VisibleLight,operators,"Equality(VisibleLight, VisibleLight) / Inequality(VisibleLight, VisibleLight)"
+Rendering.VisibleLight,range,float range { get; set; }
+Rendering.VisibleLight,screenRect,Rect screenRect { get; set; }
+Rendering.VisibleLight,spotAngle,float spotAngle { get; set; }
 Resolution,height,int height
 Resolution,refreshRateRatio,RefreshRate refreshRateRatio
 Resolution,width,int width

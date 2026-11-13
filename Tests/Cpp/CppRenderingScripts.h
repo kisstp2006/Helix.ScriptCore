@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Cpp/CppScripts.h>
+#include <Helix/Engine/Rendering/Pipeline/RenderPipeline.h>
 
 // The scenarios of Managed/RenderingScripts.cs on the C++ script API: the same lines.
 namespace helix::scriptcore::testing
@@ -215,6 +216,98 @@ namespace helix::scriptcore::testing
             Object::DestroyImmediate(byType);
             Object::DestroyImmediate(plain);
             Calls().Push(line);
+        }
+    };
+
+    // A scriptable pipeline of C++ (the C# one in Managed/RenderingScripts.cs notes the same lines).
+    class CppPipeline final : public engine::RenderPipeline
+    {
+    public:
+        void Render(engine::ScriptableRenderContext& context, Span<engine::Camera* const> cameras) override
+        {
+            using namespace engine;
+            BeginContextRendering(context, cameras);
+            for (Camera* camera : cameras)
+            {
+                BeginCameraRendering(context, camera);
+                ScriptableCullingParameters parameters;
+                if (!camera->TryGetCullingParameters(parameters))
+                    continue;
+                CullingResults culling = context.Cull(parameters);
+                Span<const VisibleLight> lights = culling.visibleLights();
+                Calls().Push(Format("lights:{}:{}:{}", lights.Size(), lights.Empty() ? -1 : i32(lights[0].lightType),
+                                    lights.Empty() ? String() : text::F(lights[0].finalColor.g)));
+                context.SetupCameraProperties(camera);
+                CommandBuffer clear;
+                clear.SetName("Clear");
+                clear.ClearRenderTarget(true, true, camera->backgroundColor());
+                context.ExecuteCommandBuffer(clear);
+                SortingSettings sorting(camera);
+                sorting.criteria = SortingCriteria::CommonOpaque;
+                DrawingSettings drawing(ShaderTagId("SRPDefaultUnlit"), sorting);
+                drawing.SetShaderPassName(1, ShaderTagId("ForwardBase"));
+                FilteringSettings filtering(RenderQueueRange::opaque());
+                context.DrawRenderers(culling, drawing, filtering);
+                sorting.criteria = SortingCriteria::CommonTransparent;
+                drawing.sortingSettings = sorting;
+                filtering.renderQueueRange = RenderQueueRange::transparent();
+                context.DrawRenderers(culling, drawing, filtering);
+                context.InvokeOnRenderObjectCallback();
+                context.Submit();
+                EndCameraRendering(context, camera);
+            }
+            EndContextRendering(context, cameras);
+        }
+
+    protected:
+        void Dispose(bool) override { Calls().Push(String("Dispose")); }
+    };
+
+    // Its asset: the engine calls CreatePipeline (protected, as the reference's).
+    HX_CLASS(Namespace = "ScriptCoreTests")
+    class CppPipelineAsset : public ::HelixEngine::ScriptableObject
+    {
+    protected:
+        engine::RenderPipeline* CreatePipeline()
+        {
+            Calls().Push(String("CreatePipeline"));
+            return new CppPipeline();
+        }
+    };
+
+    // The values of the pipeline API: their defaults and what they keep.
+    HX_CLASS(Namespace = "ScriptCoreTests")
+    class CppPipelineValues : public ::HelixEngine::GameBehaviour
+    {
+        void Start()
+        {
+            using namespace engine;
+            using text::B;
+            SortingSettings sorting;
+            sorting.criteria = SortingCriteria::CommonOpaque;
+            DrawingSettings drawing(ShaderTagId("First"), sorting);
+            drawing.SetShaderPassName(2, ShaderTagId("Third"));
+            FilteringSettings filtering = FilteringSettings::defaultValue();
+            RenderStateBlock state(RenderStateMask(i32(RenderStateMask::Depth) | i32(RenderStateMask::Raster)));
+            ScriptableCullingParameters parameters;
+            parameters.cullingPlaneCount = 3;
+            parameters.SetCullingPlane(1, Plane(Vector3(0, 1, 0), 2));
+            Plane plane = parameters.GetCullingPlane(1);
+            CommandBuffer buffer;
+            buffer.SetName("Values");
+            bool empty = buffer.sizeInBytes() == 0;
+            buffer.SetGlobalFloat("_Value", 1);
+            bool recorded = buffer.sizeInBytes() > 0;
+            buffer.Clear();
+            Calls().Push(Format("pipe:{}/{}/{}/{}/{}/{}/{}/{}-{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{},{}/{}/{}/{}/{}/{}/{}/{}", drawing.GetShaderPassName(0).name(),
+                                drawing.GetShaderPassName(1).name(), drawing.GetShaderPassName(2).name(), i32(drawing.sortingSettings.criteria),
+                                B(drawing.enableInstancing), B(drawing.enableDynamicBatching), drawing.mainLightIndex, filtering.renderQueueRange.lowerBound,
+                                filtering.renderQueueRange.upperBound, filtering.layerMask, filtering.renderingLayerMask, RenderQueueRange::opaque().upperBound,
+                                RenderQueueRange::transparent().lowerBound, i32(state.mask), B(state.depthState.writeEnabled),
+                                i32(state.depthState.compareFunction), i32(state.rasterState.cullingMode), i32(state.blendState.targets[0].writeMask),
+                                parameters.cullingPlaneCount, text::F(plane.normal.y), text::F(plane.distance), buffer.name(), B(empty), B(recorded),
+                                buffer.sizeInBytes(), GraphicsSettings::defaultRenderingLayerMask(), B(GraphicsSettings::currentRenderPipeline() == nullptr),
+                                B(RenderPipelineManager::currentAsset() == nullptr)));
         }
     };
 }

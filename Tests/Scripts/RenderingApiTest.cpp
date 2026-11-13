@@ -8,6 +8,7 @@
 #include <Helix/Engine/Asset/Resources.h>
 #include <Helix/Engine/GameObject/Lifecycle.h>
 #include <Helix/Engine/Rendering/Graphics.h>
+#include <Helix/Engine/Rendering/Pipeline/RenderPipeline.h>
 #include <Helix/Platform/IO/FileSystem.h>
 #include <Helix/Platform/Window/Window.h>
 #include <Helix/Testing/Test.h>
@@ -294,4 +295,112 @@ HX_TEST(ScriptApi, AGoldenImageDrawnThroughTheScriptApi)
     });
     std::printf("    %u devices\n", devices);
     DestroyImmediate(host);
+}
+
+HX_TEST(ScriptApi, ThePipelineValuesInBothLanguages)
+{
+    HX_REQUIRE(StartScripts());
+    HX_CHECK(SameLines("CsPipelineValues", "CppPipelineValues",
+                       "pipe:First//Third/59/True/False/-1/0-5000/-1/4294967295/2500/2501/6/True/2/2/15/3/1.00,2.00/Values/True/True/0/1/True/True"));
+}
+
+namespace
+{
+    // The manager's events in C++.
+    struct CppPipelineEvents
+    {
+        u32 tokens[3] = {};
+
+        CppPipelineEvents()
+        {
+            tokens[0] = RenderPipelineManager::beginContextRendering().Add(
+                [](void*, ScriptableRenderContext&, Span<Camera* const> c) { Calls().Push(Format("cpp.beginContext:{}", c.Size())); });
+            tokens[1] = RenderPipelineManager::beginCameraRendering().Add(
+                [](void*, ScriptableRenderContext&, Camera* c) { Calls().Push(Format("cpp.beginCamera:{}", c->Name())); });
+            tokens[2] = RenderPipelineManager::endCameraRendering().Add(
+                [](void*, ScriptableRenderContext&, Camera* c) { Calls().Push(Format("cpp.endCamera:{}", c->Name())); });
+        }
+
+        ~CppPipelineEvents()
+        {
+            RenderPipelineManager::beginContextRendering().Remove(tokens[0]);
+            RenderPipelineManager::beginCameraRendering().Remove(tokens[1]);
+            RenderPipelineManager::endCameraRendering().Remove(tokens[2]);
+        }
+    };
+}
+
+HX_TEST(ScriptApi, ScriptablePipelinesOfBothLanguagesDrawTheGoldenImage)
+{
+    HX_REQUIRE(StartScripts());
+    engine::testing::TestShaderFolder shaders;
+    GameObject* host = GameObject::Create("PipelineHost");
+    host->AddComponent(CSharp("CsGoldenScene").type);
+    host->AddComponent(CSharp("CsPipelineEvents").type);
+    RunScriptPhase(ScriptMessage::Update);
+    // A frame without a device drops what the drawer queued.
+    Graphics::RenderFrame();
+    GameObject* shape = GameObject::Find("GoldenShape");
+    HX_REQUIRE(shape != nullptr);
+    AddScript(shape, Cpp("CppRendererEvents"));
+    CppPipelineEvents events;
+    constexpr u32 size = 32;
+    for (const char* assetClass : {"CsPipelineAsset", "CppPipelineAsset"})
+    {
+        std::printf("    %s\n", assetClass);
+        Calls().Clear();
+        ScriptableObject* asset = ScriptableObject::CreateInstanceByName(assetClass);
+        HX_REQUIRE(asset != nullptr);
+        u32 devices = ForEachDevice([&](rhi::Device& device) {
+            rhi::TextureHandle color = device.CreateTexture(
+                {.format = rhi::Format::RGBA8Unorm, .width = size, .height = size, .usage = rhi::TextureRenderTarget | rhi::TextureSampled});
+            rhi::TextureHandle depth = device.CreateTexture({.format = rhi::Format::D32Float, .width = size, .height = size, .usage = rhi::TextureDepthStencil});
+            Graphics::SetDevice(&device);
+            Graphics::SetTarget({color, depth, size, size, rhi::Format::RGBA8Unorm, rhi::Format::D32Float});
+            Graphics::SetAmbientLight(Color(0.25f, 0.25f, 0.25f, 1));
+            GraphicsSettings::SetDefaultRenderPipeline(asset);
+            RunScriptPhase(ScriptMessage::Update);
+            Calls().Clear();
+            Graphics::RenderFrame();
+            HX_CHECK(Graphics::QueuedMeshCount() == 0 && Graphics::LastStats().drawCalls == 2 && RenderPipelineManager::currentAsset() == asset);
+            // The pipeline made for the device; the events of both languages (C# heard first: it listened first); no
+            // camera messages of the fallback; OnWillRenderObject while culling, OnRenderObject where the pipeline asked.
+            Array<String> lines = Move(Calls());
+            Calls() = Array<String>();
+            const char* expected[] = {"CreatePipeline",
+                                      "cs.beginContext:1",
+                                      "cpp.beginContext:1",
+                                      "cs.beginCamera:GoldenEye",
+                                      "cpp.beginCamera:GoldenEye",
+                                      "cs.OnWillRenderObject:GoldenEye",
+                                      "cpp.OnWillRenderObject:GoldenEye",
+                                      "lights:1:1:0.50",
+                                      "cpp.OnRenderObject",
+                                      "cs.OnRenderObject",
+                                      "cs.endCamera:GoldenEye",
+                                      "cpp.endCamera:GoldenEye"};
+            bool same = lines.Size() == sizeof(expected) / sizeof(expected[0]);
+            for (u32 i = 0; same && i < lines.Size(); i++)
+                same = lines[i] == StringView(expected[i]);
+            if (!same)
+                for (const String& l : lines)
+                    std::printf("    %s\n", l.CStr());
+            HX_CHECK(same);
+            Array<u32> pixels;
+            pixels.Resize(size * size);
+            HX_REQUIRE(device.ReadTexture(color, 0, pixels.Data(), pixels.Size() * 4));
+            HX_CHECK(engine::testing::MatchGolden("ScriptApiScene", pixels.Data(), size, size));
+            // A device change lets the pipeline go.
+            Graphics::ReleaseResources();
+            HX_CHECK(Calls().Size() == 1 && Calls()[0] == StringView("Dispose"));
+            Calls().Clear();
+            device.Destroy(color);
+            device.Destroy(depth);
+        });
+        std::printf("    %u devices\n", devices);
+        GraphicsSettings::SetDefaultRenderPipeline(nullptr);
+        DestroyImmediate(asset);
+    }
+    DestroyImmediate(host);
+    Calls().Clear();
 }

@@ -61,6 +61,7 @@ namespace HelixEngine.Internal
                 SerializedFields.Start(Export);
                 CoroutineRunner.Start(Export);
                 AwaitableScheduler.Start(Export);
+                RenderPipelineBridge.Start(Export);
                 Native.MakeException = (status, what) => status switch
                 {
                     Native.MissingObject => new MissingReferenceException($"{what}: the object was destroyed; check it against null before using it"),

@@ -241,3 +241,112 @@ namespace Tests
         void OnRenderObject() => Notes.NoteRaw("cs.OnRenderObject");
     }
 }
+
+namespace Tests
+{
+    // A scriptable pipeline of C# (the C++ one in Cpp/CppRenderingScripts.h notes the same lines): per camera the
+    // visible lights, the camera's properties, a clear from a command buffer, the opaque then the transparent queues with
+    // the unlit and forward passes, the scripts' OnRenderObject.
+    public class CsPipeline : RenderPipeline
+    {
+        static readonly ShaderTagId s_Unlit = new ShaderTagId("SRPDefaultUnlit");
+        static readonly ShaderTagId s_Forward = new ShaderTagId("ForwardBase");
+
+        protected override void Render(ScriptableRenderContext context, Camera[] cameras) => throw new NotSupportedException("the List overload renders");
+
+        protected override void Render(ScriptableRenderContext context, System.Collections.Generic.List<Camera> cameras)
+        {
+            BeginContextRendering(context, cameras);
+            foreach (Camera camera in cameras)
+            {
+                BeginCameraRendering(context, camera);
+                if (!camera.TryGetCullingParameters(out ScriptableCullingParameters parameters))
+                    continue;
+                CullingResults culling = context.Cull(ref parameters);
+                var lights = culling.visibleLights;
+                Notes.NoteRaw($"lights:{lights.Length}:{(lights.Length > 0 ? (int)lights[0].lightType : -1)}:{(lights.Length > 0 ? Text.F(lights[0].finalColor.g) : "")}");
+                context.SetupCameraProperties(camera);
+                var clear = new CommandBuffer { name = "Clear" };
+                clear.ClearRenderTarget(true, true, camera.backgroundColor);
+                context.ExecuteCommandBuffer(clear);
+                clear.Release();
+                var sorting = new SortingSettings(camera) { criteria = SortingCriteria.CommonOpaque };
+                var drawing = new DrawingSettings(s_Unlit, sorting);
+                drawing.SetShaderPassName(1, s_Forward);
+                var filtering = new FilteringSettings(RenderQueueRange.opaque);
+                context.DrawRenderers(culling, ref drawing, ref filtering);
+                sorting.criteria = SortingCriteria.CommonTransparent;
+                drawing.sortingSettings = sorting;
+                filtering.renderQueueRange = RenderQueueRange.transparent;
+                context.DrawRenderers(culling, ref drawing, ref filtering);
+                context.InvokeOnRenderObjectCallback();
+                context.Submit();
+                EndCameraRendering(context, camera);
+            }
+            EndContextRendering(context, cameras);
+        }
+
+        protected override void Dispose(bool disposing) => Notes.NoteRaw("Dispose");
+    }
+
+    public class CsPipelineAsset : RenderPipelineAsset
+    {
+        protected override RenderPipeline CreatePipeline()
+        {
+            Notes.NoteRaw("CreatePipeline");
+            return new CsPipeline();
+        }
+    }
+
+    // The manager's events in C#.
+    public class CsPipelineEvents : GameBehaviour
+    {
+        void OnEnable()
+        {
+            RenderPipelineManager.beginContextRendering += BeginContext;
+            RenderPipelineManager.beginCameraRendering += BeginCamera;
+            RenderPipelineManager.endCameraRendering += EndCamera;
+        }
+
+        void OnDisable()
+        {
+            RenderPipelineManager.beginContextRendering -= BeginContext;
+            RenderPipelineManager.beginCameraRendering -= BeginCamera;
+            RenderPipelineManager.endCameraRendering -= EndCamera;
+        }
+
+        static void BeginContext(ScriptableRenderContext context, System.Collections.Generic.List<Camera> cameras) => Notes.NoteRaw($"cs.beginContext:{cameras.Count}");
+        static void BeginCamera(ScriptableRenderContext context, Camera camera) => Notes.NoteRaw($"cs.beginCamera:{camera.name}");
+        static void EndCamera(ScriptableRenderContext context, Camera camera) => Notes.NoteRaw($"cs.endCamera:{camera.name}");
+    }
+
+    // The values of the pipeline API: their defaults and what they keep.
+    public class CsPipelineValues : GameBehaviour
+    {
+        void Start()
+        {
+            var drawing = new DrawingSettings(new ShaderTagId("First"), new SortingSettings { criteria = SortingCriteria.CommonOpaque });
+            drawing.SetShaderPassName(2, new ShaderTagId("Third"));
+            var filtering = FilteringSettings.defaultValue;
+            var state = new RenderStateBlock(RenderStateMask.Depth | RenderStateMask.Raster);
+            var parameters = new ScriptableCullingParameters();
+            parameters.cullingPlaneCount = 3;
+            parameters.SetCullingPlane(1, new Plane(new Vector3(0, 1, 0), 2));
+            Plane plane = parameters.GetCullingPlane(1);
+            var buffer = new CommandBuffer();
+            buffer.name = "Values";
+            bool empty = buffer.sizeInBytes == 0;
+            buffer.SetGlobalFloat("_Value", 1);
+            bool recorded = buffer.sizeInBytes > 0;
+            buffer.Clear();
+            Notes.NoteRaw($"pipe:{drawing.GetShaderPassName(0).name}/{drawing.GetShaderPassName(1).name}/{drawing.GetShaderPassName(2).name}/" +
+                          $"{(int)drawing.sortingSettings.criteria}/{drawing.enableInstancing}/{drawing.enableDynamicBatching}/{drawing.mainLightIndex}/" +
+                          $"{filtering.renderQueueRange.lowerBound}-{filtering.renderQueueRange.upperBound}/{filtering.layerMask}/{filtering.renderingLayerMask}/" +
+                          $"{RenderQueueRange.opaque.upperBound}/{RenderQueueRange.transparent.lowerBound}/{(int)state.mask}/{state.depthState.writeEnabled}/" +
+                          $"{(int)state.depthState.compareFunction}/{(int)state.rasterState.cullingMode}/{(int)state.blendState.blendState0.writeMask}/" +
+                          $"{parameters.cullingPlaneCount}/{Text.F(plane.normal.y)},{Text.F(plane.distance)}/{buffer.name}/{empty}/{recorded}/{buffer.sizeInBytes}/" +
+                          $"{GraphicsSettings.defaultRenderingLayerMask}/{GraphicsSettings.currentRenderPipeline == null}/{RenderPipelineManager.currentPipeline == null}");
+            buffer.Release();
+        }
+    }
+}

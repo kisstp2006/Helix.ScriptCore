@@ -84,6 +84,14 @@ namespace HelixEngine.Rendering
 
         public string name => KeywordNative.TagName(this);
 
+        internal int Id => m_Id;
+        internal static ShaderTagId FromId(int id)
+        {
+            ShaderTagId t = default;
+            t.m_Id = id;
+            return t;
+        }
+
         public static explicit operator ShaderTagId(string name) => new ShaderTagId(name);
         public static explicit operator string(ShaderTagId tagId) => tagId.name;
         public static bool operator ==(ShaderTagId tag1, ShaderTagId tag2) => tag1.m_Id == tag2.m_Id;

@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
 using System.Text;
@@ -98,7 +99,10 @@ public static class Program
           !t.Namespace.StartsWith("Helix.Scripting", StringComparison.Ordinal))) &&
         !t.Namespace.EndsWith(".Internal", StringComparison.Ordinal) && !t.Namespace.Contains(".Internal.", StringComparison.Ordinal);
 
-    static bool Visible(Type t) => t.IsPublic || (t.IsNestedPublic && t.DeclaringType != null && Visible(t.DeclaringType));
+    // Compiler-made types (the buffers of fixed size fields) are no surface.
+    static bool Visible(Type t) =>
+        (t.IsPublic || (t.IsNestedPublic && t.DeclaringType != null && Visible(t.DeclaringType))) &&
+        !t.CustomAttributes.Any(a => a.AttributeType.FullName == "System.Runtime.CompilerServices.CompilerGeneratedAttribute");
 
     // HelixEngine's types without the namespace's first part; the Helix namespaces' types in full.
     static string TypeName(Type t) =>
