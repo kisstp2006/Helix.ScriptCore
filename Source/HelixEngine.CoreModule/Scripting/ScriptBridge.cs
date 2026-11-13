@@ -110,6 +110,7 @@ namespace HelixEngine.Internal
         /// <summary>The script classes of an assembly (GameBehaviour and ScriptableObject classes that are not generic), bases first.</summary>
         public static int RegisterAssembly(Assembly assembly)
         {
+            LoadModuleBindings(assembly);
             var types = new List<Type>();
             foreach (Type t in assembly.GetTypes())
                 if (t.IsClass && !t.IsGenericTypeDefinition && (typeof(GameBehaviour).IsAssignableFrom(t) || typeof(ScriptableObject).IsAssignableFrom(t)) &&
@@ -121,6 +122,29 @@ namespace HelixEngine.Internal
                 if (Register(t) != null)
                     count++;
             return count;
+        }
+
+        static readonly HashSet<Type> s_ModuleBindings = new();
+
+        // The C# bindings of game modules an assembly carries (Helix.Bindgen's HxModule_<module> classes, compiled from
+        // the module's generated C#): each takes its module's function table once, so C# reaches the module's classes
+        // and derives from them. The module is loaded first (its exports published by name).
+        static void LoadModuleBindings(Assembly assembly)
+        {
+            foreach (Type t in assembly.GetTypes())
+            {
+                if (t.Namespace != "Helix.Interop.Generated" || !t.Name.StartsWith("HxModule_", StringComparison.Ordinal) || !s_ModuleBindings.Add(t))
+                    continue;
+                MethodInfo load = t.GetMethod("Load", BindingFlags.Public | BindingFlags.Static);
+                try
+                {
+                    load?.Invoke(null, new object[] { (Func<string, IntPtr>)Export });
+                }
+                catch (TargetInvocationException e)
+                {
+                    Log(4, $"The bindings of {t.Name.Substring(9)} in {assembly.GetName().Name} did not load: {e.InnerException?.Message}");
+                }
+            }
         }
 
         static int Depth(Type t)
