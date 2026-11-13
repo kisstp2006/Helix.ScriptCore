@@ -901,14 +901,14 @@ HX_TEST(Scripts, AwaitablesResumeAtTheReferencesPoints)
     // The Web has no threads: BackgroundThreadAsync continues on the main thread at once.
     HX_CHECK(Expect({"A:a.result=7", "A:a.main bg=False main=True"}));
 #else
-    HX_CHECK(Expect({"A:a.result=7"}));
-    // To a thread pool thread and back: the main thread takes it in a later frame's Update.
-    for (int i = 0; i < 400 && Calls().Empty(); i++)
+    // To a thread pool thread and back: the main thread takes it in an Update, of this frame when the pool was quick
+    // enough, else of a later one.
+    for (int i = 0; i < 400 && Calls().Size() < 2; i++)
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
         frames.Frame();
     }
-    HX_CHECK(Expect({"A:a.main bg=True main=True"}));
+    HX_CHECK(Expect({"A:a.result=7", "A:a.main bg=True main=True"}));
 #endif
     SendScriptMessage(g, "Complete");
     HX_CHECK(Expect({"A:a.source", "A:seq.done"}));
