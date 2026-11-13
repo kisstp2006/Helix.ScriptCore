@@ -88,6 +88,74 @@ Bounds,max,Vector3 max { get; set; }
 Bounds,min,Vector3 min { get; set; }
 Bounds,operators,"Equality(Bounds, Bounds) / Inequality(Bounds, Bounds)"
 Bounds,size,Vector3 size { get; set; }
+Camera,CalculateFrustumCorners,"void CalculateFrustumCorners(Rect, float, Camera.MonoOrStereoscopicEye, Vector3[])"
+Camera,CalculateObliqueMatrix,Matrix4x4 CalculateObliqueMatrix(Vector4)
+Camera,CopyFrom,void CopyFrom(Camera)
+Camera,FieldOfViewToFocalLength,"static float FieldOfViewToFocalLength(float, float)"
+Camera,FocalLengthToFieldOfView,"static float FocalLengthToFieldOfView(float, float)"
+Camera,GetAllCameras,static int GetAllCameras(Camera[])
+Camera,HorizontalToVerticalFieldOfView,"static float HorizontalToVerticalFieldOfView(float, float)"
+Camera,Render,void Render()
+Camera,Reset,void Reset()
+Camera,ResetAspect,void ResetAspect()
+Camera,ResetCullingMatrix,void ResetCullingMatrix()
+Camera,ResetProjectionMatrix,void ResetProjectionMatrix()
+Camera,ResetWorldToCameraMatrix,void ResetWorldToCameraMatrix()
+Camera,ScreenPointToRay,"Ray ScreenPointToRay(Vector3, Camera.MonoOrStereoscopicEye) / Ray ScreenPointToRay(Vector3)"
+Camera,ScreenToViewportPoint,Vector3 ScreenToViewportPoint(Vector3)
+Camera,ScreenToWorldPoint,"Vector3 ScreenToWorldPoint(Vector3, Camera.MonoOrStereoscopicEye) / Vector3 ScreenToWorldPoint(Vector3)"
+Camera,VerticalToHorizontalFieldOfView,"static float VerticalToHorizontalFieldOfView(float, float)"
+Camera,ViewportPointToRay,"Ray ViewportPointToRay(Vector3, Camera.MonoOrStereoscopicEye) / Ray ViewportPointToRay(Vector3)"
+Camera,ViewportToScreenPoint,Vector3 ViewportToScreenPoint(Vector3)
+Camera,ViewportToWorldPoint,"Vector3 ViewportToWorldPoint(Vector3, Camera.MonoOrStereoscopicEye) / Vector3 ViewportToWorldPoint(Vector3)"
+Camera,WorldToScreenPoint,"Vector3 WorldToScreenPoint(Vector3, Camera.MonoOrStereoscopicEye) / Vector3 WorldToScreenPoint(Vector3)"
+Camera,WorldToViewportPoint,"Vector3 WorldToViewportPoint(Vector3, Camera.MonoOrStereoscopicEye) / Vector3 WorldToViewportPoint(Vector3)"
+Camera,allCameras,static Camera[] allCameras { get; }
+Camera,allCamerasCount,static int allCamerasCount { get; }
+Camera,allowHDR,bool allowHDR { get; set; }
+Camera,allowMSAA,bool allowMSAA { get; set; }
+Camera,aspect,float aspect { get; set; }
+Camera,backgroundColor,Color backgroundColor { get; set; }
+Camera,cameraToWorldMatrix,Matrix4x4 cameraToWorldMatrix { get; }
+Camera,cameraType,CameraType cameraType { get; set; }
+Camera,clearFlags,CameraClearFlags clearFlags { get; set; }
+Camera,cullingMask,int cullingMask { get; set; }
+Camera,cullingMatrix,Matrix4x4 cullingMatrix { get; set; }
+Camera,current,static Camera current { get; }
+Camera,depth,float depth { get; set; }
+Camera,depthTextureMode,DepthTextureMode depthTextureMode { get; set; }
+Camera,eventMask,int eventMask { get; set; }
+Camera,farClipPlane,float farClipPlane { get; set; }
+Camera,fieldOfView,float fieldOfView { get; set; }
+Camera,layerCullDistances,float[] layerCullDistances { get; set; }
+Camera,main,static Camera main { get; }
+Camera,nearClipPlane,float nearClipPlane { get; set; }
+Camera,nonJitteredProjectionMatrix,Matrix4x4 nonJitteredProjectionMatrix { get; set; }
+Camera,orthographic,bool orthographic { get; set; }
+Camera,orthographicSize,float orthographicSize { get; set; }
+Camera,pixelHeight,int pixelHeight { get; }
+Camera,pixelRect,Rect pixelRect { get; set; }
+Camera,pixelWidth,int pixelWidth { get; }
+Camera,projectionMatrix,Matrix4x4 projectionMatrix { get; set; }
+Camera,rect,Rect rect { get; set; }
+Camera,scaledPixelHeight,int scaledPixelHeight { get; }
+Camera,scaledPixelWidth,int scaledPixelWidth { get; }
+Camera,scene,Scene scene { get; set; }
+Camera,targetDisplay,int targetDisplay { get; set; }
+Camera,useOcclusionCulling,bool useOcclusionCulling { get; set; }
+Camera,worldToCameraMatrix,Matrix4x4 worldToCameraMatrix { get; set; }
+Camera.MonoOrStereoscopicEye,Left,Camera.MonoOrStereoscopicEye.Left = 0
+Camera.MonoOrStereoscopicEye,Mono,Camera.MonoOrStereoscopicEye.Mono = 2
+Camera.MonoOrStereoscopicEye,Right,Camera.MonoOrStereoscopicEye.Right = 1
+CameraClearFlags,Depth,CameraClearFlags.Depth = 3
+CameraClearFlags,Nothing,CameraClearFlags.Nothing = 4
+CameraClearFlags,Skybox,CameraClearFlags.Skybox = 1
+CameraClearFlags,SolidColor,CameraClearFlags.SolidColor = 2
+CameraType,Game,CameraType.Game = 1
+CameraType,Preview,CameraType.Preview = 4
+CameraType,Reflection,CameraType.Reflection = 16
+CameraType,SceneView,CameraType.SceneView = 2
+CameraType,VR,CameraType.VR = 8
 Color,.ctor,"Color(float, float, float, float) / Color(float, float, float)"
 Color,HSVToRGB,"static Color HSVToRGB(float, float, float) / static Color HSVToRGB(float, float, float, bool)"
 Color,Lerp,"static Color Lerp(Color, Color, float)"
@@ -308,8 +376,15 @@ Debug,LogWarningFormat,"static void LogWarningFormat(string, params object[]) / 
 Debug,isDebugBuild,static bool isDebugBuild { get; }
 DefaultExecutionOrder,.ctor,DefaultExecutionOrder(int)
 DefaultExecutionOrder,order,int order { get; }
+DepthTextureMode,Depth,DepthTextureMode.Depth = 1
+DepthTextureMode,DepthNormals,DepthTextureMode.DepthNormals = 2
+DepthTextureMode,MotionVectors,DepthTextureMode.MotionVectors = 4
+DepthTextureMode,None,DepthTextureMode.None = 0
 EntityId,value,ulong value
 Events.HelixAction,delegate,"void () / void (T0) / void (T0, T1) / void (T0, T1, T2) / void (T0, T1, T2, T3)"
+FilterMode,Bilinear,FilterMode.Bilinear = 1
+FilterMode,Point,FilterMode.Point = 0
+FilterMode,Trilinear,FilterMode.Trilinear = 2
 FindObjectsInactive,Exclude,FindObjectsInactive.Exclude = 0
 FindObjectsInactive,Include,FindObjectsInactive.Include = 1
 FindObjectsSortMode,InstanceID,FindObjectsSortMode.InstanceID = 1
@@ -355,6 +430,12 @@ GameObject,isStatic,bool isStatic { get; }
 GameObject,layer,int layer { get; set; }
 GameObject,tag,string tag { get; set; }
 GameObject,transform,Transform transform { get; }
+GeometryUtility,CalculateBounds,"static Bounds CalculateBounds(Vector3[], Matrix4x4)"
+GeometryUtility,CalculateFrustumPlanes,"static void CalculateFrustumPlanes(Camera, Plane[]) / static void CalculateFrustumPlanes(Matrix4x4, Plane[]) / static Plane[] CalculateFrustumPlanes(Camera) / static Plane[] CalculateFrustumPlanes(Matrix4x4)"
+GeometryUtility,TestPlanesAABB,"static bool TestPlanesAABB(Plane[], Bounds)"
+GeometryUtility,TryCreatePlaneFromPolygon,"static bool TryCreatePlaneFromPolygon(Vector3[], out Plane)"
+Graphics,DrawMesh,"static void DrawMesh(Mesh, Vector3, Quaternion, Material, int, Camera = null, int = 0, MaterialPropertyBlock = null, bool = True, bool = True, bool = True) / static void DrawMesh(Mesh, Vector3, Quaternion, Material, int, Camera, int, MaterialPropertyBlock, ShadowCastingMode, bool = True, Transform = null, bool = True) / static void DrawMesh(Mesh, Matrix4x4, Material, int, Camera = null, int = 0, MaterialPropertyBlock = null, bool = True, bool = True, bool = True) / static void DrawMesh(Mesh, Matrix4x4, Material, int, Camera, int, MaterialPropertyBlock, ShadowCastingMode, bool = True, Transform = null, bool = True)"
+Graphics,RenderMesh,"static void RenderMesh(ref RenderParams, Mesh, int, Matrix4x4, Nullable<Matrix4x4> = null)"
 HideFlags,DontSave,HideFlags.DontSave = 52
 HideFlags,DontSaveInBuild,HideFlags.DontSaveInBuild = 16
 HideFlags,DontSaveInEditor,HideFlags.DontSaveInEditor = 4
@@ -367,6 +448,38 @@ HideFlags,NotEditable,HideFlags.NotEditable = 8
 HideInInspector,.ctor,HideInInspector()
 ISerializationCallbackReceiver,OnAfterDeserialize,void OnAfterDeserialize()
 ISerializationCallbackReceiver,OnBeforeSerialize,void OnBeforeSerialize()
+Light,Reset,void Reset()
+Light,bounceIntensity,float bounceIntensity { get; set; }
+Light,color,Color color { get; set; }
+Light,colorTemperature,float colorTemperature { get; set; }
+Light,cullingMask,int cullingMask { get; set; }
+Light,innerSpotAngle,float innerSpotAngle { get; set; }
+Light,intensity,float intensity { get; set; }
+Light,range,float range { get; set; }
+Light,renderMode,LightRenderMode renderMode { get; set; }
+Light,renderingLayerMask,int renderingLayerMask { get; set; }
+Light,shadowBias,float shadowBias { get; set; }
+Light,shadowNearPlane,float shadowNearPlane { get; set; }
+Light,shadowNormalBias,float shadowNormalBias { get; set; }
+Light,shadowStrength,float shadowStrength { get; set; }
+Light,shadows,LightShadows shadows { get; set; }
+Light,spotAngle,float spotAngle { get; set; }
+Light,type,LightType type { get; set; }
+Light,useColorTemperature,bool useColorTemperature { get; set; }
+LightRenderMode,Auto,LightRenderMode.Auto = 0
+LightRenderMode,ForcePixel,LightRenderMode.ForcePixel = 1
+LightRenderMode,ForceVertex,LightRenderMode.ForceVertex = 2
+LightShadows,Hard,LightShadows.Hard = 1
+LightShadows,None,LightShadows.None = 0
+LightShadows,Soft,LightShadows.Soft = 2
+LightType,Box,LightType.Box = 6
+LightType,Directional,LightType.Directional = 1
+LightType,Disc,LightType.Disc = 4
+LightType,Point,LightType.Point = 2
+LightType,Pyramid,LightType.Pyramid = 5
+LightType,Rectangle,LightType.Rectangle = 3
+LightType,Spot,LightType.Spot = 0
+LightType,Tube,LightType.Tube = 7
 LogOption,NoStacktrace,LogOption.NoStacktrace = 1
 LogOption,None,LogOption.None = 0
 LogType,Assert,LogType.Assert = 1
@@ -374,6 +487,114 @@ LogType,Error,LogType.Error = 0
 LogType,Exception,LogType.Exception = 4
 LogType,Log,LogType.Log = 3
 LogType,Warning,LogType.Warning = 2
+Material,.ctor,Material(Shader) / Material(Material)
+Material,ComputeCRC,int ComputeCRC()
+Material,CopyMatchingPropertiesFromMaterial,void CopyMatchingPropertiesFromMaterial(Material)
+Material,CopyPropertiesFromMaterial,void CopyPropertiesFromMaterial(Material)
+Material,DisableKeyword,void DisableKeyword(string) / void DisableKeyword(LocalKeyword)
+Material,EnableKeyword,void EnableKeyword(string) / void EnableKeyword(LocalKeyword)
+Material,FindPass,int FindPass(string)
+Material,GetColor,Color GetColor(int) / Color GetColor(string)
+Material,GetColorArray,"void GetColorArray(string, List<Color>) / void GetColorArray(int, List<Color>) / Color[] GetColorArray(int) / Color[] GetColorArray(string)"
+Material,GetFloat,float GetFloat(int) / float GetFloat(string)
+Material,GetFloatArray,"void GetFloatArray(string, List<float>) / void GetFloatArray(int, List<float>) / float[] GetFloatArray(int) / float[] GetFloatArray(string)"
+Material,GetInt,int GetInt(int) / int GetInt(string)
+Material,GetInteger,int GetInteger(int) / int GetInteger(string)
+Material,GetMatrix,Matrix4x4 GetMatrix(string) / Matrix4x4 GetMatrix(int)
+Material,GetMatrixArray,"void GetMatrixArray(string, List<Matrix4x4>) / void GetMatrixArray(int, List<Matrix4x4>) / Matrix4x4[] GetMatrixArray(string) / Matrix4x4[] GetMatrixArray(int)"
+Material,GetPassName,string GetPassName(int)
+Material,GetPropertyNames,string[] GetPropertyNames(MaterialPropertyType)
+Material,GetShaderPassEnabled,bool GetShaderPassEnabled(string)
+Material,GetTag,"string GetTag(string, bool, string) / string GetTag(string, bool)"
+Material,GetTexture,Texture GetTexture(int) / Texture GetTexture(string)
+Material,GetTextureOffset,Vector2 GetTextureOffset(int) / Vector2 GetTextureOffset(string)
+Material,GetTexturePropertyNameIDs,void GetTexturePropertyNameIDs(List<int>) / int[] GetTexturePropertyNameIDs()
+Material,GetTexturePropertyNames,void GetTexturePropertyNames(List<string>) / string[] GetTexturePropertyNames()
+Material,GetTextureScale,Vector2 GetTextureScale(int) / Vector2 GetTextureScale(string)
+Material,GetVector,Vector4 GetVector(int) / Vector4 GetVector(string)
+Material,GetVectorArray,"void GetVectorArray(string, List<Vector4>) / void GetVectorArray(int, List<Vector4>) / Vector4[] GetVectorArray(int) / Vector4[] GetVectorArray(string)"
+Material,HasColor,bool HasColor(string) / bool HasColor(int)
+Material,HasFloat,bool HasFloat(string) / bool HasFloat(int)
+Material,HasInt,bool HasInt(string) / bool HasInt(int)
+Material,HasInteger,bool HasInteger(string) / bool HasInteger(int)
+Material,HasMatrix,bool HasMatrix(string) / bool HasMatrix(int)
+Material,HasProperty,bool HasProperty(string) / bool HasProperty(int)
+Material,HasTexture,bool HasTexture(string) / bool HasTexture(int)
+Material,HasVector,bool HasVector(string) / bool HasVector(int)
+Material,IsKeywordEnabled,bool IsKeywordEnabled(string) / bool IsKeywordEnabled(LocalKeyword)
+Material,Lerp,"void Lerp(Material, Material, float)"
+Material,SetColor,"void SetColor(int, Color) / void SetColor(string, Color)"
+Material,SetColorArray,"void SetColorArray(string, List<Color>) / void SetColorArray(int, List<Color>) / void SetColorArray(string, Color[]) / void SetColorArray(int, Color[])"
+Material,SetFloat,"void SetFloat(int, float) / void SetFloat(string, float)"
+Material,SetFloatArray,"void SetFloatArray(string, List<float>) / void SetFloatArray(int, List<float>) / void SetFloatArray(string, float[]) / void SetFloatArray(int, float[])"
+Material,SetInt,"void SetInt(int, int) / void SetInt(string, int)"
+Material,SetInteger,"void SetInteger(int, int) / void SetInteger(string, int)"
+Material,SetKeyword,"void SetKeyword(string, bool) / void SetKeyword(LocalKeyword, bool)"
+Material,SetMatrix,"void SetMatrix(int, Matrix4x4) / void SetMatrix(string, Matrix4x4)"
+Material,SetMatrixArray,"void SetMatrixArray(string, List<Matrix4x4>) / void SetMatrixArray(int, List<Matrix4x4>) / void SetMatrixArray(string, Matrix4x4[]) / void SetMatrixArray(int, Matrix4x4[])"
+Material,SetOverrideTag,"void SetOverrideTag(string, string)"
+Material,SetShaderPassEnabled,"void SetShaderPassEnabled(string, bool)"
+Material,SetTexture,"void SetTexture(int, Texture) / void SetTexture(string, Texture)"
+Material,SetTextureOffset,"void SetTextureOffset(string, Vector2) / void SetTextureOffset(int, Vector2)"
+Material,SetTextureScale,"void SetTextureScale(string, Vector2) / void SetTextureScale(int, Vector2)"
+Material,SetVector,"void SetVector(int, Vector4) / void SetVector(string, Vector4)"
+Material,SetVectorArray,"void SetVectorArray(string, List<Vector4>) / void SetVectorArray(int, List<Vector4>) / void SetVectorArray(string, Vector4[]) / void SetVectorArray(int, Vector4[])"
+Material,color,Color color { get; set; }
+Material,doubleSidedGI,bool doubleSidedGI { get; set; }
+Material,enableInstancing,bool enableInstancing { get; set; }
+Material,enabledKeywords,LocalKeyword[] enabledKeywords { get; set; }
+Material,globalIlluminationFlags,MaterialGlobalIlluminationFlags globalIlluminationFlags { get; set; }
+Material,mainTexture,Texture mainTexture { get; set; }
+Material,mainTextureOffset,Vector2 mainTextureOffset { get; set; }
+Material,mainTextureScale,Vector2 mainTextureScale { get; set; }
+Material,passCount,int passCount { get; }
+Material,rawRenderQueue,int rawRenderQueue { get; }
+Material,renderQueue,int renderQueue { get; set; }
+Material,shader,Shader shader { get; set; }
+Material,shaderKeywords,string[] shaderKeywords { get; set; }
+MaterialGlobalIlluminationFlags,AnyEmissive,MaterialGlobalIlluminationFlags.AnyEmissive = 3
+MaterialGlobalIlluminationFlags,BakedEmissive,MaterialGlobalIlluminationFlags.BakedEmissive = 2
+MaterialGlobalIlluminationFlags,EmissiveIsBlack,MaterialGlobalIlluminationFlags.EmissiveIsBlack = 4
+MaterialGlobalIlluminationFlags,None,MaterialGlobalIlluminationFlags.None = 0
+MaterialGlobalIlluminationFlags,RealtimeEmissive,MaterialGlobalIlluminationFlags.RealtimeEmissive = 1
+MaterialPropertyBlock,.ctor,MaterialPropertyBlock()
+MaterialPropertyBlock,Clear,void Clear()
+MaterialPropertyBlock,GetColor,Color GetColor(string) / Color GetColor(int)
+MaterialPropertyBlock,GetFloat,float GetFloat(string) / float GetFloat(int)
+MaterialPropertyBlock,GetFloatArray,"float[] GetFloatArray(string) / float[] GetFloatArray(int) / void GetFloatArray(string, List<float>) / void GetFloatArray(int, List<float>)"
+MaterialPropertyBlock,GetInt,int GetInt(string) / int GetInt(int)
+MaterialPropertyBlock,GetInteger,int GetInteger(string) / int GetInteger(int)
+MaterialPropertyBlock,GetMatrix,Matrix4x4 GetMatrix(string) / Matrix4x4 GetMatrix(int)
+MaterialPropertyBlock,GetMatrixArray,"Matrix4x4[] GetMatrixArray(string) / Matrix4x4[] GetMatrixArray(int) / void GetMatrixArray(string, List<Matrix4x4>) / void GetMatrixArray(int, List<Matrix4x4>)"
+MaterialPropertyBlock,GetTexture,Texture GetTexture(string) / Texture GetTexture(int)
+MaterialPropertyBlock,GetVector,Vector4 GetVector(string) / Vector4 GetVector(int)
+MaterialPropertyBlock,GetVectorArray,"Vector4[] GetVectorArray(string) / Vector4[] GetVectorArray(int) / void GetVectorArray(string, List<Vector4>) / void GetVectorArray(int, List<Vector4>)"
+MaterialPropertyBlock,HasColor,bool HasColor(string) / bool HasColor(int)
+MaterialPropertyBlock,HasFloat,bool HasFloat(string) / bool HasFloat(int)
+MaterialPropertyBlock,HasInt,bool HasInt(string) / bool HasInt(int)
+MaterialPropertyBlock,HasInteger,bool HasInteger(string) / bool HasInteger(int)
+MaterialPropertyBlock,HasMatrix,bool HasMatrix(string) / bool HasMatrix(int)
+MaterialPropertyBlock,HasProperty,bool HasProperty(string) / bool HasProperty(int)
+MaterialPropertyBlock,HasTexture,bool HasTexture(string) / bool HasTexture(int)
+MaterialPropertyBlock,HasVector,bool HasVector(string) / bool HasVector(int)
+MaterialPropertyBlock,SetColor,"void SetColor(string, Color) / void SetColor(int, Color)"
+MaterialPropertyBlock,SetFloat,"void SetFloat(string, float) / void SetFloat(int, float)"
+MaterialPropertyBlock,SetFloatArray,"void SetFloatArray(string, float[]) / void SetFloatArray(int, float[]) / void SetFloatArray(string, List<float>) / void SetFloatArray(int, List<float>)"
+MaterialPropertyBlock,SetInt,"void SetInt(string, int) / void SetInt(int, int)"
+MaterialPropertyBlock,SetInteger,"void SetInteger(string, int) / void SetInteger(int, int)"
+MaterialPropertyBlock,SetMatrix,"void SetMatrix(string, Matrix4x4) / void SetMatrix(int, Matrix4x4)"
+MaterialPropertyBlock,SetMatrixArray,"void SetMatrixArray(string, Matrix4x4[]) / void SetMatrixArray(int, Matrix4x4[]) / void SetMatrixArray(string, List<Matrix4x4>) / void SetMatrixArray(int, List<Matrix4x4>)"
+MaterialPropertyBlock,SetTexture,"void SetTexture(string, Texture) / void SetTexture(int, Texture)"
+MaterialPropertyBlock,SetVector,"void SetVector(string, Vector4) / void SetVector(int, Vector4)"
+MaterialPropertyBlock,SetVectorArray,"void SetVectorArray(string, Vector4[]) / void SetVectorArray(int, Vector4[]) / void SetVectorArray(string, List<Vector4>) / void SetVectorArray(int, List<Vector4>)"
+MaterialPropertyBlock,isEmpty,bool isEmpty { get; }
+MaterialPropertyType,ComputeBuffer,MaterialPropertyType.ComputeBuffer = 6
+MaterialPropertyType,ConstantBuffer,MaterialPropertyType.ConstantBuffer = 5
+MaterialPropertyType,Float,MaterialPropertyType.Float = 0
+MaterialPropertyType,Int,MaterialPropertyType.Int = 1
+MaterialPropertyType,Matrix,MaterialPropertyType.Matrix = 3
+MaterialPropertyType,Texture,MaterialPropertyType.Texture = 4
+MaterialPropertyType,Vector,MaterialPropertyType.Vector = 2
 Mathf,Abs,static float Abs(float) / static int Abs(int)
 Mathf,Acos,static float Acos(float)
 Mathf,Approximately,"static bool Approximately(float, float)"
@@ -479,6 +700,75 @@ Matrix4x4,rotation,Quaternion rotation { get; }
 Matrix4x4,this[],"float this[][int, int] { get; set; } / float this[][int] { get; set; }"
 Matrix4x4,transpose,Matrix4x4 transpose { get; }
 Matrix4x4,zero,static Matrix4x4 zero { get; }
+Mesh,.ctor,Mesh()
+Mesh,Clear,void Clear(bool = True)
+Mesh,GetBaseVertex,uint GetBaseVertex(int)
+Mesh,GetColors,void GetColors(List<Color>) / void GetColors(List<Color32>)
+Mesh,GetIndexCount,uint GetIndexCount(int)
+Mesh,GetIndexStart,uint GetIndexStart(int)
+Mesh,GetIndices,"void GetIndices(List<int>, int, bool = True) / void GetIndices(List<ushort>, int, bool = True) / int[] GetIndices(int, bool = True)"
+Mesh,GetNormals,void GetNormals(List<Vector3>)
+Mesh,GetSubMesh,SubMeshDescriptor GetSubMesh(int)
+Mesh,GetTangents,void GetTangents(List<Vector4>)
+Mesh,GetTopology,MeshTopology GetTopology(int)
+Mesh,GetTriangles,"void GetTriangles(List<int>, int, bool = True) / void GetTriangles(List<ushort>, int, bool = True) / int[] GetTriangles(int, bool = True)"
+Mesh,GetUVs,"void GetUVs(int, List<Vector2>) / void GetUVs(int, List<Vector3>) / void GetUVs(int, List<Vector4>)"
+Mesh,GetVertexAttribute,VertexAttributeDescriptor GetVertexAttribute(int)
+Mesh,GetVertexAttributeDimension,int GetVertexAttributeDimension(VertexAttribute)
+Mesh,GetVertexAttributeFormat,VertexAttributeFormat GetVertexAttributeFormat(VertexAttribute)
+Mesh,GetVertexAttributeOffset,int GetVertexAttributeOffset(VertexAttribute)
+Mesh,GetVertexAttributeStream,int GetVertexAttributeStream(VertexAttribute)
+Mesh,GetVertexAttributes,int GetVertexAttributes(VertexAttributeDescriptor[]) / int GetVertexAttributes(List<VertexAttributeDescriptor>) / VertexAttributeDescriptor[] GetVertexAttributes()
+Mesh,GetVertexBufferStride,int GetVertexBufferStride(int)
+Mesh,GetVertices,void GetVertices(List<Vector3>)
+Mesh,HasVertexAttribute,bool HasVertexAttribute(VertexAttribute)
+Mesh,MarkDynamic,void MarkDynamic()
+Mesh,MarkModified,void MarkModified()
+Mesh,RecalculateBounds,void RecalculateBounds(MeshUpdateFlags = Default)
+Mesh,RecalculateNormals,void RecalculateNormals(MeshUpdateFlags = Default)
+Mesh,RecalculateTangents,void RecalculateTangents(MeshUpdateFlags = Default)
+Mesh,SetColors,"void SetColors(List<Color>) / void SetColors(Color[], int, int, MeshUpdateFlags = Default) / void SetColors(List<Color>, int, int, MeshUpdateFlags = Default) / void SetColors(List<Color32>) / void SetColors(Color32[], int, int, MeshUpdateFlags = Default) / void SetColors(List<Color32>, int, int, MeshUpdateFlags = Default) / void SetColors(Color[]) / void SetColors(Color32[])"
+Mesh,SetIndexBufferData,"void SetIndexBufferData<T>(T[], int, int, int, MeshUpdateFlags = Default) / void SetIndexBufferData<T>(List<T>, int, int, int, MeshUpdateFlags = Default)"
+Mesh,SetIndexBufferParams,"void SetIndexBufferParams(int, IndexFormat)"
+Mesh,SetIndices,"void SetIndices(int[], int, int, MeshTopology, int, bool = True, int = 0) / void SetIndices(List<int>, MeshTopology, int, bool = True, int = 0) / void SetIndices(List<int>, int, int, MeshTopology, int, bool = True, int = 0) / void SetIndices(ushort[], MeshTopology, int, bool = True, int = 0) / void SetIndices(ushort[], int, int, MeshTopology, int, bool = True, int = 0) / void SetIndices(List<ushort>, MeshTopology, int, bool = True, int = 0) / void SetIndices(List<ushort>, int, int, MeshTopology, int, bool = True, int = 0) / void SetIndices(int[], MeshTopology, int, bool = True, int = 0)"
+Mesh,SetNormals,"void SetNormals(List<Vector3>) / void SetNormals(Vector3[], int, int, MeshUpdateFlags = Default) / void SetNormals(List<Vector3>, int, int, MeshUpdateFlags = Default) / void SetNormals(Vector3[])"
+Mesh,SetSubMesh,"void SetSubMesh(int, SubMeshDescriptor, MeshUpdateFlags = Default)"
+Mesh,SetSubMeshes,"void SetSubMeshes(List<SubMeshDescriptor>, MeshUpdateFlags = Default) / void SetSubMeshes(SubMeshDescriptor[], int, int, MeshUpdateFlags = Default) / void SetSubMeshes(List<SubMeshDescriptor>, int, int, MeshUpdateFlags = Default) / void SetSubMeshes(SubMeshDescriptor[], MeshUpdateFlags = Default)"
+Mesh,SetTangents,"void SetTangents(List<Vector4>) / void SetTangents(Vector4[], int, int, MeshUpdateFlags = Default) / void SetTangents(List<Vector4>, int, int, MeshUpdateFlags = Default) / void SetTangents(Vector4[])"
+Mesh,SetTriangles,"void SetTriangles(List<int>, int, bool = True, int = 0) / void SetTriangles(int[], int, int, int, bool = True, int = 0) / void SetTriangles(List<int>, int, int, int, bool = True, int = 0) / void SetTriangles(ushort[], int, bool = True, int = 0) / void SetTriangles(List<ushort>, int, bool = True, int = 0) / void SetTriangles(ushort[], int, int, int, bool = True, int = 0) / void SetTriangles(List<ushort>, int, int, int, bool = True, int = 0) / void SetTriangles(int[]) / void SetTriangles(int[], int, bool = True, int = 0)"
+Mesh,SetUVs,"void SetUVs(int, List<Vector2>) / void SetUVs(int, List<Vector3>) / void SetUVs(int, List<Vector4>) / void SetUVs(int, Vector2[], int, int, MeshUpdateFlags = Default) / void SetUVs(int, Vector3[], int, int, MeshUpdateFlags = Default) / void SetUVs(int, Vector4[], int, int, MeshUpdateFlags = Default) / void SetUVs(int, List<Vector2>, int, int, MeshUpdateFlags = Default) / void SetUVs(int, List<Vector3>, int, int, MeshUpdateFlags = Default) / void SetUVs(int, List<Vector4>, int, int, MeshUpdateFlags = Default) / void SetUVs(int, Vector2[]) / void SetUVs(int, Vector3[]) / void SetUVs(int, Vector4[])"
+Mesh,SetVertexBufferData,"void SetVertexBufferData<T>(T[], int, int, int, int = 0, MeshUpdateFlags = Default) / void SetVertexBufferData<T>(List<T>, int, int, int, int = 0, MeshUpdateFlags = Default)"
+Mesh,SetVertexBufferParams,"void SetVertexBufferParams(int, params VertexAttributeDescriptor[])"
+Mesh,SetVertices,"void SetVertices(List<Vector3>) / void SetVertices(Vector3[], int, int, MeshUpdateFlags = Default) / void SetVertices(List<Vector3>, int, int, MeshUpdateFlags = Default) / void SetVertices(Vector3[])"
+Mesh,UploadMeshData,void UploadMeshData(bool)
+Mesh,bounds,Bounds bounds { get; set; }
+Mesh,colors,Color[] colors { get; set; }
+Mesh,colors32,Color32[] colors32 { get; set; }
+Mesh,indexFormat,IndexFormat indexFormat { get; set; }
+Mesh,isReadable,bool isReadable { get; }
+Mesh,normals,Vector3[] normals { get; set; }
+Mesh,subMeshCount,int subMeshCount { get; set; }
+Mesh,tangents,Vector4[] tangents { get; set; }
+Mesh,triangles,int[] triangles { get; set; }
+Mesh,uv,Vector2[] uv { get; set; }
+Mesh,uv2,Vector2[] uv2 { get; set; }
+Mesh,uv3,Vector2[] uv3 { get; set; }
+Mesh,uv4,Vector2[] uv4 { get; set; }
+Mesh,uv5,Vector2[] uv5 { get; set; }
+Mesh,uv6,Vector2[] uv6 { get; set; }
+Mesh,uv7,Vector2[] uv7 { get; set; }
+Mesh,uv8,Vector2[] uv8 { get; set; }
+Mesh,vertexAttributeCount,int vertexAttributeCount { get; }
+Mesh,vertexBufferCount,int vertexBufferCount { get; }
+Mesh,vertexCount,int vertexCount { get; }
+Mesh,vertices,Vector3[] vertices { get; set; }
+MeshFilter,mesh,Mesh mesh { get; set; }
+MeshFilter,sharedMesh,Mesh sharedMesh { get; set; }
+MeshTopology,LineStrip,MeshTopology.LineStrip = 4
+MeshTopology,Lines,MeshTopology.Lines = 3
+MeshTopology,Points,MeshTopology.Points = 5
+MeshTopology,Quads,MeshTopology.Quads = 2
+MeshTopology,Triangles,MeshTopology.Triangles = 0
 MissingReferenceException,.ctor,"MissingReferenceException() / MissingReferenceException(string) / MissingReferenceException(string, Exception)"
 NetworkReachability,NotReachable,NetworkReachability.NotReachable = 0
 NetworkReachability,ReachableViaCarrierDataNetwork,NetworkReachability.ReachableViaCarrierDataNetwork = 1
@@ -605,6 +895,148 @@ RectInt.PositionEnumerator,MoveNext,bool MoveNext()
 RectInt.PositionEnumerator,Reset,void Reset()
 RefreshRate,denominator,uint denominator
 RefreshRate,numerator,uint numerator
+RenderParams,.ctor,RenderParams(Material)
+RenderParams,camera,Camera camera { get; set; }
+RenderParams,layer,int layer { get; set; }
+RenderParams,matProps,MaterialPropertyBlock matProps { get; set; }
+RenderParams,material,Material material { get; set; }
+RenderParams,receiveShadows,bool receiveShadows { get; set; }
+RenderParams,rendererPriority,int rendererPriority { get; set; }
+RenderParams,renderingLayerMask,uint renderingLayerMask { get; set; }
+RenderParams,shadowCastingMode,ShadowCastingMode shadowCastingMode { get; set; }
+RenderParams,worldBounds,Bounds worldBounds { get; set; }
+Renderer,GetMaterials,void GetMaterials(List<Material>)
+Renderer,GetPropertyBlock,"void GetPropertyBlock(MaterialPropertyBlock) / void GetPropertyBlock(MaterialPropertyBlock, int)"
+Renderer,GetSharedMaterials,void GetSharedMaterials(List<Material>)
+Renderer,HasPropertyBlock,bool HasPropertyBlock()
+Renderer,ResetBounds,void ResetBounds()
+Renderer,ResetLocalBounds,void ResetLocalBounds()
+Renderer,SetMaterials,void SetMaterials(List<Material>)
+Renderer,SetPropertyBlock,"void SetPropertyBlock(MaterialPropertyBlock) / void SetPropertyBlock(MaterialPropertyBlock, int)"
+Renderer,SetSharedMaterials,void SetSharedMaterials(List<Material>)
+Renderer,allowOcclusionWhenDynamic,bool allowOcclusionWhenDynamic { get; set; }
+Renderer,bounds,Bounds bounds { get; set; }
+Renderer,enabled,bool enabled { get; set; }
+Renderer,forceRenderingOff,bool forceRenderingOff { get; set; }
+Renderer,isVisible,bool isVisible { get; }
+Renderer,localBounds,Bounds localBounds { get; set; }
+Renderer,localToWorldMatrix,Matrix4x4 localToWorldMatrix { get; }
+Renderer,material,Material material { get; set; }
+Renderer,materials,Material[] materials { get; set; }
+Renderer,receiveShadows,bool receiveShadows { get; set; }
+Renderer,rendererPriority,int rendererPriority { get; set; }
+Renderer,renderingLayerMask,uint renderingLayerMask { get; set; }
+Renderer,shadowCastingMode,ShadowCastingMode shadowCastingMode { get; set; }
+Renderer,sharedMaterial,Material sharedMaterial { get; set; }
+Renderer,sharedMaterials,Material[] sharedMaterials { get; set; }
+Renderer,sortingLayerID,int sortingLayerID { get; set; }
+Renderer,sortingOrder,int sortingOrder { get; set; }
+Renderer,staticShadowCaster,bool staticShadowCaster { get; set; }
+Renderer,worldToLocalMatrix,Matrix4x4 worldToLocalMatrix { get; }
+Rendering.GlobalKeyword,.ctor,GlobalKeyword(string)
+Rendering.GlobalKeyword,Create,static GlobalKeyword Create(string)
+Rendering.GlobalKeyword,ToString,string ToString()
+Rendering.GlobalKeyword,name,string name { get; }
+Rendering.IndexFormat,UInt16,Rendering.IndexFormat.UInt16 = 0
+Rendering.IndexFormat,UInt32,Rendering.IndexFormat.UInt32 = 1
+Rendering.LocalKeyword,.ctor,"LocalKeyword(Shader, string)"
+Rendering.LocalKeyword,ToString,string ToString()
+Rendering.LocalKeyword,isDynamic,bool isDynamic { get; }
+Rendering.LocalKeyword,isOverridable,bool isOverridable { get; }
+Rendering.LocalKeyword,isValid,bool isValid { get; }
+Rendering.LocalKeyword,name,string name { get; }
+Rendering.LocalKeyword,operators,"Equality(LocalKeyword, LocalKeyword) / Inequality(LocalKeyword, LocalKeyword)"
+Rendering.LocalKeyword,type,ShaderKeywordType type { get; }
+Rendering.LocalKeywordSpace,FindKeyword,LocalKeyword FindKeyword(string)
+Rendering.LocalKeywordSpace,keywordCount,uint keywordCount { get; }
+Rendering.LocalKeywordSpace,keywordNames,string[] keywordNames { get; }
+Rendering.LocalKeywordSpace,keywords,LocalKeyword[] keywords { get; }
+Rendering.LocalKeywordSpace,operators,"Equality(LocalKeywordSpace, LocalKeywordSpace) / Inequality(LocalKeywordSpace, LocalKeywordSpace)"
+Rendering.MeshUpdateFlags,Default,Rendering.MeshUpdateFlags.Default = 0
+Rendering.MeshUpdateFlags,DontNotifyMeshUsers,Rendering.MeshUpdateFlags.DontNotifyMeshUsers = 4
+Rendering.MeshUpdateFlags,DontRecalculateBounds,Rendering.MeshUpdateFlags.DontRecalculateBounds = 8
+Rendering.MeshUpdateFlags,DontResetBoneBounds,Rendering.MeshUpdateFlags.DontResetBoneBounds = 2
+Rendering.MeshUpdateFlags,DontValidateIndices,Rendering.MeshUpdateFlags.DontValidateIndices = 1
+Rendering.ShaderKeywordType,BuiltinAutoStripped,Rendering.ShaderKeywordType.BuiltinAutoStripped = 10
+Rendering.ShaderKeywordType,BuiltinDefault,Rendering.ShaderKeywordType.BuiltinDefault = 2
+Rendering.ShaderKeywordType,BuiltinExtra,Rendering.ShaderKeywordType.BuiltinExtra = 6
+Rendering.ShaderKeywordType,None,Rendering.ShaderKeywordType.None = 0
+Rendering.ShaderKeywordType,Plugin,Rendering.ShaderKeywordType.Plugin = 32
+Rendering.ShaderKeywordType,UserDefined,Rendering.ShaderKeywordType.UserDefined = 16
+Rendering.ShaderPropertyFlags,Gamma,Rendering.ShaderPropertyFlags.Gamma = 32
+Rendering.ShaderPropertyFlags,HDR,Rendering.ShaderPropertyFlags.HDR = 16
+Rendering.ShaderPropertyFlags,HideInInspector,Rendering.ShaderPropertyFlags.HideInInspector = 1
+Rendering.ShaderPropertyFlags,MainColor,Rendering.ShaderPropertyFlags.MainColor = 256
+Rendering.ShaderPropertyFlags,MainTexture,Rendering.ShaderPropertyFlags.MainTexture = 128
+Rendering.ShaderPropertyFlags,NoScaleOffset,Rendering.ShaderPropertyFlags.NoScaleOffset = 4
+Rendering.ShaderPropertyFlags,NonModifiableTextureData,Rendering.ShaderPropertyFlags.NonModifiableTextureData = 64
+Rendering.ShaderPropertyFlags,None,Rendering.ShaderPropertyFlags.None = 0
+Rendering.ShaderPropertyFlags,Normal,Rendering.ShaderPropertyFlags.Normal = 8
+Rendering.ShaderPropertyFlags,PerRendererData,Rendering.ShaderPropertyFlags.PerRendererData = 2
+Rendering.ShaderPropertyType,Color,Rendering.ShaderPropertyType.Color = 0
+Rendering.ShaderPropertyType,Float,Rendering.ShaderPropertyType.Float = 2
+Rendering.ShaderPropertyType,Int,Rendering.ShaderPropertyType.Int = 5
+Rendering.ShaderPropertyType,Range,Rendering.ShaderPropertyType.Range = 3
+Rendering.ShaderPropertyType,Texture,Rendering.ShaderPropertyType.Texture = 4
+Rendering.ShaderPropertyType,Vector,Rendering.ShaderPropertyType.Vector = 1
+Rendering.ShaderTagId,.ctor,ShaderTagId(string)
+Rendering.ShaderTagId,name,string name { get; }
+Rendering.ShaderTagId,none,static ShaderTagId none
+Rendering.ShaderTagId,operators,"Explicit(string) / Explicit(ShaderTagId) / Equality(ShaderTagId, ShaderTagId) / Inequality(ShaderTagId, ShaderTagId)"
+Rendering.ShadowCastingMode,Off,Rendering.ShadowCastingMode.Off = 0
+Rendering.ShadowCastingMode,On,Rendering.ShadowCastingMode.On = 1
+Rendering.ShadowCastingMode,ShadowsOnly,Rendering.ShadowCastingMode.ShadowsOnly = 3
+Rendering.ShadowCastingMode,TwoSided,Rendering.ShadowCastingMode.TwoSided = 2
+Rendering.SubMeshDescriptor,.ctor,"SubMeshDescriptor(int, int, MeshTopology = Triangles)"
+Rendering.SubMeshDescriptor,ToString,string ToString()
+Rendering.SubMeshDescriptor,baseVertex,int baseVertex
+Rendering.SubMeshDescriptor,bounds,Bounds bounds
+Rendering.SubMeshDescriptor,firstVertex,int firstVertex
+Rendering.SubMeshDescriptor,indexCount,int indexCount
+Rendering.SubMeshDescriptor,indexStart,int indexStart
+Rendering.SubMeshDescriptor,topology,MeshTopology topology
+Rendering.SubMeshDescriptor,vertexCount,int vertexCount
+Rendering.TextureDimension,Any,Rendering.TextureDimension.Any = 1
+Rendering.TextureDimension,Cube,Rendering.TextureDimension.Cube = 4
+Rendering.TextureDimension,CubeArray,Rendering.TextureDimension.CubeArray = 6
+Rendering.TextureDimension,None,Rendering.TextureDimension.None = 0
+Rendering.TextureDimension,Tex2D,Rendering.TextureDimension.Tex2D = 2
+Rendering.TextureDimension,Tex2DArray,Rendering.TextureDimension.Tex2DArray = 5
+Rendering.TextureDimension,Tex3D,Rendering.TextureDimension.Tex3D = 3
+Rendering.TextureDimension,Unknown,Rendering.TextureDimension.Unknown = -1
+Rendering.VertexAttribute,BlendIndices,Rendering.VertexAttribute.BlendIndices = 13
+Rendering.VertexAttribute,BlendWeight,Rendering.VertexAttribute.BlendWeight = 12
+Rendering.VertexAttribute,Color,Rendering.VertexAttribute.Color = 3
+Rendering.VertexAttribute,Normal,Rendering.VertexAttribute.Normal = 1
+Rendering.VertexAttribute,Position,Rendering.VertexAttribute.Position = 0
+Rendering.VertexAttribute,Tangent,Rendering.VertexAttribute.Tangent = 2
+Rendering.VertexAttribute,TexCoord0,Rendering.VertexAttribute.TexCoord0 = 4
+Rendering.VertexAttribute,TexCoord1,Rendering.VertexAttribute.TexCoord1 = 5
+Rendering.VertexAttribute,TexCoord2,Rendering.VertexAttribute.TexCoord2 = 6
+Rendering.VertexAttribute,TexCoord3,Rendering.VertexAttribute.TexCoord3 = 7
+Rendering.VertexAttribute,TexCoord4,Rendering.VertexAttribute.TexCoord4 = 8
+Rendering.VertexAttribute,TexCoord5,Rendering.VertexAttribute.TexCoord5 = 9
+Rendering.VertexAttribute,TexCoord6,Rendering.VertexAttribute.TexCoord6 = 10
+Rendering.VertexAttribute,TexCoord7,Rendering.VertexAttribute.TexCoord7 = 11
+Rendering.VertexAttributeDescriptor,.ctor,"VertexAttributeDescriptor(VertexAttribute = Position, VertexAttributeFormat = Float32, int = 3, int = 0)"
+Rendering.VertexAttributeDescriptor,ToString,string ToString()
+Rendering.VertexAttributeDescriptor,attribute,VertexAttribute attribute
+Rendering.VertexAttributeDescriptor,dimension,int dimension
+Rendering.VertexAttributeDescriptor,format,VertexAttributeFormat format
+Rendering.VertexAttributeDescriptor,operators,"Equality(VertexAttributeDescriptor, VertexAttributeDescriptor) / Inequality(VertexAttributeDescriptor, VertexAttributeDescriptor)"
+Rendering.VertexAttributeDescriptor,stream,int stream
+Rendering.VertexAttributeFormat,Float16,Rendering.VertexAttributeFormat.Float16 = 1
+Rendering.VertexAttributeFormat,Float32,Rendering.VertexAttributeFormat.Float32 = 0
+Rendering.VertexAttributeFormat,SInt16,Rendering.VertexAttributeFormat.SInt16 = 9
+Rendering.VertexAttributeFormat,SInt32,Rendering.VertexAttributeFormat.SInt32 = 11
+Rendering.VertexAttributeFormat,SInt8,Rendering.VertexAttributeFormat.SInt8 = 7
+Rendering.VertexAttributeFormat,SNorm16,Rendering.VertexAttributeFormat.SNorm16 = 5
+Rendering.VertexAttributeFormat,SNorm8,Rendering.VertexAttributeFormat.SNorm8 = 3
+Rendering.VertexAttributeFormat,UInt16,Rendering.VertexAttributeFormat.UInt16 = 8
+Rendering.VertexAttributeFormat,UInt32,Rendering.VertexAttributeFormat.UInt32 = 10
+Rendering.VertexAttributeFormat,UInt8,Rendering.VertexAttributeFormat.UInt8 = 6
+Rendering.VertexAttributeFormat,UNorm16,Rendering.VertexAttributeFormat.UNorm16 = 4
+Rendering.VertexAttributeFormat,UNorm8,Rendering.VertexAttributeFormat.UNorm8 = 2
 Resolution,height,int height
 Resolution,refreshRateRatio,RefreshRate refreshRateRatio
 Resolution,width,int width
@@ -685,17 +1117,170 @@ Screen,orientation,static ScreenOrientation orientation { get; set; }
 Screen,safeArea,static Rect safeArea { get; }
 Screen,sleepTimeout,static int sleepTimeout { get; set; }
 Screen,width,static int width { get; }
+ScreenCapture,CaptureScreenshot,"static void CaptureScreenshot(string) / static void CaptureScreenshot(string, int)"
 ScreenOrientation,AutoRotation,ScreenOrientation.AutoRotation = 5
 ScreenOrientation,LandscapeLeft,ScreenOrientation.LandscapeLeft = 3
 ScreenOrientation,LandscapeRight,ScreenOrientation.LandscapeRight = 4
 ScreenOrientation,Portrait,ScreenOrientation.Portrait = 1
 ScreenOrientation,PortraitUpsideDown,ScreenOrientation.PortraitUpsideDown = 2
+ScriptableObject,CreateInstance,static ScriptableObject CreateInstance(Type) / static T CreateInstance<T>() / static ScriptableObject CreateInstance(string)
 SendMessageOptions,DontRequireReceiver,SendMessageOptions.DontRequireReceiver = 1
 SendMessageOptions,RequireReceiver,SendMessageOptions.RequireReceiver = 0
 SerializeField,.ctor,SerializeField()
 SerializeReference,.ctor,SerializeReference()
+Shader,DisableKeyword,static void DisableKeyword(string) / static void DisableKeyword(GlobalKeyword)
+Shader,EnableKeyword,static void EnableKeyword(string) / static void EnableKeyword(GlobalKeyword)
+Shader,Find,static Shader Find(string)
+Shader,FindPassTagValue,"ShaderTagId FindPassTagValue(int, ShaderTagId) / ShaderTagId FindPassTagValue(int, int, ShaderTagId)"
+Shader,FindPropertyIndex,int FindPropertyIndex(string)
+Shader,FindSubshaderTagValue,"ShaderTagId FindSubshaderTagValue(int, ShaderTagId)"
+Shader,GetGlobalColor,static Color GetGlobalColor(string) / static Color GetGlobalColor(int)
+Shader,GetGlobalFloat,static float GetGlobalFloat(string) / static float GetGlobalFloat(int)
+Shader,GetGlobalFloatArray,"static void GetGlobalFloatArray(string, List<float>) / static void GetGlobalFloatArray(int, List<float>) / static float[] GetGlobalFloatArray(string) / static float[] GetGlobalFloatArray(int)"
+Shader,GetGlobalInt,static int GetGlobalInt(string) / static int GetGlobalInt(int)
+Shader,GetGlobalInteger,static int GetGlobalInteger(string) / static int GetGlobalInteger(int)
+Shader,GetGlobalMatrix,static Matrix4x4 GetGlobalMatrix(string) / static Matrix4x4 GetGlobalMatrix(int)
+Shader,GetGlobalMatrixArray,"static void GetGlobalMatrixArray(string, List<Matrix4x4>) / static void GetGlobalMatrixArray(int, List<Matrix4x4>) / static Matrix4x4[] GetGlobalMatrixArray(string) / static Matrix4x4[] GetGlobalMatrixArray(int)"
+Shader,GetGlobalTexture,static Texture GetGlobalTexture(string) / static Texture GetGlobalTexture(int)
+Shader,GetGlobalVector,static Vector4 GetGlobalVector(string) / static Vector4 GetGlobalVector(int)
+Shader,GetGlobalVectorArray,"static void GetGlobalVectorArray(string, List<Vector4>) / static void GetGlobalVectorArray(int, List<Vector4>) / static Vector4[] GetGlobalVectorArray(string) / static Vector4[] GetGlobalVectorArray(int)"
+Shader,GetPassCountInSubshader,int GetPassCountInSubshader(int)
+Shader,GetPropertyCount,int GetPropertyCount()
+Shader,GetPropertyDefaultFloatValue,float GetPropertyDefaultFloatValue(int)
+Shader,GetPropertyDefaultIntValue,int GetPropertyDefaultIntValue(int)
+Shader,GetPropertyDefaultVectorValue,Vector4 GetPropertyDefaultVectorValue(int)
+Shader,GetPropertyDescription,string GetPropertyDescription(int)
+Shader,GetPropertyFlags,ShaderPropertyFlags GetPropertyFlags(int)
+Shader,GetPropertyName,string GetPropertyName(int)
+Shader,GetPropertyNameId,int GetPropertyNameId(int)
+Shader,GetPropertyRangeLimits,Vector2 GetPropertyRangeLimits(int)
+Shader,GetPropertyTextureDefaultName,string GetPropertyTextureDefaultName(int)
+Shader,GetPropertyTextureDimension,TextureDimension GetPropertyTextureDimension(int)
+Shader,GetPropertyType,ShaderPropertyType GetPropertyType(int)
+Shader,IsKeywordEnabled,static bool IsKeywordEnabled(string) / static bool IsKeywordEnabled(GlobalKeyword)
+Shader,PropertyToID,static int PropertyToID(string)
+Shader,SetGlobalColor,"static void SetGlobalColor(string, Color) / static void SetGlobalColor(int, Color)"
+Shader,SetGlobalFloat,"static void SetGlobalFloat(string, float) / static void SetGlobalFloat(int, float)"
+Shader,SetGlobalFloatArray,"static void SetGlobalFloatArray(string, List<float>) / static void SetGlobalFloatArray(int, List<float>) / static void SetGlobalFloatArray(string, float[]) / static void SetGlobalFloatArray(int, float[])"
+Shader,SetGlobalInt,"static void SetGlobalInt(string, int) / static void SetGlobalInt(int, int)"
+Shader,SetGlobalInteger,"static void SetGlobalInteger(string, int) / static void SetGlobalInteger(int, int)"
+Shader,SetGlobalMatrix,"static void SetGlobalMatrix(string, Matrix4x4) / static void SetGlobalMatrix(int, Matrix4x4)"
+Shader,SetGlobalMatrixArray,"static void SetGlobalMatrixArray(string, List<Matrix4x4>) / static void SetGlobalMatrixArray(int, List<Matrix4x4>) / static void SetGlobalMatrixArray(string, Matrix4x4[]) / static void SetGlobalMatrixArray(int, Matrix4x4[])"
+Shader,SetGlobalTexture,"static void SetGlobalTexture(string, Texture) / static void SetGlobalTexture(int, Texture)"
+Shader,SetGlobalVector,"static void SetGlobalVector(string, Vector4) / static void SetGlobalVector(int, Vector4)"
+Shader,SetGlobalVectorArray,"static void SetGlobalVectorArray(string, List<Vector4>) / static void SetGlobalVectorArray(int, List<Vector4>) / static void SetGlobalVectorArray(string, Vector4[]) / static void SetGlobalVectorArray(int, Vector4[])"
+Shader,SetKeyword,"static void SetKeyword(GlobalKeyword, bool)"
+Shader,WarmupAllShaders,static void WarmupAllShaders()
+Shader,enabledGlobalKeywords,static GlobalKeyword[] enabledGlobalKeywords { get; }
+Shader,globalKeywords,static GlobalKeyword[] globalKeywords { get; }
+Shader,globalMaximumLOD,static int globalMaximumLOD { get; set; }
+Shader,isSupported,bool isSupported { get; }
+Shader,keywordSpace,LocalKeywordSpace keywordSpace { get; }
+Shader,maximumLOD,int maximumLOD { get; set; }
+Shader,passCount,int passCount { get; }
+Shader,renderQueue,int renderQueue { get; }
+Shader,subshaderCount,int subshaderCount { get; }
 Space,Self,Space.Self = 1
 Space,World,Space.World = 0
+Texture,GenerateAllMips,static int GenerateAllMips
+Texture,IncrementUpdateCount,void IncrementUpdateCount()
+Texture,anisoLevel,int anisoLevel { get; set; }
+Texture,dimension,TextureDimension dimension { get; set; }
+Texture,filterMode,FilterMode filterMode { get; set; }
+Texture,height,int height { get; set; }
+Texture,isDataSRGB,bool isDataSRGB { get; }
+Texture,isReadable,bool isReadable { get; }
+Texture,mipMapBias,float mipMapBias { get; set; }
+Texture,mipmapCount,int mipmapCount { get; }
+Texture,updateCount,uint updateCount { get; }
+Texture,width,int width { get; set; }
+Texture,wrapMode,TextureWrapMode wrapMode { get; set; }
+Texture,wrapModeU,TextureWrapMode wrapModeU { get; set; }
+Texture,wrapModeV,TextureWrapMode wrapModeV { get; set; }
+Texture,wrapModeW,TextureWrapMode wrapModeW { get; set; }
+Texture2D,.ctor,"Texture2D(int, int) / Texture2D(int, int, TextureFormat, bool) / Texture2D(int, int, TextureFormat, bool, bool) / Texture2D(int, int, TextureFormat, bool, bool, bool) / Texture2D(int, int, TextureFormat, int, bool) / Texture2D(int, int, TextureFormat, int, bool, bool)"
+Texture2D,Apply,"void Apply(bool = True, bool = False)"
+Texture2D,GetPixel,"Color GetPixel(int, int, int = 0)"
+Texture2D,GetPixelBilinear,"Color GetPixelBilinear(float, float, int = 0)"
+Texture2D,GetPixels,"Color[] GetPixels(int = 0) / Color[] GetPixels(int, int, int, int, int = 0)"
+Texture2D,GetPixels32,Color32[] GetPixels32(int = 0)
+Texture2D,GetRawTextureData,byte[] GetRawTextureData()
+Texture2D,LoadRawTextureData,"void LoadRawTextureData(IntPtr, int) / void LoadRawTextureData(byte[])"
+Texture2D,Reinitialize,"bool Reinitialize(int, int) / bool Reinitialize(int, int, TextureFormat, bool)"
+Texture2D,SetPixel,"void SetPixel(int, int, Color, int = 0)"
+Texture2D,SetPixels,"void SetPixels(Color[], int = 0) / void SetPixels(int, int, int, int, Color[], int = 0)"
+Texture2D,SetPixels32,"void SetPixels32(Color32[], int = 0) / void SetPixels32(int, int, int, int, Color32[], int = 0)"
+Texture2D,blackTexture,static Texture2D blackTexture { get; }
+Texture2D,format,TextureFormat format { get; }
+Texture2D,grayTexture,static Texture2D grayTexture { get; }
+Texture2D,linearGrayTexture,static Texture2D linearGrayTexture { get; }
+Texture2D,normalTexture,static Texture2D normalTexture { get; }
+Texture2D,redTexture,static Texture2D redTexture { get; }
+Texture2D,whiteTexture,static Texture2D whiteTexture { get; }
+TextureFormat,ARGB32,TextureFormat.ARGB32 = 5
+TextureFormat,ARGB4444,TextureFormat.ARGB4444 = 2
+TextureFormat,ASTC_10x10,TextureFormat.ASTC_10x10 = 52
+TextureFormat,ASTC_12x12,TextureFormat.ASTC_12x12 = 53
+TextureFormat,ASTC_4x4,TextureFormat.ASTC_4x4 = 48
+TextureFormat,ASTC_5x5,TextureFormat.ASTC_5x5 = 49
+TextureFormat,ASTC_6x6,TextureFormat.ASTC_6x6 = 50
+TextureFormat,ASTC_8x8,TextureFormat.ASTC_8x8 = 51
+TextureFormat,ASTC_HDR_10x10,TextureFormat.ASTC_HDR_10x10 = 70
+TextureFormat,ASTC_HDR_12x12,TextureFormat.ASTC_HDR_12x12 = 71
+TextureFormat,ASTC_HDR_4x4,TextureFormat.ASTC_HDR_4x4 = 66
+TextureFormat,ASTC_HDR_5x5,TextureFormat.ASTC_HDR_5x5 = 67
+TextureFormat,ASTC_HDR_6x6,TextureFormat.ASTC_HDR_6x6 = 68
+TextureFormat,ASTC_HDR_8x8,TextureFormat.ASTC_HDR_8x8 = 69
+TextureFormat,Alpha8,TextureFormat.Alpha8 = 1
+TextureFormat,BC4,TextureFormat.BC4 = 26
+TextureFormat,BC5,TextureFormat.BC5 = 27
+TextureFormat,BC6H,TextureFormat.BC6H = 24
+TextureFormat,BC7,TextureFormat.BC7 = 25
+TextureFormat,BGRA32,TextureFormat.BGRA32 = 14
+TextureFormat,DXT1,TextureFormat.DXT1 = 10
+TextureFormat,DXT1Crunched,TextureFormat.DXT1Crunched = 28
+TextureFormat,DXT5,TextureFormat.DXT5 = 12
+TextureFormat,DXT5Crunched,TextureFormat.DXT5Crunched = 29
+TextureFormat,EAC_R,TextureFormat.EAC_R = 41
+TextureFormat,EAC_RG,TextureFormat.EAC_RG = 43
+TextureFormat,EAC_RG_SIGNED,TextureFormat.EAC_RG_SIGNED = 44
+TextureFormat,EAC_R_SIGNED,TextureFormat.EAC_R_SIGNED = 42
+TextureFormat,ETC2_RGB,TextureFormat.ETC2_RGB = 45
+TextureFormat,ETC2_RGBA1,TextureFormat.ETC2_RGBA1 = 46
+TextureFormat,ETC2_RGBA8,TextureFormat.ETC2_RGBA8 = 47
+TextureFormat,ETC2_RGBA8Crunched,TextureFormat.ETC2_RGBA8Crunched = 65
+TextureFormat,ETC_RGB4,TextureFormat.ETC_RGB4 = 34
+TextureFormat,ETC_RGB4Crunched,TextureFormat.ETC_RGB4Crunched = 64
+TextureFormat,R16,TextureFormat.R16 = 9
+TextureFormat,R16_SIGNED,TextureFormat.R16_SIGNED = 79
+TextureFormat,R8,TextureFormat.R8 = 63
+TextureFormat,R8_SIGNED,TextureFormat.R8_SIGNED = 75
+TextureFormat,RFloat,TextureFormat.RFloat = 18
+TextureFormat,RG16,TextureFormat.RG16 = 62
+TextureFormat,RG16_SIGNED,TextureFormat.RG16_SIGNED = 76
+TextureFormat,RG32,TextureFormat.RG32 = 72
+TextureFormat,RG32_SIGNED,TextureFormat.RG32_SIGNED = 80
+TextureFormat,RGB24,TextureFormat.RGB24 = 3
+TextureFormat,RGB24_SIGNED,TextureFormat.RGB24_SIGNED = 77
+TextureFormat,RGB48,TextureFormat.RGB48 = 73
+TextureFormat,RGB48_SIGNED,TextureFormat.RGB48_SIGNED = 81
+TextureFormat,RGB565,TextureFormat.RGB565 = 7
+TextureFormat,RGB9e5Float,TextureFormat.RGB9e5Float = 22
+TextureFormat,RGBA32,TextureFormat.RGBA32 = 4
+TextureFormat,RGBA32_SIGNED,TextureFormat.RGBA32_SIGNED = 78
+TextureFormat,RGBA4444,TextureFormat.RGBA4444 = 13
+TextureFormat,RGBA64,TextureFormat.RGBA64 = 74
+TextureFormat,RGBA64_SIGNED,TextureFormat.RGBA64_SIGNED = 82
+TextureFormat,RGBAFloat,TextureFormat.RGBAFloat = 20
+TextureFormat,RGBAHalf,TextureFormat.RGBAHalf = 17
+TextureFormat,RGFloat,TextureFormat.RGFloat = 19
+TextureFormat,RGHalf,TextureFormat.RGHalf = 16
+TextureFormat,RHalf,TextureFormat.RHalf = 15
+TextureFormat,YUY2,TextureFormat.YUY2 = 21
+TextureWrapMode,Clamp,TextureWrapMode.Clamp = 1
+TextureWrapMode,Mirror,TextureWrapMode.Mirror = 2
+TextureWrapMode,MirrorOnce,TextureWrapMode.MirrorOnce = 3
+TextureWrapMode,Repeat,TextureWrapMode.Repeat = 0
 ThreadPriority,BelowNormal,ThreadPriority.BelowNormal = 1
 ThreadPriority,High,ThreadPriority.High = 4
 ThreadPriority,Low,ThreadPriority.Low = 0

@@ -63,7 +63,8 @@ if(TARGET helix_scriptcore_tests OR TARGET helix_scriptcore_bench)
     add_dependencies(helix_scriptcore_test_scripts helix_core_module)
     set(engine_source "${engine_dir}/Source")
     set(engine_binding_headers "${engine_source}/Helix/Engine/Object/EntityId.h" "${engine_source}/Helix/Engine/Object/Object.h"
-        "${engine_source}/Helix/Engine/GameObject/GameObject.h" "${engine_source}/Helix/Engine/Script/GameBehaviour.h")
+        "${engine_source}/Helix/Engine/GameObject/GameObject.h" "${engine_source}/Helix/Engine/Script/GameBehaviour.h"
+        "${engine_source}/Helix/Engine/Script/ScriptableObject.h")
     foreach(target IN ITEMS helix_scriptcore_tests helix_scriptcore_bench)
         if(TARGET ${target})
             add_dependencies(${target} helix_scriptcore_test_scripts)
@@ -74,7 +75,7 @@ if(TARGET helix_scriptcore_tests OR TARGET helix_scriptcore_bench)
     endforeach()
     if(TARGET helix_scriptcore_tests)
         helix_bindgen(helix_scriptcore_tests MODULE ScriptCoreTests NAMESPACE ScriptCoreTests KIND NativeGame
-                      HEADERS "${tests_dir}/Cpp/CppScripts.h" REFERENCES ${engine_binding_headers} REFERENCE_NAMESPACE HelixEngine INCLUDE_ROOTS "${tests_dir}" "${engine_source}")
+                      HEADERS "${tests_dir}/Cpp/CppScripts.h" "${tests_dir}/Cpp/CppRenderingScripts.h" REFERENCES ${engine_binding_headers} REFERENCE_NAMESPACE HelixEngine INCLUDE_ROOTS "${tests_dir}" "${engine_source}")
         # A game module loaded at run time: its file name is its module name.
         add_library(helix_scriptcore_test_module SHARED "${tests_dir}/Module/ModuleScripts.h")
         set_target_properties(helix_scriptcore_test_module PROPERTIES OUTPUT_NAME ScriptCoreModule PREFIX "" LINKER_LANGUAGE CXX)
@@ -85,6 +86,35 @@ if(TARGET helix_scriptcore_tests OR TARGET helix_scriptcore_bench)
                       HEADERS "${tests_dir}/Module/ModuleScripts.h" REFERENCES ${engine_binding_headers} REFERENCE_NAMESPACE HelixEngine INCLUDE_ROOTS "${tests_dir}" "${engine_source}")
         add_dependencies(helix_scriptcore_tests helix_scriptcore_test_module)
         target_compile_definitions(helix_scriptcore_tests PRIVATE "HX_TEST_MODULE=\"$<TARGET_FILE:helix_scriptcore_test_module>\"")
+
+        # The engine's C# test shaders (its Tests/Shaders) built against this repo's Helix.Shaders and embedded as the
+        # engine's tests embed them, so its Support/TestShaders.h and Support/Golden.h serve these tests too (golden
+        # images of their own in Tests/Golden).
+        helix_dependency_dir(shaders_dir Shaders)
+        set(test_shaders_dir "${scriptcore_artifacts}/bin/HelixEngine.TestShaders/release")
+        file(GLOB_RECURSE test_shader_sources CONFIGURE_DEPENDS "${engine_dir}/Tests/Shaders/*.cs" "${engine_dir}/Tests/Shaders/*.csproj"
+             "${engine_dir}/Shaders/*.cs" "${engine_dir}/Shaders/*.csproj")
+        list(FILTER test_shader_sources EXCLUDE REGEX "/(bin|obj)/")
+        add_custom_command(
+            OUTPUT "${test_shaders_dir}/HelixEngine.TestShaders.dll" "${test_shaders_dir}/HelixEngine.TestShaders.pdb"
+            COMMAND "${HELIX_DOTNET}" build "${engine_dir}/Tests/Shaders/HelixEngine.TestShaders.csproj" -c Release --artifacts-path "${scriptcore_artifacts}"
+                    --nologo -v quiet "-p:HelixShadersDir=${shaders_dir}"
+            DEPENDS ${test_shader_sources}
+            COMMENT "Building the engine's C# test shaders")
+        set(tests_generated "${CMAKE_CURRENT_BINARY_DIR}/Generated")
+        set(test_embedded "${tests_generated}/TestShadersAssembly.h" "${tests_generated}/TestShadersSymbols.h")
+        add_custom_command(
+            OUTPUT ${test_embedded}
+            COMMAND "${CMAKE_COMMAND}" -E make_directory "${tests_generated}"
+            COMMAND "${CMAKE_COMMAND}" "-DINPUT=${test_shaders_dir}/HelixEngine.TestShaders.dll" "-DOUTPUT=${tests_generated}/TestShadersAssembly.h"
+                    -DNAME=kTestShadersAssembly -P "${HELIX_EMBED_FILE}"
+            COMMAND "${CMAKE_COMMAND}" "-DINPUT=${test_shaders_dir}/HelixEngine.TestShaders.pdb" "-DOUTPUT=${tests_generated}/TestShadersSymbols.h"
+                    -DNAME=kTestShadersSymbols -P "${HELIX_EMBED_FILE}"
+            DEPENDS "${test_shaders_dir}/HelixEngine.TestShaders.dll" "${HELIX_EMBED_FILE}"
+            COMMENT "Embedding the engine's C# test shaders")
+        target_sources(helix_scriptcore_tests PRIVATE ${test_embedded})
+        target_include_directories(helix_scriptcore_tests PRIVATE "${tests_generated}" "${engine_dir}/Tests")
+        target_compile_definitions(helix_scriptcore_tests PRIVATE "HELIX_ENGINE_GOLDEN_DIR=\"${tests_dir}/Golden\"")
     endif()
 endif()
 

@@ -2,24 +2,28 @@
 
 The C# script API of the Helix engine: the `HelixEngine.*` assemblies. They are made of the engine's classes as
 Helix.Bindgen generates them from the engine's tagged headers, the interop runtime of Helix.Bindgen, and the C# of this
-repo; scripts are classes deriving from `GameBehaviour`.
+repo; scripts are classes deriving from `GameBehaviour` or `ScriptableObject`.
 
 ## Contents
 
 | Path | Content |
 |---|---|
-| `Source/HelixEngine.CoreModule/` | `HelixEngine.CoreModule`: the generated engine classes (`Object`, `GameObject`, `Component`, `Behaviour`, `Transform`, `GameBehaviour`, `Time`, `Application`, `Screen`, `Debug`, `Resources`, `SceneManagement.SceneManager`), `DefaultExecutionOrder`, `MissingReferenceException` |
+| `Source/HelixEngine.CoreModule/` | `HelixEngine.CoreModule`: the generated engine classes (`Object`, `GameObject`, `Component`, `Behaviour`, `Transform`, `GameBehaviour`, `ScriptableObject`, `Time`, `Application`, `Screen`, `Debug`, `Resources`, `SceneManagement.SceneManager`, `Shader`, `Material`, `Mesh`, `Texture`, `Texture2D`, `MeshFilter`, `Renderer`, `MeshRenderer`, `Camera`, `Light`, `GeometryUtility`, `ScreenCapture`), `DefaultExecutionOrder`, `MissingReferenceException` |
+| `Source/HelixEngine.CoreModule/Rendering/` | What C# has in another shape: the keyword structs (`LocalKeyword`, `GlobalKeyword`, `LocalKeywordSpace`, `ShaderTagId`), `MaterialPropertyBlock` (no Object; its native block lives while it does), the `List<T>`, range and generic overloads of `Mesh`, `Material` and `Renderer`, the descriptors' constructors, the stereo eye overloads of `Camera`, `RenderParams` and `Graphics.RenderMesh` / `DrawMesh` |
 | `Source/HelixEngine.CoreModule/Math/` | The value types (`Vector2/3/4`, `Vector2Int/3Int`, `Quaternion`, `Matrix4x4`, `Color`, `Color32`, `Rect`, `RectInt`, `Bounds`, `Ray`, `Plane`): fields generated from Helix.Math, the members in C# (the reference's formats and equality), the rest through Helix.Math; `Mathf` |
 | `Source/HelixEngine.CoreModule/Scripting/` | `Object` (ToString, generic `Instantiate`), `Debug` (object and format overloads, exceptions), `Scene`, `AsyncOperation`, `ResourceRequest`, the async operations of `SceneManager` and `Resources`, `Events.HelixAction`, `SendMessage` |
 | `Tools/ApiInventory/` | `HelixApiInventory`: the public surface of the assembly against `Tests/Api/HelixEngine.csv` (a test; `--write` rewrites it) |
 | `Source/HelixEngine.CoreModule/Scripting/ScriptBridge.cs` | The C# side of scripts: the start of the engine's C# side, script classes of assemblies registered with their messages, the C# objects of scripts, the loops of the phases |
-| `Tests/` | C# and C++ scripts in one engine under the .NET host (the tests link the shared engine): the order of messages, both languages on one GameObject, exceptions, `AddComponent<T>`, `SendMessage` both ways, a game module loaded, run and unloaded as a shared library, the value types' documented values, one scenario on the script API in both languages with the same results |
+| `Tests/` | C# and C++ scripts in one engine under the .NET host (the tests link the shared engine): the order of messages, both languages on one GameObject, exceptions, `AddComponent<T>`, `SendMessage` both ways, a game module loaded, run and unloaded as a shared library, the value types' documented values, scenarios on the script API in both languages with the same results (objects, shaders and materials, meshes and textures, renderers, cameras and lights, ScriptableObjects), ScriptableObject assets read, written and copied, a golden image drawn through the script API on every device (each D3D11 adapter, OpenGL) with the camera messages; the engine's C# test shaders are built against this repo's Helix.Shaders |
 
 ## Scripts
 
 - A script's messages (Awake, OnEnable, Start, FixedUpdate, Update, LateUpdate, OnDisable, OnDestroy, the
-  application, hierarchy and visibility messages) are found once per class by reflection: any access, empty methods
-  too, also in C# base classes. `DefaultExecutionOrder` orders the class.
+  application, hierarchy, visibility and camera messages) are found once per class by reflection: any access, empty
+  methods too, also in C# base classes. `DefaultExecutionOrder` orders the class.
+- `ScriptableObject` scripts of both languages: `CreateInstance` (a type, `<T>`, a name), Awake and OnEnable when one
+  is made, read from an asset (`Resources.Load`) or copied (`Instantiate`), OnDisable and OnDestroy when it is
+  destroyed; their fields are serialized as GameBehaviour scripts' are (class 114 documents).
 - The engine runs one scheduler for both languages: within one execution order the C++ scripts of a phase run first,
   then the C# ones in one call into C#, which calls each script in its own try (an exception is logged with the
   script and its GameObject, the others still run).

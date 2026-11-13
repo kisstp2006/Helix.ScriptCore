@@ -12,9 +12,9 @@ namespace HelixEngine.Internal
 {
     /// <summary>
     /// The C# side of scripts: it starts the engine's C# side (the bindings of the engine module, the functions the
-    /// native script runtime calls), registers the GameBehaviour classes of script assemblies with their messages, makes
-    /// the C# object of a script when its native GameBehaviour is made, and calls the scripts of a phase in one loop,
-    /// each call in its own try.
+    /// native script runtime calls), registers the GameBehaviour and ScriptableObject classes of script assemblies with
+    /// their messages, makes the C# object of a script when its native object is made, and calls the scripts of a phase
+    /// in one loop, each call in its own try.
     /// </summary>
     public static unsafe class ScriptBridge
     {
@@ -23,6 +23,7 @@ namespace HelixEngine.Internal
         {
             "Awake", "OnEnable", "Start", "FixedUpdate", "Update", "LateUpdate", "OnDisable", "OnDestroy", "OnApplicationFocus", "OnApplicationPause",
             "OnApplicationQuit", "OnTransformParentChanged", "OnTransformChildrenChanged", "OnBecameVisible", "OnBecameInvisible", "OnValidate", "Reset",
+            "OnPreCull", "OnPreRender", "OnPostRender", "OnWillRenderObject", "OnRenderObject",
         };
         const int FocusMessage = 8, PauseMessage = 9;
 
@@ -106,12 +107,13 @@ namespace HelixEngine.Internal
             }
         }
 
-        /// <summary>The script classes of an assembly (GameBehaviour classes that are not abstract nor generic), bases first.</summary>
+        /// <summary>The script classes of an assembly (GameBehaviour and ScriptableObject classes that are not generic), bases first.</summary>
         public static int RegisterAssembly(Assembly assembly)
         {
             var types = new List<Type>();
             foreach (Type t in assembly.GetTypes())
-                if (t.IsClass && !t.IsGenericTypeDefinition && typeof(GameBehaviour).IsAssignableFrom(t) && !Types.IsGenerated(t))
+                if (t.IsClass && !t.IsGenericTypeDefinition && (typeof(GameBehaviour).IsAssignableFrom(t) || typeof(ScriptableObject).IsAssignableFrom(t)) &&
+                    !Types.IsGenerated(t))
                     types.Add(t);
             types.Sort((a, b) => Depth(a).CompareTo(Depth(b)));
             int count = 0;
@@ -293,7 +295,7 @@ namespace HelixEngine.Internal
                     return 1;
                 // The object knows its native object before anything of it runs (its constructor runs first, as in
                 // the reference; the engine is not to be used there).
-                var o = (GameBehaviour)RuntimeHelpers.GetUninitializedObject(st.Type);
+                var o = (Object)RuntimeHelpers.GetUninitializedObject(st.Type);
                 o.m_HxId = objectId;
                 ConstructorInfo ctor = st.Type.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, Type.EmptyTypes);
                 ctor?.Invoke(o, null);
