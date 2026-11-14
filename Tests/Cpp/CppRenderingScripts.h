@@ -219,41 +219,21 @@ namespace helix::scriptcore::testing
         }
     };
 
-    // A scriptable pipeline of C++ (the C# one in Managed/RenderingScripts.cs notes the same lines).
+    // A scriptable pipeline of C++ (the C# one in Managed/RenderingScripts.cs notes the same lines); through a temporary
+    // it draws into a temporary render texture and blits that to the camera's target. It takes standard requests.
     class CppPipeline final : public engine::RenderPipeline
     {
     public:
+        explicit CppPipeline(bool throughTemporary = false) : throughTemporary_(throughTemporary) {}
+
         void Render(engine::ScriptableRenderContext& context, Span<engine::Camera* const> cameras) override
         {
-            using namespace engine;
             BeginContextRendering(context, cameras);
-            for (Camera* camera : cameras)
+            for (engine::Camera* camera : cameras)
             {
                 BeginCameraRendering(context, camera);
-                ScriptableCullingParameters parameters;
-                if (!camera->TryGetCullingParameters(parameters))
+                if (!DrawCamera(context, camera))
                     continue;
-                CullingResults culling = context.Cull(parameters);
-                Span<const VisibleLight> lights = culling.visibleLights();
-                Calls().Push(Format("lights:{}:{}:{}", lights.Size(), lights.Empty() ? -1 : i32(lights[0].lightType),
-                                    lights.Empty() ? String() : text::F(lights[0].finalColor.g)));
-                context.SetupCameraProperties(camera);
-                CommandBuffer clear;
-                clear.SetName("Clear");
-                clear.ClearRenderTarget(true, true, camera->backgroundColor());
-                context.ExecuteCommandBuffer(clear);
-                SortingSettings sorting(camera);
-                sorting.criteria = SortingCriteria::CommonOpaque;
-                DrawingSettings drawing(ShaderTagId("SRPDefaultUnlit"), sorting);
-                drawing.SetShaderPassName(1, ShaderTagId("ForwardBase"));
-                FilteringSettings filtering(RenderQueueRange::opaque());
-                context.DrawRenderers(culling, drawing, filtering);
-                sorting.criteria = SortingCriteria::CommonTransparent;
-                drawing.sortingSettings = sorting;
-                filtering.renderQueueRange = RenderQueueRange::transparent();
-                context.DrawRenderers(culling, drawing, filtering);
-                context.InvokeOnRenderObjectCallback();
-                context.Submit();
                 EndCameraRendering(context, camera);
             }
             EndContextRendering(context, cameras);
@@ -261,9 +241,66 @@ namespace helix::scriptcore::testing
 
     protected:
         void Dispose(bool) override { Calls().Push(String("Dispose")); }
+
+        bool IsRenderRequestSupported(engine::Camera*, const engine::StandardRequest& request) override { return request.destination != nullptr; }
+
+        void ProcessRenderRequest(engine::ScriptableRenderContext& context, engine::Camera* camera, const engine::StandardRequest& request) override
+        {
+            engine::RenderTexture* previous = camera->targetTexture();
+            camera->SetTargetTexture(request.destination);
+            DrawCamera(context, camera);
+            camera->SetTargetTexture(previous);
+        }
+
+    private:
+        bool DrawCamera(engine::ScriptableRenderContext& context, engine::Camera* camera)
+        {
+            using namespace engine;
+            ScriptableCullingParameters parameters;
+            if (!camera->TryGetCullingParameters(parameters))
+                return false;
+            CullingResults culling = context.Cull(parameters);
+            Span<const VisibleLight> lights = culling.visibleLights();
+            Calls().Push(Format("lights:{}:{}:{}", lights.Size(), lights.Empty() ? -1 : i32(lights[0].lightType),
+                                lights.Empty() ? String() : text::F(lights[0].finalColor.g)));
+            context.SetupCameraProperties(camera);
+            const i32 color = Shader::PropertyToID("_CameraColorTexture");
+            CommandBuffer clear;
+            clear.SetName("Clear");
+            if (throughTemporary_)
+            {
+                clear.GetTemporaryRT(color, camera->pixelWidth(), camera->pixelHeight(), 24);
+                clear.SetRenderTarget(color);
+            }
+            clear.ClearRenderTarget(true, true, camera->backgroundColor());
+            context.ExecuteCommandBuffer(clear);
+            SortingSettings sorting(camera);
+            sorting.criteria = SortingCriteria::CommonOpaque;
+            DrawingSettings drawing(ShaderTagId("SRPDefaultUnlit"), sorting);
+            drawing.SetShaderPassName(1, ShaderTagId("ForwardBase"));
+            FilteringSettings filtering(RenderQueueRange::opaque());
+            context.DrawRenderers(culling, drawing, filtering);
+            sorting.criteria = SortingCriteria::CommonTransparent;
+            drawing.sortingSettings = sorting;
+            filtering.renderQueueRange = RenderQueueRange::transparent();
+            context.DrawRenderers(culling, drawing, filtering);
+            context.InvokeOnRenderObjectCallback();
+            if (throughTemporary_)
+            {
+                CommandBuffer blit;
+                blit.SetName("Blit");
+                blit.Blit(color, BuiltinRenderTextureType::CameraTarget);
+                blit.ReleaseTemporaryRT(color);
+                context.ExecuteCommandBuffer(blit);
+            }
+            context.Submit();
+            return true;
+        }
+
+        bool throughTemporary_;
     };
 
-    // Its asset: the engine calls CreatePipeline (protected, as the reference's).
+    // Its assets: the engine calls CreatePipeline (protected, as the reference's).
     HX_CLASS(Namespace = "ScriptCoreTests")
     class CppPipelineAsset : public ::HelixEngine::ScriptableObject
     {
@@ -272,6 +309,17 @@ namespace helix::scriptcore::testing
         {
             Calls().Push(String("CreatePipeline"));
             return new CppPipeline();
+        }
+    };
+
+    HX_CLASS(Namespace = "ScriptCoreTests")
+    class CppTemporaryPipelineAsset : public ::HelixEngine::ScriptableObject
+    {
+    protected:
+        engine::RenderPipeline* CreatePipeline()
+        {
+            Calls().Push(String("CreatePipeline"));
+            return new CppPipeline(true);
         }
     };
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using HelixEngine.Experimental.Rendering;
 using HelixEngine.Internal;
 using HelixEngine.Rendering;
 
@@ -96,8 +97,22 @@ namespace HelixEngine.Rendering
             data.stencilFailBack = (int)stencil.failOperationBack;
             data.stencilZFailBack = (int)stencil.zFailOperationBack;
             data.stencilReference = stateBlock.stencilReference;
+            // The other targets' blend states, seven values each.
+            var blends = new int[7 * 7];
+            RenderTargetBlendState[] others = { blend.blendState1, blend.blendState2, blend.blendState3, blend.blendState4, blend.blendState5, blend.blendState6, blend.blendState7 };
+            for (int i = 0; i < 7; i++)
+            {
+                RenderTargetBlendState b = others[i];
+                blends[i * 7] = (int)b.writeMask;
+                blends[i * 7 + 1] = (int)b.sourceColorBlendMode;
+                blends[i * 7 + 2] = (int)b.destinationColorBlendMode;
+                blends[i * 7 + 3] = (int)b.sourceAlphaBlendMode;
+                blends[i * 7 + 4] = (int)b.destinationAlphaBlendMode;
+                blends[i * 7 + 5] = (int)b.colorBlendOperation;
+                blends[i * 7 + 6] = (int)b.alphaBlendOperation;
+            }
             RenderPipelineNative.DrawRenderers(m_Ptr, cullingResults.ptr, data, drawingSettings.PassNames(), drawingSettings.overrideMaterial,
-                                               drawingSettings.overrideShader, drawingSettings.fallbackMaterial);
+                                               drawingSettings.overrideShader, drawingSettings.fallbackMaterial, blends);
         }
 
         public void SetupCameraProperties(Camera camera, bool stereoSetup = false)
@@ -170,6 +185,68 @@ namespace HelixEngine.Rendering
             Dispose(true);
             disposed = true;
         }
+
+        /// <summary>A request to render a camera into a render texture (its mip, face and slice).</summary>
+        public class StandardRequest
+        {
+            public RenderTexture destination = null;
+            public int mipLevel = 0;
+            public CubemapFace face = CubemapFace.Unknown;
+            public int slice = 0;
+        }
+
+        /// <summary>Whether the active pipeline takes a request of this camera.</summary>
+        public static bool SupportsRenderRequest<RequestData>(Camera camera, RequestData data) => Request(camera, data, false);
+
+        /// <summary>The request rendered by the active pipeline now (an error when it does not take it).</summary>
+        public static void SubmitRenderRequest<RequestData>(Camera camera, RequestData data)
+        {
+            if (!Request(camera, data, true))
+                Debug.LogError("RenderPipeline.SubmitRenderRequest: the active render pipeline does not support the request.");
+        }
+
+        static bool Request<RequestData>(Camera camera, RequestData data, bool process)
+        {
+            if (camera == null)
+                throw new ArgumentNullException(nameof(camera));
+            if (data is StandardRequest standard)
+                return RenderPipelineNative.RenderRequest(camera, 0, standard.destination, standard.mipLevel, (int)standard.face, standard.slice, process);
+            GCHandle handle = GCHandle.Alloc(data);
+            try
+            {
+                return RenderPipelineNative.RenderRequest(camera, (ulong)GCHandle.ToIntPtr(handle), null, 0, -1, 0, process);
+            }
+            finally
+            {
+                handle.Free();
+            }
+        }
+
+        protected virtual bool IsRenderRequestSupported<RequestData>(Camera camera, RequestData data) => false;
+
+        protected virtual void ProcessRenderRequests<RequestData>(ScriptableRenderContext context, Camera camera, RequestData renderRequest)
+        {
+        }
+
+        // The generic members for a request's type (made once per type).
+        static readonly Dictionary<Type, (System.Reflection.MethodInfo Supported, System.Reflection.MethodInfo Process)> s_RequestMethods = new();
+
+        static (System.Reflection.MethodInfo Supported, System.Reflection.MethodInfo Process) RequestMethods(Type type)
+        {
+            if (!s_RequestMethods.TryGetValue(type, out var m))
+            {
+                const System.Reflection.BindingFlags flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+                m = (typeof(RenderPipeline).GetMethod(nameof(IsRenderRequestSupported), flags).MakeGenericMethod(type),
+                     typeof(RenderPipeline).GetMethod(nameof(ProcessRenderRequests), flags).MakeGenericMethod(type));
+                s_RequestMethods[type] = m;
+            }
+            return m;
+        }
+
+        internal bool InternalSupports(Camera camera, object data) => (bool)RequestMethods(data.GetType()).Supported.Invoke(this, new[] { camera, data });
+
+        internal void InternalProcess(ScriptableRenderContext context, Camera camera, object data) =>
+            RequestMethods(data.GetType()).Process.Invoke(this, new[] { context, camera, data });
     }
 
     /// <summary>A ScriptableObject that makes a pipeline; set it in GraphicsSettings or QualitySettings.</summary>
@@ -318,8 +395,8 @@ namespace HelixEngine.Rendering
         public void SetGlobalColor(int nameID, Color value) => RenderPipelineNative.SetGlobalVector(Id, nameID, new Vector4(value.r, value.g, value.b, value.a));
         public void SetGlobalMatrix(string name, Matrix4x4 value) => SetGlobalMatrix(Shader.PropertyToID(name), value);
         public void SetGlobalMatrix(int nameID, Matrix4x4 value) => RenderPipelineNative.SetGlobalMatrix(Id, nameID, value);
-        public void SetGlobalTexture(string name, Texture value) => SetGlobalTexture(Shader.PropertyToID(name), value);
-        public void SetGlobalTexture(int nameID, Texture value) => RenderPipelineNative.SetGlobalTexture(Id, nameID, value);
+        public void SetGlobalTexture(string name, RenderTargetIdentifier value) => SetGlobalTexture(Shader.PropertyToID(name), value);
+        public void SetGlobalTexture(int nameID, RenderTargetIdentifier value) => RenderPipelineNative.SetGlobalTextureTarget(Id, nameID, value.Data);
 
         public void EnableShaderKeyword(string keyword) => RenderPipelineNative.SetKeyword(Id, keyword, true);
         public void DisableShaderKeyword(string keyword) => RenderPipelineNative.SetKeyword(Id, keyword, false);
@@ -351,6 +428,127 @@ namespace HelixEngine.Rendering
 
         public void BeginSample(string name) => RenderPipelineNative.BeginSample(Id, name ?? "");
         public void EndSample(string name) => RenderPipelineNative.EndSample(Id, name ?? "");
+
+        public void ClearRenderTarget(RTClearFlags clearFlags, Color backgroundColor, float depth = 1.0f, uint stencil = 0) =>
+            ClearRenderTarget((clearFlags & RTClearFlags.Depth) != 0, (clearFlags & RTClearFlags.Color) != 0, backgroundColor, depth);
+
+        // ---------------------------------------------------------------------------------------------- targets
+
+        static readonly RenderTargetData[] s_NoColors = new RenderTargetData[0];
+
+        void SetTarget(RenderTargetIdentifier[] colors, RenderTargetIdentifier depth, bool separateDepth, RenderBufferLoadAction load = RenderBufferLoadAction.Load,
+                       RenderBufferStoreAction store = RenderBufferStoreAction.Store)
+        {
+            if (colors == null)
+                throw new ArgumentNullException(nameof(colors));
+            var data = colors.Length == 0 ? s_NoColors : new RenderTargetData[colors.Length];
+            for (int i = 0; i < colors.Length; i++)
+                data[i] = colors[i].Data;
+            RenderPipelineNative.SetRenderTarget(Id, data, depth.Data, separateDepth, (int)load, (int)store);
+        }
+
+        public void SetRenderTarget(RenderTargetIdentifier rt) => SetTarget(new[] { rt }, rt, false);
+        public void SetRenderTarget(RenderTargetIdentifier rt, RenderBufferLoadAction loadAction, RenderBufferStoreAction storeAction) =>
+            SetTarget(new[] { rt }, rt, false, loadAction, storeAction);
+        public void SetRenderTarget(RenderTargetIdentifier rt, RenderBufferLoadAction colorLoadAction, RenderBufferStoreAction colorStoreAction,
+                                    RenderBufferLoadAction depthLoadAction, RenderBufferStoreAction depthStoreAction) =>
+            SetTarget(new[] { rt }, rt, false, colorLoadAction, colorStoreAction);
+        public void SetRenderTarget(RenderTargetIdentifier rt, int mipLevel) => SetRenderTarget(new RenderTargetIdentifier(rt, mipLevel));
+        public void SetRenderTarget(RenderTargetIdentifier rt, int mipLevel, CubemapFace cubemapFace) => SetRenderTarget(new RenderTargetIdentifier(rt, mipLevel, cubemapFace));
+        public void SetRenderTarget(RenderTargetIdentifier rt, int mipLevel, CubemapFace cubemapFace, int depthSlice) =>
+            SetRenderTarget(new RenderTargetIdentifier(rt, mipLevel, cubemapFace, depthSlice));
+        public void SetRenderTarget(RenderTargetIdentifier color, RenderTargetIdentifier depth) => SetTarget(new[] { color }, depth, true);
+        public void SetRenderTarget(RenderTargetIdentifier color, RenderTargetIdentifier depth, int mipLevel) =>
+            SetRenderTarget(color, depth, mipLevel, CubemapFace.Unknown, 0);
+        public void SetRenderTarget(RenderTargetIdentifier color, RenderTargetIdentifier depth, int mipLevel, CubemapFace cubemapFace) =>
+            SetRenderTarget(color, depth, mipLevel, cubemapFace, 0);
+        public void SetRenderTarget(RenderTargetIdentifier color, RenderTargetIdentifier depth, int mipLevel, CubemapFace cubemapFace, int depthSlice) =>
+            SetTarget(new[] { new RenderTargetIdentifier(color, mipLevel, cubemapFace, depthSlice) }, new RenderTargetIdentifier(depth, mipLevel, cubemapFace, depthSlice), true);
+        public void SetRenderTarget(RenderTargetIdentifier color, RenderBufferLoadAction colorLoadAction, RenderBufferStoreAction colorStoreAction,
+                                    RenderTargetIdentifier depth, RenderBufferLoadAction depthLoadAction, RenderBufferStoreAction depthStoreAction) =>
+            SetTarget(new[] { color }, depth, true, colorLoadAction, colorStoreAction);
+        public void SetRenderTarget(RenderTargetIdentifier[] colors, RenderTargetIdentifier depth) => SetTarget(colors, depth, true);
+        public void SetRenderTarget(RenderTargetIdentifier[] colors, RenderTargetIdentifier depth, int mipLevel, CubemapFace cubemapFace, int depthSlice)
+        {
+            var at = new RenderTargetIdentifier[colors.Length];
+            for (int i = 0; i < colors.Length; i++)
+                at[i] = new RenderTargetIdentifier(colors[i], mipLevel, cubemapFace, depthSlice);
+            SetTarget(at, new RenderTargetIdentifier(depth, mipLevel, cubemapFace, depthSlice), true);
+        }
+
+        public void GetTemporaryRT(int nameID, RenderTextureDescriptor desc, FilterMode filter) => RenderPipelineNative.GetTemporaryRT(Id, nameID, desc.Data, filter);
+        public void GetTemporaryRT(int nameID, RenderTextureDescriptor desc) => GetTemporaryRT(nameID, desc, FilterMode.Point);
+        public void GetTemporaryRT(int nameID, int width, int height, int depthBuffer = 0, FilterMode filter = FilterMode.Point,
+                                   RenderTextureFormat format = RenderTextureFormat.Default, RenderTextureReadWrite readWrite = RenderTextureReadWrite.Default,
+                                   int antiAliasing = 1, bool enableRandomWrite = false)
+        {
+            var desc = new RenderTextureDescriptor(width, height) { sRGB = readWrite == RenderTextureReadWrite.sRGB };
+            desc.colorFormat = format;
+            desc.depthBufferBits = depthBuffer;
+            desc.msaaSamples = antiAliasing < 1 ? 1 : antiAliasing;
+            desc.enableRandomWrite = enableRandomWrite;
+            GetTemporaryRT(nameID, desc, filter);
+        }
+        public void GetTemporaryRT(int nameID, int width, int height, int depthBuffer, FilterMode filter, GraphicsFormat format, int antiAliasing = 1,
+                                   bool enableRandomWrite = false)
+        {
+            var desc = new RenderTextureDescriptor(width, height, format, depthBuffer) { msaaSamples = antiAliasing < 1 ? 1 : antiAliasing, enableRandomWrite = enableRandomWrite };
+            GetTemporaryRT(nameID, desc, filter);
+        }
+        public void GetTemporaryRTArray(int nameID, int width, int height, int slices, int depthBuffer = 0, FilterMode filter = FilterMode.Point,
+                                        RenderTextureFormat format = RenderTextureFormat.Default, RenderTextureReadWrite readWrite = RenderTextureReadWrite.Default,
+                                        int antiAliasing = 1, bool enableRandomWrite = false)
+        {
+            var desc = new RenderTextureDescriptor(width, height) { sRGB = readWrite == RenderTextureReadWrite.sRGB, dimension = TextureDimension.Tex2DArray };
+            desc.volumeDepth = slices < 1 ? 1 : slices;
+            desc.colorFormat = format;
+            desc.depthBufferBits = depthBuffer;
+            desc.msaaSamples = antiAliasing < 1 ? 1 : antiAliasing;
+            desc.enableRandomWrite = enableRandomWrite;
+            GetTemporaryRT(nameID, desc, filter);
+        }
+        public void GetTemporaryRTArray(int nameID, int width, int height, int slices, int depthBuffer, FilterMode filter, GraphicsFormat format,
+                                        int antiAliasing = 1, bool enableRandomWrite = false, bool useDynamicScale = false)
+        {
+            var desc = new RenderTextureDescriptor(width, height, format, depthBuffer)
+            {
+                dimension = TextureDimension.Tex2DArray, volumeDepth = slices < 1 ? 1 : slices, msaaSamples = antiAliasing < 1 ? 1 : antiAliasing,
+                enableRandomWrite = enableRandomWrite, useDynamicScale = useDynamicScale,
+            };
+            GetTemporaryRT(nameID, desc, filter);
+        }
+        public void ReleaseTemporaryRT(int nameID) => RenderPipelineNative.ReleaseTemporaryRT(Id, nameID);
+
+        public void Blit(RenderTargetIdentifier source, RenderTargetIdentifier dest) => Blit(source, dest, null, -1);
+        public void Blit(RenderTargetIdentifier source, RenderTargetIdentifier dest, Material mat) => Blit(source, dest, mat, -1);
+        public void Blit(RenderTargetIdentifier source, RenderTargetIdentifier dest, Material mat, int pass) =>
+            RenderPipelineNative.Blit(Id, source.Data, dest.Data, mat, pass, new Vector4(1, 1, 0, 0));
+        public void Blit(RenderTargetIdentifier source, RenderTargetIdentifier dest, Vector2 scale, Vector2 offset) =>
+            RenderPipelineNative.Blit(Id, source.Data, dest.Data, null, -1, new Vector4(scale.x, scale.y, offset.x, offset.y));
+        public void Blit(Texture source, RenderTargetIdentifier dest) => Blit(new RenderTargetIdentifier(source), dest, null, -1);
+        public void Blit(Texture source, RenderTargetIdentifier dest, Material mat) => Blit(new RenderTargetIdentifier(source), dest, mat, -1);
+        public void Blit(Texture source, RenderTargetIdentifier dest, Material mat, int pass) => Blit(new RenderTargetIdentifier(source), dest, mat, pass);
+
+        public void CopyTexture(RenderTargetIdentifier src, RenderTargetIdentifier dst) => RenderPipelineNative.CopyTexture(Id, src.Data, -1, -1, dst.Data, -1, -1);
+        public void CopyTexture(RenderTargetIdentifier src, int srcElement, RenderTargetIdentifier dst, int dstElement) =>
+            RenderPipelineNative.CopyTexture(Id, src.Data, srcElement, 0, dst.Data, dstElement, 0);
+        public void CopyTexture(RenderTargetIdentifier src, int srcElement, int srcMip, RenderTargetIdentifier dst, int dstElement, int dstMip) =>
+            RenderPipelineNative.CopyTexture(Id, src.Data, srcElement, srcMip, dst.Data, dstElement, dstMip);
+
+        public void ResolveAntiAliasedSurface(RenderTexture rt, RenderTexture target = null)
+        {
+            if (rt == null)
+                throw new ArgumentNullException(nameof(rt));
+            RenderPipelineNative.ResolveAntiAliasedSurface(Id, rt, target);
+        }
+
+        public void GenerateMips(RenderTargetIdentifier rt) => RenderPipelineNative.GenerateMips(Id, rt.Data);
+        public void GenerateMips(RenderTexture rt)
+        {
+            if (rt == null)
+                throw new ArgumentNullException(nameof(rt));
+            GenerateMips(new RenderTargetIdentifier(rt));
+        }
 
         public override string ToString() => $"{name} (CommandBuffer)";
     }
@@ -417,12 +615,14 @@ namespace HelixEngine.Internal
             var set = (delegate* unmanaged[Cdecl]<void**, uint, byte>)export("HxEngineRendering_SetManaged");
             if (set == null)
                 return;
-            void** table = (void**)NativeMemory.Alloc((nuint)(4 * sizeof(void*)));
+            void** table = (void**)NativeMemory.Alloc((nuint)(6 * sizeof(void*)));
             table[0] = (void*)(delegate* unmanaged[Cdecl]<ulong, ulong>)&Create;
             table[1] = (void*)(delegate* unmanaged[Cdecl]<ulong, ulong, void>)&Render;
             table[2] = (void*)(delegate* unmanaged[Cdecl]<ulong, void>)&Dispose;
             table[3] = (void*)(delegate* unmanaged[Cdecl]<uint, ulong, void>)&Raise;
-            set(table, 4);
+            table[4] = (void*)(delegate* unmanaged[Cdecl]<ulong, ulong, byte>)&Supports;
+            table[5] = (void*)(delegate* unmanaged[Cdecl]<ulong, ulong, ulong, void>)&Process;
+            set(table, 6);
         }
 
         [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
@@ -482,6 +682,51 @@ namespace HelixEngine.Internal
             catch (Exception e)
             {
                 Debug.LogException(e);
+            }
+        }
+
+        // The request: its object (a GC handle), or the engine's standard request.
+        static object RequestOf(ulong request)
+        {
+            if (request != 0)
+                return GCHandle.FromIntPtr((IntPtr)request).Target;
+            return new RenderPipeline.StandardRequest
+            {
+                destination = RenderPipelineNative.EventRequestDestination(),
+                mipLevel = RenderPipelineNative.EventRequestMip(),
+                face = (CubemapFace)RenderPipelineNative.EventRequestFace(),
+                slice = RenderPipelineNative.EventRequestSlice(),
+            };
+        }
+
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+        static byte Supports(ulong handle, ulong request)
+        {
+            try
+            {
+                return GCHandle.FromIntPtr((IntPtr)handle).Target is RenderPipeline pipeline &&
+                       pipeline.InternalSupports(RenderPipelineNative.EventCamera(), RequestOf(request))
+                    ? (byte)1
+                    : (byte)0;
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e is System.Reflection.TargetInvocationException t && t.InnerException != null ? t.InnerException : e);
+                return 0;
+            }
+        }
+
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+        static void Process(ulong handle, ulong context, ulong request)
+        {
+            try
+            {
+                if (GCHandle.FromIntPtr((IntPtr)handle).Target is RenderPipeline pipeline)
+                    pipeline.InternalProcess(new ScriptableRenderContext(context), RenderPipelineNative.EventCamera(), RequestOf(request));
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e is System.Reflection.TargetInvocationException t && t.InnerException != null ? t.InnerException : e);
             }
         }
 

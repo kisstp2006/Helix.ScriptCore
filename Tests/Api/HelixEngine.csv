@@ -111,6 +111,7 @@ Camera,ViewportToScreenPoint,Vector3 ViewportToScreenPoint(Vector3)
 Camera,ViewportToWorldPoint,"Vector3 ViewportToWorldPoint(Vector3, Camera.MonoOrStereoscopicEye) / Vector3 ViewportToWorldPoint(Vector3)"
 Camera,WorldToScreenPoint,"Vector3 WorldToScreenPoint(Vector3, Camera.MonoOrStereoscopicEye) / Vector3 WorldToScreenPoint(Vector3)"
 Camera,WorldToViewportPoint,"Vector3 WorldToViewportPoint(Vector3, Camera.MonoOrStereoscopicEye) / Vector3 WorldToViewportPoint(Vector3)"
+Camera,activeTexture,RenderTexture activeTexture { get; }
 Camera,allCameras,static Camera[] allCameras { get; }
 Camera,allCamerasCount,static int allCamerasCount { get; }
 Camera,allowHDR,bool allowHDR { get; set; }
@@ -128,6 +129,7 @@ Camera,depthTextureMode,DepthTextureMode depthTextureMode { get; set; }
 Camera,eventMask,int eventMask { get; set; }
 Camera,farClipPlane,float farClipPlane { get; set; }
 Camera,fieldOfView,float fieldOfView { get; set; }
+Camera,forceIntoRenderTexture,bool forceIntoRenderTexture { get; set; }
 Camera,layerCullDistances,float[] layerCullDistances { get; set; }
 Camera,main,static Camera main { get; }
 Camera,nearClipPlane,float nearClipPlane { get; set; }
@@ -143,6 +145,7 @@ Camera,scaledPixelHeight,int scaledPixelHeight { get; }
 Camera,scaledPixelWidth,int scaledPixelWidth { get; }
 Camera,scene,Scene scene { get; set; }
 Camera,targetDisplay,int targetDisplay { get; set; }
+Camera,targetTexture,RenderTexture targetTexture { get; set; }
 Camera,useOcclusionCulling,bool useOcclusionCulling { get; set; }
 Camera,worldToCameraMatrix,Matrix4x4 worldToCameraMatrix { get; set; }
 Camera.MonoOrStereoscopicEye,Left,Camera.MonoOrStereoscopicEye.Left = 0
@@ -355,6 +358,13 @@ Component,TryGetComponent,"bool TryGetComponent(Type, out Component) / bool TryG
 Component,gameObject,GameObject gameObject { get; }
 Component,tag,string tag { get; set; }
 Component,transform,Transform transform { get; }
+CubemapFace,NegativeX,CubemapFace.NegativeX = 1
+CubemapFace,NegativeY,CubemapFace.NegativeY = 3
+CubemapFace,NegativeZ,CubemapFace.NegativeZ = 5
+CubemapFace,PositiveX,CubemapFace.PositiveX = 0
+CubemapFace,PositiveY,CubemapFace.PositiveY = 2
+CubemapFace,PositiveZ,CubemapFace.PositiveZ = 4
+CubemapFace,Unknown,CubemapFace.Unknown = -1
 CustomYieldInstruction,Current,object Current { get; }
 CustomYieldInstruction,MoveNext,bool MoveNext()
 CustomYieldInstruction,Reset,void Reset()
@@ -383,6 +393,77 @@ DepthTextureMode,MotionVectors,DepthTextureMode.MotionVectors = 4
 DepthTextureMode,None,DepthTextureMode.None = 0
 EntityId,value,ulong value
 Events.HelixAction,delegate,"void () / void (T0) / void (T0, T1) / void (T0, T1, T2) / void (T0, T1, T2, T3)"
+Experimental.Rendering.GraphicsFormat,A2B10G10R10_UNormPack32,Experimental.Rendering.GraphicsFormat.A2B10G10R10_UNormPack32 = 75
+Experimental.Rendering.GraphicsFormat,B10G11R11_UFloatPack32,Experimental.Rendering.GraphicsFormat.B10G11R11_UFloatPack32 = 74
+Experimental.Rendering.GraphicsFormat,B8G8R8A8_SRGB,Experimental.Rendering.GraphicsFormat.B8G8R8A8_SRGB = 57
+Experimental.Rendering.GraphicsFormat,B8G8R8A8_UNorm,Experimental.Rendering.GraphicsFormat.B8G8R8A8_UNorm = 59
+Experimental.Rendering.GraphicsFormat,B8G8R8_SRGB,Experimental.Rendering.GraphicsFormat.B8G8R8_SRGB = 56
+Experimental.Rendering.GraphicsFormat,B8G8R8_UNorm,Experimental.Rendering.GraphicsFormat.B8G8R8_UNorm = 58
+Experimental.Rendering.GraphicsFormat,D16_UNorm,Experimental.Rendering.GraphicsFormat.D16_UNorm = 90
+Experimental.Rendering.GraphicsFormat,D24_UNorm,Experimental.Rendering.GraphicsFormat.D24_UNorm = 91
+Experimental.Rendering.GraphicsFormat,D24_UNorm_S8_UInt,Experimental.Rendering.GraphicsFormat.D24_UNorm_S8_UInt = 92
+Experimental.Rendering.GraphicsFormat,D32_SFloat,Experimental.Rendering.GraphicsFormat.D32_SFloat = 93
+Experimental.Rendering.GraphicsFormat,D32_SFloat_S8_UInt,Experimental.Rendering.GraphicsFormat.D32_SFloat_S8_UInt = 94
+Experimental.Rendering.GraphicsFormat,None,Experimental.Rendering.GraphicsFormat.None = 0
+Experimental.Rendering.GraphicsFormat,R16G16B16A16_SFloat,Experimental.Rendering.GraphicsFormat.R16G16B16A16_SFloat = 48
+Experimental.Rendering.GraphicsFormat,R16G16B16A16_SInt,Experimental.Rendering.GraphicsFormat.R16G16B16A16_SInt = 36
+Experimental.Rendering.GraphicsFormat,R16G16B16A16_SNorm,Experimental.Rendering.GraphicsFormat.R16G16B16A16_SNorm = 28
+Experimental.Rendering.GraphicsFormat,R16G16B16A16_UInt,Experimental.Rendering.GraphicsFormat.R16G16B16A16_UInt = 32
+Experimental.Rendering.GraphicsFormat,R16G16B16A16_UNorm,Experimental.Rendering.GraphicsFormat.R16G16B16A16_UNorm = 24
+Experimental.Rendering.GraphicsFormat,R16G16B16_SFloat,Experimental.Rendering.GraphicsFormat.R16G16B16_SFloat = 47
+Experimental.Rendering.GraphicsFormat,R16G16B16_SInt,Experimental.Rendering.GraphicsFormat.R16G16B16_SInt = 35
+Experimental.Rendering.GraphicsFormat,R16G16B16_SNorm,Experimental.Rendering.GraphicsFormat.R16G16B16_SNorm = 27
+Experimental.Rendering.GraphicsFormat,R16G16B16_UInt,Experimental.Rendering.GraphicsFormat.R16G16B16_UInt = 31
+Experimental.Rendering.GraphicsFormat,R16G16B16_UNorm,Experimental.Rendering.GraphicsFormat.R16G16B16_UNorm = 23
+Experimental.Rendering.GraphicsFormat,R16G16_SFloat,Experimental.Rendering.GraphicsFormat.R16G16_SFloat = 46
+Experimental.Rendering.GraphicsFormat,R16G16_SInt,Experimental.Rendering.GraphicsFormat.R16G16_SInt = 34
+Experimental.Rendering.GraphicsFormat,R16G16_SNorm,Experimental.Rendering.GraphicsFormat.R16G16_SNorm = 26
+Experimental.Rendering.GraphicsFormat,R16G16_UInt,Experimental.Rendering.GraphicsFormat.R16G16_UInt = 30
+Experimental.Rendering.GraphicsFormat,R16G16_UNorm,Experimental.Rendering.GraphicsFormat.R16G16_UNorm = 22
+Experimental.Rendering.GraphicsFormat,R16_SFloat,Experimental.Rendering.GraphicsFormat.R16_SFloat = 45
+Experimental.Rendering.GraphicsFormat,R16_SInt,Experimental.Rendering.GraphicsFormat.R16_SInt = 33
+Experimental.Rendering.GraphicsFormat,R16_SNorm,Experimental.Rendering.GraphicsFormat.R16_SNorm = 25
+Experimental.Rendering.GraphicsFormat,R16_UInt,Experimental.Rendering.GraphicsFormat.R16_UInt = 29
+Experimental.Rendering.GraphicsFormat,R16_UNorm,Experimental.Rendering.GraphicsFormat.R16_UNorm = 21
+Experimental.Rendering.GraphicsFormat,R32G32B32A32_SFloat,Experimental.Rendering.GraphicsFormat.R32G32B32A32_SFloat = 52
+Experimental.Rendering.GraphicsFormat,R32G32B32A32_SInt,Experimental.Rendering.GraphicsFormat.R32G32B32A32_SInt = 44
+Experimental.Rendering.GraphicsFormat,R32G32B32A32_UInt,Experimental.Rendering.GraphicsFormat.R32G32B32A32_UInt = 40
+Experimental.Rendering.GraphicsFormat,R32G32B32_SFloat,Experimental.Rendering.GraphicsFormat.R32G32B32_SFloat = 51
+Experimental.Rendering.GraphicsFormat,R32G32B32_SInt,Experimental.Rendering.GraphicsFormat.R32G32B32_SInt = 43
+Experimental.Rendering.GraphicsFormat,R32G32B32_UInt,Experimental.Rendering.GraphicsFormat.R32G32B32_UInt = 39
+Experimental.Rendering.GraphicsFormat,R32G32_SFloat,Experimental.Rendering.GraphicsFormat.R32G32_SFloat = 50
+Experimental.Rendering.GraphicsFormat,R32G32_SInt,Experimental.Rendering.GraphicsFormat.R32G32_SInt = 42
+Experimental.Rendering.GraphicsFormat,R32G32_UInt,Experimental.Rendering.GraphicsFormat.R32G32_UInt = 38
+Experimental.Rendering.GraphicsFormat,R32_SFloat,Experimental.Rendering.GraphicsFormat.R32_SFloat = 49
+Experimental.Rendering.GraphicsFormat,R32_SInt,Experimental.Rendering.GraphicsFormat.R32_SInt = 41
+Experimental.Rendering.GraphicsFormat,R32_UInt,Experimental.Rendering.GraphicsFormat.R32_UInt = 37
+Experimental.Rendering.GraphicsFormat,R8G8B8A8_SInt,Experimental.Rendering.GraphicsFormat.R8G8B8A8_SInt = 20
+Experimental.Rendering.GraphicsFormat,R8G8B8A8_SNorm,Experimental.Rendering.GraphicsFormat.R8G8B8A8_SNorm = 12
+Experimental.Rendering.GraphicsFormat,R8G8B8A8_SRGB,Experimental.Rendering.GraphicsFormat.R8G8B8A8_SRGB = 4
+Experimental.Rendering.GraphicsFormat,R8G8B8A8_UInt,Experimental.Rendering.GraphicsFormat.R8G8B8A8_UInt = 16
+Experimental.Rendering.GraphicsFormat,R8G8B8A8_UNorm,Experimental.Rendering.GraphicsFormat.R8G8B8A8_UNorm = 8
+Experimental.Rendering.GraphicsFormat,R8G8B8_SInt,Experimental.Rendering.GraphicsFormat.R8G8B8_SInt = 19
+Experimental.Rendering.GraphicsFormat,R8G8B8_SNorm,Experimental.Rendering.GraphicsFormat.R8G8B8_SNorm = 11
+Experimental.Rendering.GraphicsFormat,R8G8B8_SRGB,Experimental.Rendering.GraphicsFormat.R8G8B8_SRGB = 3
+Experimental.Rendering.GraphicsFormat,R8G8B8_UInt,Experimental.Rendering.GraphicsFormat.R8G8B8_UInt = 15
+Experimental.Rendering.GraphicsFormat,R8G8B8_UNorm,Experimental.Rendering.GraphicsFormat.R8G8B8_UNorm = 7
+Experimental.Rendering.GraphicsFormat,R8G8_SInt,Experimental.Rendering.GraphicsFormat.R8G8_SInt = 18
+Experimental.Rendering.GraphicsFormat,R8G8_SNorm,Experimental.Rendering.GraphicsFormat.R8G8_SNorm = 10
+Experimental.Rendering.GraphicsFormat,R8G8_SRGB,Experimental.Rendering.GraphicsFormat.R8G8_SRGB = 2
+Experimental.Rendering.GraphicsFormat,R8G8_UInt,Experimental.Rendering.GraphicsFormat.R8G8_UInt = 14
+Experimental.Rendering.GraphicsFormat,R8G8_UNorm,Experimental.Rendering.GraphicsFormat.R8G8_UNorm = 6
+Experimental.Rendering.GraphicsFormat,R8_SInt,Experimental.Rendering.GraphicsFormat.R8_SInt = 17
+Experimental.Rendering.GraphicsFormat,R8_SNorm,Experimental.Rendering.GraphicsFormat.R8_SNorm = 9
+Experimental.Rendering.GraphicsFormat,R8_SRGB,Experimental.Rendering.GraphicsFormat.R8_SRGB = 1
+Experimental.Rendering.GraphicsFormat,R8_UInt,Experimental.Rendering.GraphicsFormat.R8_UInt = 13
+Experimental.Rendering.GraphicsFormat,R8_UNorm,Experimental.Rendering.GraphicsFormat.R8_UNorm = 5
+Experimental.Rendering.GraphicsFormat,S8_UInt,Experimental.Rendering.GraphicsFormat.S8_UInt = 95
+Experimental.Rendering.GraphicsFormatUtility,GetDepthStencilFormat,static GraphicsFormat GetDepthStencilFormat(int)
+Experimental.Rendering.GraphicsFormatUtility,GetGraphicsFormat,"static GraphicsFormat GetGraphicsFormat(RenderTextureFormat, bool)"
+Experimental.Rendering.GraphicsFormatUtility,GetRenderTextureFormat,static RenderTextureFormat GetRenderTextureFormat(GraphicsFormat)
+Experimental.Rendering.GraphicsFormatUtility,IsDepthFormat,static bool IsDepthFormat(GraphicsFormat)
+Experimental.Rendering.GraphicsFormatUtility,IsSRGBFormat,static bool IsSRGBFormat(GraphicsFormat)
+Experimental.Rendering.GraphicsFormatUtility,IsStencilFormat,static bool IsStencilFormat(GraphicsFormat)
 FilterMode,Bilinear,FilterMode.Bilinear = 1
 FilterMode,Point,FilterMode.Point = 0
 FilterMode,Trilinear,FilterMode.Trilinear = 2
@@ -435,9 +516,15 @@ GeometryUtility,CalculateBounds,"static Bounds CalculateBounds(Vector3[], Matrix
 GeometryUtility,CalculateFrustumPlanes,"static void CalculateFrustumPlanes(Camera, Plane[]) / static void CalculateFrustumPlanes(Matrix4x4, Plane[]) / static Plane[] CalculateFrustumPlanes(Camera) / static Plane[] CalculateFrustumPlanes(Matrix4x4)"
 GeometryUtility,TestPlanesAABB,"static bool TestPlanesAABB(Plane[], Bounds)"
 GeometryUtility,TryCreatePlaneFromPolygon,"static bool TryCreatePlaneFromPolygon(Vector3[], out Plane)"
+Graphics,Blit,"static void Blit(Texture, RenderTexture) / static void Blit(Texture, RenderTexture, Material, int = -1) / static void Blit(Texture, RenderTexture, Vector2, Vector2) / static void Blit(Texture, Material, int = -1)"
+Graphics,ConvertTexture,"static bool ConvertTexture(Texture, Texture) / static bool ConvertTexture(Texture, int, Texture, int)"
+Graphics,CopyTexture,"static void CopyTexture(Texture, Texture) / static void CopyTexture(Texture, int, Texture, int) / static void CopyTexture(Texture, int, int, Texture, int, int)"
 Graphics,DrawMesh,"static void DrawMesh(Mesh, Vector3, Quaternion, Material, int, Camera = null, int = 0, MaterialPropertyBlock = null, bool = True, bool = True, bool = True) / static void DrawMesh(Mesh, Vector3, Quaternion, Material, int, Camera, int, MaterialPropertyBlock, ShadowCastingMode, bool = True, Transform = null, bool = True) / static void DrawMesh(Mesh, Matrix4x4, Material, int, Camera = null, int = 0, MaterialPropertyBlock = null, bool = True, bool = True, bool = True) / static void DrawMesh(Mesh, Matrix4x4, Material, int, Camera, int, MaterialPropertyBlock, ShadowCastingMode, bool = True, Transform = null, bool = True)"
 Graphics,ExecuteCommandBuffer,static void ExecuteCommandBuffer(CommandBuffer)
 Graphics,RenderMesh,"static void RenderMesh(ref RenderParams, Mesh, int, Matrix4x4, Nullable<Matrix4x4> = null)"
+Graphics,SetRenderTarget,"static void SetRenderTarget(RenderTexture) / static void SetRenderTarget(RenderBuffer, RenderBuffer)"
+Graphics,activeColorBuffer,static RenderBuffer activeColorBuffer { get; }
+Graphics,activeDepthBuffer,static RenderBuffer activeDepthBuffer { get; }
 Helix.Collections.Allocator,AudioKernel,Helix.Collections.Allocator.AudioKernel = 5
 Helix.Collections.Allocator,Domain,Helix.Collections.Allocator.Domain = 6
 Helix.Collections.Allocator,FirstUserIndex,Helix.Collections.Allocator.FirstUserIndex = 64
@@ -1146,6 +1233,7 @@ RectInt.PositionEnumerator,MoveNext,bool MoveNext()
 RectInt.PositionEnumerator,Reset,void Reset()
 RefreshRate,denominator,uint denominator
 RefreshRate,numerator,uint numerator
+RenderBuffer,GetNativeRenderBufferPtr,IntPtr GetNativeRenderBufferPtr()
 RenderParams,.ctor,RenderParams(Material)
 RenderParams,camera,Camera camera { get; set; }
 RenderParams,layer,int layer { get; set; }
@@ -1156,6 +1244,96 @@ RenderParams,rendererPriority,int rendererPriority { get; set; }
 RenderParams,renderingLayerMask,uint renderingLayerMask { get; set; }
 RenderParams,shadowCastingMode,ShadowCastingMode shadowCastingMode { get; set; }
 RenderParams,worldBounds,Bounds worldBounds { get; set; }
+RenderTexture,.ctor,"RenderTexture(RenderTextureDescriptor) / RenderTexture(int, int, int) / RenderTexture(int, int, int, RenderTextureFormat) / RenderTexture(int, int, int, RenderTextureFormat, RenderTextureReadWrite) / RenderTexture(int, int, int, GraphicsFormat) / RenderTexture(RenderTexture)"
+RenderTexture,Create,bool Create()
+RenderTexture,DiscardContents,"void DiscardContents() / void DiscardContents(bool, bool)"
+RenderTexture,GenerateMips,void GenerateMips()
+RenderTexture,GetTemporary,"static RenderTexture GetTemporary(RenderTextureDescriptor) / static RenderTexture GetTemporary(int, int) / static RenderTexture GetTemporary(int, int, int) / static RenderTexture GetTemporary(int, int, int, RenderTextureFormat) / static RenderTexture GetTemporary(int, int, int, RenderTextureFormat, RenderTextureReadWrite, int) / static RenderTexture GetTemporary(int, int, int, GraphicsFormat)"
+RenderTexture,IsCreated,bool IsCreated()
+RenderTexture,MarkRestoreExpected,void MarkRestoreExpected()
+RenderTexture,Release,void Release()
+RenderTexture,ReleaseTemporary,static void ReleaseTemporary(RenderTexture)
+RenderTexture,ResolveAntiAliasedSurface,void ResolveAntiAliasedSurface() / void ResolveAntiAliasedSurface(RenderTexture)
+RenderTexture,SupportsStencil,bool SupportsStencil()
+RenderTexture,active,static RenderTexture active { get; set; }
+RenderTexture,antiAliasing,int antiAliasing { get; set; }
+RenderTexture,autoGenerateMips,bool autoGenerateMips { get; set; }
+RenderTexture,bindTextureMS,bool bindTextureMS { get; set; }
+RenderTexture,colorBuffer,RenderBuffer colorBuffer { get; }
+RenderTexture,depth,int depth { get; set; }
+RenderTexture,depthBuffer,RenderBuffer depthBuffer { get; }
+RenderTexture,depthStencilFormat,GraphicsFormat depthStencilFormat { get; set; }
+RenderTexture,descriptor,RenderTextureDescriptor descriptor { get; set; }
+RenderTexture,dimension,TextureDimension dimension { get; set; }
+RenderTexture,enableRandomWrite,bool enableRandomWrite { get; set; }
+RenderTexture,format,RenderTextureFormat format { get; set; }
+RenderTexture,graphicsFormat,GraphicsFormat graphicsFormat { get; set; }
+RenderTexture,height,int height { get; set; }
+RenderTexture,isPowerOfTwo,bool isPowerOfTwo { get; }
+RenderTexture,memorylessMode,RenderTextureMemoryless memorylessMode { get; set; }
+RenderTexture,sRGB,bool sRGB { get; }
+RenderTexture,stencilFormat,GraphicsFormat stencilFormat { get; set; }
+RenderTexture,useDynamicScale,bool useDynamicScale { get; set; }
+RenderTexture,useMipMap,bool useMipMap { get; set; }
+RenderTexture,volumeDepth,int volumeDepth { get; set; }
+RenderTexture,vrUsage,VRTextureUsage vrUsage { get; set; }
+RenderTexture,width,int width { get; set; }
+RenderTextureDescriptor,.ctor,"RenderTextureDescriptor(int, int) / RenderTextureDescriptor(int, int, RenderTextureFormat) / RenderTextureDescriptor(int, int, RenderTextureFormat, int) / RenderTextureDescriptor(int, int, RenderTextureFormat, int, int) / RenderTextureDescriptor(int, int, GraphicsFormat, int) / RenderTextureDescriptor(int, int, GraphicsFormat, int, int) / RenderTextureDescriptor(int, int, GraphicsFormat, GraphicsFormat)"
+RenderTextureDescriptor,autoGenerateMips,bool autoGenerateMips { get; set; }
+RenderTextureDescriptor,bindMS,bool bindMS { get; set; }
+RenderTextureDescriptor,colorFormat,RenderTextureFormat colorFormat { get; set; }
+RenderTextureDescriptor,depthBufferBits,int depthBufferBits { get; set; }
+RenderTextureDescriptor,depthStencilFormat,GraphicsFormat depthStencilFormat { get; set; }
+RenderTextureDescriptor,dimension,TextureDimension dimension { get; set; }
+RenderTextureDescriptor,enableRandomWrite,bool enableRandomWrite { get; set; }
+RenderTextureDescriptor,graphicsFormat,GraphicsFormat graphicsFormat { get; set; }
+RenderTextureDescriptor,height,int height { get; set; }
+RenderTextureDescriptor,memoryless,RenderTextureMemoryless memoryless { get; set; }
+RenderTextureDescriptor,mipCount,int mipCount { get; set; }
+RenderTextureDescriptor,msaaSamples,int msaaSamples { get; set; }
+RenderTextureDescriptor,sRGB,bool sRGB { get; set; }
+RenderTextureDescriptor,shadowSamplingMode,ShadowSamplingMode shadowSamplingMode { get; set; }
+RenderTextureDescriptor,stencilFormat,GraphicsFormat stencilFormat { get; set; }
+RenderTextureDescriptor,useDynamicScale,bool useDynamicScale { get; set; }
+RenderTextureDescriptor,useMipMap,bool useMipMap { get; set; }
+RenderTextureDescriptor,volumeDepth,int volumeDepth { get; set; }
+RenderTextureDescriptor,vrUsage,VRTextureUsage vrUsage { get; set; }
+RenderTextureDescriptor,width,int width { get; set; }
+RenderTextureFormat,ARGB1555,RenderTextureFormat.ARGB1555 = 6
+RenderTextureFormat,ARGB2101010,RenderTextureFormat.ARGB2101010 = 8
+RenderTextureFormat,ARGB32,RenderTextureFormat.ARGB32 = 0
+RenderTextureFormat,ARGB4444,RenderTextureFormat.ARGB4444 = 5
+RenderTextureFormat,ARGB64,RenderTextureFormat.ARGB64 = 10
+RenderTextureFormat,ARGBFloat,RenderTextureFormat.ARGBFloat = 11
+RenderTextureFormat,ARGBHalf,RenderTextureFormat.ARGBHalf = 2
+RenderTextureFormat,ARGBInt,RenderTextureFormat.ARGBInt = 17
+RenderTextureFormat,BGR101010_XR,RenderTextureFormat.BGR101010_XR = 27
+RenderTextureFormat,BGRA10101010_XR,RenderTextureFormat.BGRA10101010_XR = 26
+RenderTextureFormat,BGRA32,RenderTextureFormat.BGRA32 = 20
+RenderTextureFormat,Default,RenderTextureFormat.Default = 7
+RenderTextureFormat,DefaultHDR,RenderTextureFormat.DefaultHDR = 9
+RenderTextureFormat,Depth,RenderTextureFormat.Depth = 1
+RenderTextureFormat,R16,RenderTextureFormat.R16 = 28
+RenderTextureFormat,R8,RenderTextureFormat.R8 = 16
+RenderTextureFormat,RFloat,RenderTextureFormat.RFloat = 14
+RenderTextureFormat,RG16,RenderTextureFormat.RG16 = 25
+RenderTextureFormat,RG32,RenderTextureFormat.RG32 = 23
+RenderTextureFormat,RGB111110Float,RenderTextureFormat.RGB111110Float = 22
+RenderTextureFormat,RGB565,RenderTextureFormat.RGB565 = 4
+RenderTextureFormat,RGBAUShort,RenderTextureFormat.RGBAUShort = 24
+RenderTextureFormat,RGFloat,RenderTextureFormat.RGFloat = 12
+RenderTextureFormat,RGHalf,RenderTextureFormat.RGHalf = 13
+RenderTextureFormat,RGInt,RenderTextureFormat.RGInt = 18
+RenderTextureFormat,RHalf,RenderTextureFormat.RHalf = 15
+RenderTextureFormat,RInt,RenderTextureFormat.RInt = 19
+RenderTextureFormat,Shadowmap,RenderTextureFormat.Shadowmap = 3
+RenderTextureMemoryless,Color,RenderTextureMemoryless.Color = 1
+RenderTextureMemoryless,Depth,RenderTextureMemoryless.Depth = 2
+RenderTextureMemoryless,MSAA,RenderTextureMemoryless.MSAA = 4
+RenderTextureMemoryless,None,RenderTextureMemoryless.None = 0
+RenderTextureReadWrite,Default,RenderTextureReadWrite.Default = 0
+RenderTextureReadWrite,Linear,RenderTextureReadWrite.Linear = 1
+RenderTextureReadWrite,sRGB,RenderTextureReadWrite.sRGB = 2
 Renderer,GetMaterials,void GetMaterials(List<Material>)
 Renderer,GetPropertyBlock,"void GetPropertyBlock(MaterialPropertyBlock) / void GetPropertyBlock(MaterialPropertyBlock, int)"
 Renderer,GetSharedMaterials,void GetSharedMaterials(List<Material>)
@@ -1244,6 +1422,29 @@ Rendering.BlendState,blendState7,RenderTargetBlendState blendState7 { get; set; 
 Rendering.BlendState,defaultValue,static BlendState defaultValue { get; }
 Rendering.BlendState,operators,"Equality(BlendState, BlendState) / Inequality(BlendState, BlendState)"
 Rendering.BlendState,separateMRTBlendStates,bool separateMRTBlendStates { get; set; }
+Rendering.BuiltinRenderTextureType,BindableTexture,Rendering.BuiltinRenderTextureType.BindableTexture = -1
+Rendering.BuiltinRenderTextureType,BufferPtr,Rendering.BuiltinRenderTextureType.BufferPtr = -3
+Rendering.BuiltinRenderTextureType,CameraTarget,Rendering.BuiltinRenderTextureType.CameraTarget = 2
+Rendering.BuiltinRenderTextureType,CurrentActive,Rendering.BuiltinRenderTextureType.CurrentActive = 1
+Rendering.BuiltinRenderTextureType,Depth,Rendering.BuiltinRenderTextureType.Depth = 3
+Rendering.BuiltinRenderTextureType,DepthNormals,Rendering.BuiltinRenderTextureType.DepthNormals = 4
+Rendering.BuiltinRenderTextureType,GBuffer0,Rendering.BuiltinRenderTextureType.GBuffer0 = 10
+Rendering.BuiltinRenderTextureType,GBuffer1,Rendering.BuiltinRenderTextureType.GBuffer1 = 11
+Rendering.BuiltinRenderTextureType,GBuffer2,Rendering.BuiltinRenderTextureType.GBuffer2 = 12
+Rendering.BuiltinRenderTextureType,GBuffer3,Rendering.BuiltinRenderTextureType.GBuffer3 = 13
+Rendering.BuiltinRenderTextureType,GBuffer4,Rendering.BuiltinRenderTextureType.GBuffer4 = 16
+Rendering.BuiltinRenderTextureType,GBuffer5,Rendering.BuiltinRenderTextureType.GBuffer5 = 17
+Rendering.BuiltinRenderTextureType,GBuffer6,Rendering.BuiltinRenderTextureType.GBuffer6 = 18
+Rendering.BuiltinRenderTextureType,GBuffer7,Rendering.BuiltinRenderTextureType.GBuffer7 = 19
+Rendering.BuiltinRenderTextureType,MotionVectors,Rendering.BuiltinRenderTextureType.MotionVectors = 15
+Rendering.BuiltinRenderTextureType,None,Rendering.BuiltinRenderTextureType.None = 0
+Rendering.BuiltinRenderTextureType,PrepassLight,Rendering.BuiltinRenderTextureType.PrepassLight = 8
+Rendering.BuiltinRenderTextureType,PrepassLightSpec,Rendering.BuiltinRenderTextureType.PrepassLightSpec = 9
+Rendering.BuiltinRenderTextureType,PrepassNormalsSpec,Rendering.BuiltinRenderTextureType.PrepassNormalsSpec = 7
+Rendering.BuiltinRenderTextureType,PropertyName,Rendering.BuiltinRenderTextureType.PropertyName = -4
+Rendering.BuiltinRenderTextureType,Reflections,Rendering.BuiltinRenderTextureType.Reflections = 14
+Rendering.BuiltinRenderTextureType,RenderTexture,Rendering.BuiltinRenderTextureType.RenderTexture = -2
+Rendering.BuiltinRenderTextureType,ResolvedDepth,Rendering.BuiltinRenderTextureType.ResolvedDepth = 5
 Rendering.ColorWriteMask,All,Rendering.ColorWriteMask.All = 15
 Rendering.ColorWriteMask,Alpha,Rendering.ColorWriteMask.Alpha = 1
 Rendering.ColorWriteMask,Blue,Rendering.ColorWriteMask.Blue = 2
@@ -1251,8 +1452,10 @@ Rendering.ColorWriteMask,Green,Rendering.ColorWriteMask.Green = 4
 Rendering.ColorWriteMask,Red,Rendering.ColorWriteMask.Red = 8
 Rendering.CommandBuffer,.ctor,CommandBuffer()
 Rendering.CommandBuffer,BeginSample,void BeginSample(string)
+Rendering.CommandBuffer,Blit,"void Blit(RenderTargetIdentifier, RenderTargetIdentifier) / void Blit(RenderTargetIdentifier, RenderTargetIdentifier, Material) / void Blit(RenderTargetIdentifier, RenderTargetIdentifier, Material, int) / void Blit(RenderTargetIdentifier, RenderTargetIdentifier, Vector2, Vector2) / void Blit(Texture, RenderTargetIdentifier) / void Blit(Texture, RenderTargetIdentifier, Material) / void Blit(Texture, RenderTargetIdentifier, Material, int)"
 Rendering.CommandBuffer,Clear,void Clear()
-Rendering.CommandBuffer,ClearRenderTarget,"void ClearRenderTarget(bool, bool, Color, float = 1)"
+Rendering.CommandBuffer,ClearRenderTarget,"void ClearRenderTarget(bool, bool, Color, float = 1) / void ClearRenderTarget(RTClearFlags, Color, float = 1, uint = 0)"
+Rendering.CommandBuffer,CopyTexture,"void CopyTexture(RenderTargetIdentifier, RenderTargetIdentifier) / void CopyTexture(RenderTargetIdentifier, int, RenderTargetIdentifier, int) / void CopyTexture(RenderTargetIdentifier, int, int, RenderTargetIdentifier, int, int)"
 Rendering.CommandBuffer,DisableKeyword,void DisableKeyword(ref GlobalKeyword)
 Rendering.CommandBuffer,DisableScissorRect,void DisableScissorRect()
 Rendering.CommandBuffer,DisableShaderKeyword,void DisableShaderKeyword(string)
@@ -1263,15 +1466,21 @@ Rendering.CommandBuffer,EnableKeyword,void EnableKeyword(ref GlobalKeyword)
 Rendering.CommandBuffer,EnableScissorRect,void EnableScissorRect(Rect)
 Rendering.CommandBuffer,EnableShaderKeyword,void EnableShaderKeyword(string)
 Rendering.CommandBuffer,EndSample,void EndSample(string)
+Rendering.CommandBuffer,GenerateMips,void GenerateMips(RenderTargetIdentifier) / void GenerateMips(RenderTexture)
+Rendering.CommandBuffer,GetTemporaryRT,"void GetTemporaryRT(int, RenderTextureDescriptor, FilterMode) / void GetTemporaryRT(int, RenderTextureDescriptor) / void GetTemporaryRT(int, int, int, int = 0, FilterMode = Point, RenderTextureFormat = Default, RenderTextureReadWrite = Default, int = 1, bool = False) / void GetTemporaryRT(int, int, int, int, FilterMode, GraphicsFormat, int = 1, bool = False)"
+Rendering.CommandBuffer,GetTemporaryRTArray,"void GetTemporaryRTArray(int, int, int, int, int = 0, FilterMode = Point, RenderTextureFormat = Default, RenderTextureReadWrite = Default, int = 1, bool = False) / void GetTemporaryRTArray(int, int, int, int, int, FilterMode, GraphicsFormat, int = 1, bool = False, bool = False)"
 Rendering.CommandBuffer,Release,void Release()
+Rendering.CommandBuffer,ReleaseTemporaryRT,void ReleaseTemporaryRT(int)
+Rendering.CommandBuffer,ResolveAntiAliasedSurface,"void ResolveAntiAliasedSurface(RenderTexture, RenderTexture = null)"
 Rendering.CommandBuffer,SetGlobalColor,"void SetGlobalColor(string, Color) / void SetGlobalColor(int, Color)"
 Rendering.CommandBuffer,SetGlobalFloat,"void SetGlobalFloat(string, float) / void SetGlobalFloat(int, float)"
 Rendering.CommandBuffer,SetGlobalInt,"void SetGlobalInt(string, int) / void SetGlobalInt(int, int)"
 Rendering.CommandBuffer,SetGlobalInteger,"void SetGlobalInteger(string, int) / void SetGlobalInteger(int, int)"
 Rendering.CommandBuffer,SetGlobalMatrix,"void SetGlobalMatrix(string, Matrix4x4) / void SetGlobalMatrix(int, Matrix4x4)"
-Rendering.CommandBuffer,SetGlobalTexture,"void SetGlobalTexture(string, Texture) / void SetGlobalTexture(int, Texture)"
+Rendering.CommandBuffer,SetGlobalTexture,"void SetGlobalTexture(string, RenderTargetIdentifier) / void SetGlobalTexture(int, RenderTargetIdentifier)"
 Rendering.CommandBuffer,SetGlobalVector,"void SetGlobalVector(string, Vector4) / void SetGlobalVector(int, Vector4)"
 Rendering.CommandBuffer,SetKeyword,"void SetKeyword(ref GlobalKeyword, bool)"
+Rendering.CommandBuffer,SetRenderTarget,"void SetRenderTarget(RenderTargetIdentifier) / void SetRenderTarget(RenderTargetIdentifier, RenderBufferLoadAction, RenderBufferStoreAction) / void SetRenderTarget(RenderTargetIdentifier, RenderBufferLoadAction, RenderBufferStoreAction, RenderBufferLoadAction, RenderBufferStoreAction) / void SetRenderTarget(RenderTargetIdentifier, int) / void SetRenderTarget(RenderTargetIdentifier, int, CubemapFace) / void SetRenderTarget(RenderTargetIdentifier, int, CubemapFace, int) / void SetRenderTarget(RenderTargetIdentifier, RenderTargetIdentifier) / void SetRenderTarget(RenderTargetIdentifier, RenderTargetIdentifier, int) / void SetRenderTarget(RenderTargetIdentifier, RenderTargetIdentifier, int, CubemapFace) / void SetRenderTarget(RenderTargetIdentifier, RenderTargetIdentifier, int, CubemapFace, int) / void SetRenderTarget(RenderTargetIdentifier, RenderBufferLoadAction, RenderBufferStoreAction, RenderTargetIdentifier, RenderBufferLoadAction, RenderBufferStoreAction) / void SetRenderTarget(RenderTargetIdentifier[], RenderTargetIdentifier) / void SetRenderTarget(RenderTargetIdentifier[], RenderTargetIdentifier, int, CubemapFace, int)"
 Rendering.CommandBuffer,SetViewProjectionMatrices,"void SetViewProjectionMatrices(Matrix4x4, Matrix4x4)"
 Rendering.CommandBuffer,SetViewport,void SetViewport(Rect)
 Rendering.CommandBuffer,ToString,string ToString()
@@ -1370,6 +1579,14 @@ Rendering.PerObjectData,OcclusionProbeProxyVolume,Rendering.PerObjectData.Occlus
 Rendering.PerObjectData,ReflectionProbeData,Rendering.PerObjectData.ReflectionProbeData = 128
 Rendering.PerObjectData,ReflectionProbes,Rendering.PerObjectData.ReflectionProbes = 2
 Rendering.PerObjectData,ShadowMask,Rendering.PerObjectData.ShadowMask = 1024
+Rendering.RTClearFlags,All,Rendering.RTClearFlags.All = 7
+Rendering.RTClearFlags,Color,Rendering.RTClearFlags.Color = 1
+Rendering.RTClearFlags,ColorDepth,Rendering.RTClearFlags.ColorDepth = 3
+Rendering.RTClearFlags,ColorStencil,Rendering.RTClearFlags.ColorStencil = 5
+Rendering.RTClearFlags,Depth,Rendering.RTClearFlags.Depth = 2
+Rendering.RTClearFlags,DepthStencil,Rendering.RTClearFlags.DepthStencil = 6
+Rendering.RTClearFlags,None,Rendering.RTClearFlags.None = 0
+Rendering.RTClearFlags,Stencil,Rendering.RTClearFlags.Stencil = 4
 Rendering.RasterState,.ctor,"RasterState(CullMode = Back, int = 0, float = 0, bool = True)"
 Rendering.RasterState,conservative,bool conservative { get; set; }
 Rendering.RasterState,cullingMode,CullMode cullingMode { get; set; }
@@ -1378,7 +1595,21 @@ Rendering.RasterState,depthClip,bool depthClip { get; set; }
 Rendering.RasterState,offsetFactor,float offsetFactor { get; set; }
 Rendering.RasterState,offsetUnits,int offsetUnits { get; set; }
 Rendering.RasterState,operators,"Equality(RasterState, RasterState) / Inequality(RasterState, RasterState)"
+Rendering.RenderBufferLoadAction,Clear,Rendering.RenderBufferLoadAction.Clear = 1
+Rendering.RenderBufferLoadAction,DontCare,Rendering.RenderBufferLoadAction.DontCare = 2
+Rendering.RenderBufferLoadAction,Load,Rendering.RenderBufferLoadAction.Load = 0
+Rendering.RenderBufferStoreAction,DontCare,Rendering.RenderBufferStoreAction.DontCare = 3
+Rendering.RenderBufferStoreAction,Resolve,Rendering.RenderBufferStoreAction.Resolve = 1
+Rendering.RenderBufferStoreAction,Store,Rendering.RenderBufferStoreAction.Store = 0
+Rendering.RenderBufferStoreAction,StoreAndResolve,Rendering.RenderBufferStoreAction.StoreAndResolve = 2
+Rendering.RenderPipeline,SubmitRenderRequest,"static void SubmitRenderRequest<RequestData>(Camera, RequestData)"
+Rendering.RenderPipeline,SupportsRenderRequest,"static bool SupportsRenderRequest<RequestData>(Camera, RequestData)"
 Rendering.RenderPipeline,disposed,bool disposed { get; }
+Rendering.RenderPipeline.StandardRequest,.ctor,StandardRequest()
+Rendering.RenderPipeline.StandardRequest,destination,RenderTexture destination
+Rendering.RenderPipeline.StandardRequest,face,CubemapFace face
+Rendering.RenderPipeline.StandardRequest,mipLevel,int mipLevel
+Rendering.RenderPipeline.StandardRequest,slice,int slice
 Rendering.RenderPipelineManager,activeRenderPipelineAssetChanged,"static event Action<RenderPipelineAsset, RenderPipelineAsset> activeRenderPipelineAssetChanged"
 Rendering.RenderPipelineManager,activeRenderPipelineTypeChanged,static event Action activeRenderPipelineTypeChanged
 Rendering.RenderPipelineManager,beginCameraRendering,"static event Action<ScriptableRenderContext, Camera> beginCameraRendering"
@@ -1420,6 +1651,10 @@ Rendering.RenderTargetBlendState,operators,"Equality(RenderTargetBlendState, Ren
 Rendering.RenderTargetBlendState,sourceAlphaBlendMode,BlendMode sourceAlphaBlendMode { get; set; }
 Rendering.RenderTargetBlendState,sourceColorBlendMode,BlendMode sourceColorBlendMode { get; set; }
 Rendering.RenderTargetBlendState,writeMask,ColorWriteMask writeMask { get; set; }
+Rendering.RenderTargetIdentifier,.ctor,"RenderTargetIdentifier(BuiltinRenderTextureType) / RenderTargetIdentifier(BuiltinRenderTextureType, int = 0, CubemapFace = Unknown, int = 0) / RenderTargetIdentifier(string) / RenderTargetIdentifier(string, int = 0, CubemapFace = Unknown, int = 0) / RenderTargetIdentifier(int) / RenderTargetIdentifier(int, int = 0, CubemapFace = Unknown, int = 0) / RenderTargetIdentifier(RenderTargetIdentifier, int, CubemapFace = Unknown, int = 0) / RenderTargetIdentifier(Texture) / RenderTargetIdentifier(Texture, int = 0, CubemapFace = Unknown, int = 0) / RenderTargetIdentifier(RenderBuffer, int = 0, CubemapFace = Unknown, int = 0)"
+Rendering.RenderTargetIdentifier,AllDepthSlices,const int AllDepthSlices
+Rendering.RenderTargetIdentifier,ToString,string ToString()
+Rendering.RenderTargetIdentifier,operators,"Implicit(BuiltinRenderTextureType) / Implicit(string) / Implicit(int) / Implicit(Texture) / Implicit(RenderBuffer) / Equality(RenderTargetIdentifier, RenderTargetIdentifier) / Inequality(RenderTargetIdentifier, RenderTargetIdentifier)"
 Rendering.ScriptableCullingParameters,GetCullingPlane,Plane GetCullingPlane(int)
 Rendering.ScriptableCullingParameters,SetCullingPlane,"void SetCullingPlane(int, Plane)"
 Rendering.ScriptableCullingParameters,cullingMask,uint cullingMask { get; set; }
@@ -1467,6 +1702,9 @@ Rendering.ShadowCastingMode,Off,Rendering.ShadowCastingMode.Off = 0
 Rendering.ShadowCastingMode,On,Rendering.ShadowCastingMode.On = 1
 Rendering.ShadowCastingMode,ShadowsOnly,Rendering.ShadowCastingMode.ShadowsOnly = 3
 Rendering.ShadowCastingMode,TwoSided,Rendering.ShadowCastingMode.TwoSided = 2
+Rendering.ShadowSamplingMode,CompareDepths,Rendering.ShadowSamplingMode.CompareDepths = 0
+Rendering.ShadowSamplingMode,None,Rendering.ShadowSamplingMode.None = 2
+Rendering.ShadowSamplingMode,RawDepth,Rendering.ShadowSamplingMode.RawDepth = 1
 Rendering.SortingCriteria,BackToFront,Rendering.SortingCriteria.BackToFront = 4
 Rendering.SortingCriteria,CanvasOrder,Rendering.SortingCriteria.CanvasOrder = 32
 Rendering.SortingCriteria,CommonOpaque,Rendering.SortingCriteria.CommonOpaque = 59
@@ -1651,6 +1889,7 @@ Screen,safeArea,static Rect safeArea { get; }
 Screen,sleepTimeout,static int sleepTimeout { get; set; }
 Screen,width,static int width { get; }
 ScreenCapture,CaptureScreenshot,"static void CaptureScreenshot(string) / static void CaptureScreenshot(string, int)"
+ScreenCapture,CaptureScreenshotIntoRenderTexture,static void CaptureScreenshotIntoRenderTexture(RenderTexture)
 ScreenOrientation,AutoRotation,ScreenOrientation.AutoRotation = 5
 ScreenOrientation,LandscapeLeft,ScreenOrientation.LandscapeLeft = 3
 ScreenOrientation,LandscapeRight,ScreenOrientation.LandscapeRight = 4
@@ -1887,6 +2126,10 @@ Transform,root,Transform root { get; }
 Transform,rotation,Quaternion rotation { get; set; }
 Transform,up,Vector3 up { get; set; }
 Transform,worldToLocalMatrix,Matrix4x4 worldToLocalMatrix { get; }
+VRTextureUsage,DeviceSpecific,VRTextureUsage.DeviceSpecific = 3
+VRTextureUsage,None,VRTextureUsage.None = 0
+VRTextureUsage,OneEye,VRTextureUsage.OneEye = 1
+VRTextureUsage,TwoEyes,VRTextureUsage.TwoEyes = 2
 Vector2,.ctor,"Vector2(float, float)"
 Vector2,Angle,"static float Angle(Vector2, Vector2)"
 Vector2,ClampMagnitude,"static Vector2 ClampMagnitude(Vector2, float)"

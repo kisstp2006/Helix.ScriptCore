@@ -246,11 +246,16 @@ namespace Tests
 {
     // A scriptable pipeline of C# (the C++ one in Cpp/CppRenderingScripts.h notes the same lines): per camera the
     // visible lights, the camera's properties, a clear from a command buffer, the opaque then the transparent queues with
-    // the unlit and forward passes, the scripts' OnRenderObject.
+    // the unlit and forward passes, the scripts' OnRenderObject. Through a temporary it draws into a temporary render
+    // texture and blits that to the camera's target. It takes standard requests.
     public class CsPipeline : RenderPipeline
     {
         static readonly ShaderTagId s_Unlit = new ShaderTagId("SRPDefaultUnlit");
         static readonly ShaderTagId s_Forward = new ShaderTagId("ForwardBase");
+        static readonly int s_Color = Shader.PropertyToID("_CameraColorTexture");
+        readonly bool m_ThroughTemporary;
+
+        public CsPipeline(bool throughTemporary = false) => m_ThroughTemporary = throughTemporary;
 
         protected override void Render(ScriptableRenderContext context, Camera[] cameras) => throw new NotSupportedException("the List overload renders");
 
@@ -260,30 +265,62 @@ namespace Tests
             foreach (Camera camera in cameras)
             {
                 BeginCameraRendering(context, camera);
-                if (!camera.TryGetCullingParameters(out ScriptableCullingParameters parameters))
+                if (!DrawCamera(context, camera))
                     continue;
-                CullingResults culling = context.Cull(ref parameters);
-                var lights = culling.visibleLights;
-                Notes.NoteRaw($"lights:{lights.Length}:{(lights.Length > 0 ? (int)lights[0].lightType : -1)}:{(lights.Length > 0 ? Text.F(lights[0].finalColor.g) : "")}");
-                context.SetupCameraProperties(camera);
-                var clear = new CommandBuffer { name = "Clear" };
-                clear.ClearRenderTarget(true, true, camera.backgroundColor);
-                context.ExecuteCommandBuffer(clear);
-                clear.Release();
-                var sorting = new SortingSettings(camera) { criteria = SortingCriteria.CommonOpaque };
-                var drawing = new DrawingSettings(s_Unlit, sorting);
-                drawing.SetShaderPassName(1, s_Forward);
-                var filtering = new FilteringSettings(RenderQueueRange.opaque);
-                context.DrawRenderers(culling, ref drawing, ref filtering);
-                sorting.criteria = SortingCriteria.CommonTransparent;
-                drawing.sortingSettings = sorting;
-                filtering.renderQueueRange = RenderQueueRange.transparent;
-                context.DrawRenderers(culling, ref drawing, ref filtering);
-                context.InvokeOnRenderObjectCallback();
-                context.Submit();
                 EndCameraRendering(context, camera);
             }
             EndContextRendering(context, cameras);
+        }
+
+        protected override bool IsRenderRequestSupported<RequestData>(Camera camera, RequestData data) => data is StandardRequest standard && standard.destination != null;
+
+        protected override void ProcessRenderRequests<RequestData>(ScriptableRenderContext context, Camera camera, RequestData renderRequest)
+        {
+            if (renderRequest is not StandardRequest standard)
+                return;
+            RenderTexture previous = camera.targetTexture;
+            camera.targetTexture = standard.destination;
+            DrawCamera(context, camera);
+            camera.targetTexture = previous;
+        }
+
+        bool DrawCamera(ScriptableRenderContext context, Camera camera)
+        {
+            if (!camera.TryGetCullingParameters(out ScriptableCullingParameters parameters))
+                return false;
+            CullingResults culling = context.Cull(ref parameters);
+            var lights = culling.visibleLights;
+            Notes.NoteRaw($"lights:{lights.Length}:{(lights.Length > 0 ? (int)lights[0].lightType : -1)}:{(lights.Length > 0 ? Text.F(lights[0].finalColor.g) : "")}");
+            context.SetupCameraProperties(camera);
+            var clear = new CommandBuffer { name = "Clear" };
+            if (m_ThroughTemporary)
+            {
+                clear.GetTemporaryRT(s_Color, camera.pixelWidth, camera.pixelHeight, 24);
+                clear.SetRenderTarget(s_Color);
+            }
+            clear.ClearRenderTarget(true, true, camera.backgroundColor);
+            context.ExecuteCommandBuffer(clear);
+            clear.Release();
+            var sorting = new SortingSettings(camera) { criteria = SortingCriteria.CommonOpaque };
+            var drawing = new DrawingSettings(s_Unlit, sorting);
+            drawing.SetShaderPassName(1, s_Forward);
+            var filtering = new FilteringSettings(RenderQueueRange.opaque);
+            context.DrawRenderers(culling, ref drawing, ref filtering);
+            sorting.criteria = SortingCriteria.CommonTransparent;
+            drawing.sortingSettings = sorting;
+            filtering.renderQueueRange = RenderQueueRange.transparent;
+            context.DrawRenderers(culling, ref drawing, ref filtering);
+            context.InvokeOnRenderObjectCallback();
+            if (m_ThroughTemporary)
+            {
+                var blit = new CommandBuffer { name = "Blit" };
+                blit.Blit(s_Color, BuiltinRenderTextureType.CameraTarget);
+                blit.ReleaseTemporaryRT(s_Color);
+                context.ExecuteCommandBuffer(blit);
+                blit.Release();
+            }
+            context.Submit();
+            return true;
         }
 
         protected override void Dispose(bool disposing) => Notes.NoteRaw("Dispose");
@@ -295,6 +332,15 @@ namespace Tests
         {
             Notes.NoteRaw("CreatePipeline");
             return new CsPipeline();
+        }
+    }
+
+    public class CsTemporaryPipelineAsset : RenderPipelineAsset
+    {
+        protected override RenderPipeline CreatePipeline()
+        {
+            Notes.NoteRaw("CreatePipeline");
+            return new CsPipeline(true);
         }
     }
 

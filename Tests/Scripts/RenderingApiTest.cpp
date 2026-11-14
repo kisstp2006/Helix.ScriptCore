@@ -8,6 +8,7 @@
 #include <Helix/Engine/Asset/Resources.h>
 #include <Helix/Engine/GameObject/Lifecycle.h>
 #include <Helix/Engine/Rendering/Graphics.h>
+#include <Helix/Engine/Rendering/Implementation/RenderCore.h>
 #include <Helix/Engine/Rendering/Pipeline/RenderPipeline.h>
 #include <Helix/Platform/IO/FileSystem.h>
 #include <Helix/Platform/Window/Window.h>
@@ -345,7 +346,7 @@ HX_TEST(ScriptApi, ScriptablePipelinesOfBothLanguagesDrawTheGoldenImage)
     AddScript(shape, Cpp("CppRendererEvents"));
     CppPipelineEvents events;
     constexpr u32 size = 32;
-    for (const char* assetClass : {"CsPipelineAsset", "CppPipelineAsset"})
+    for (const char* assetClass : {"CsPipelineAsset", "CppPipelineAsset", "CsTemporaryPipelineAsset", "CppTemporaryPipelineAsset"})
     {
         std::printf("    %s\n", assetClass);
         Calls().Clear();
@@ -400,6 +401,66 @@ HX_TEST(ScriptApi, ScriptablePipelinesOfBothLanguagesDrawTheGoldenImage)
         std::printf("    %u devices\n", devices);
         GraphicsSettings::SetDefaultRenderPipeline(nullptr);
         DestroyImmediate(asset);
+    }
+    DestroyImmediate(host);
+    Calls().Clear();
+}
+
+HX_TEST(ScriptApi, StandardRequestsThroughThePipelinesOfBothLanguages)
+{
+    HX_REQUIRE(StartScripts());
+    engine::testing::TestShaderFolder shaders;
+    GameObject* host = GameObject::Create("RequestHost");
+    host->AddComponent(CSharp("CsGoldenScene").type);
+    RunScriptPhase(ScriptMessage::Update);
+    Graphics::RenderFrame();
+    GameObject* eye = GameObject::Find("GoldenEye");
+    HX_REQUIRE(eye != nullptr);
+    Camera* camera = eye->GetComponent<Camera>();
+    HX_REQUIRE(camera != nullptr);
+    constexpr u32 size = 32;
+    // Without an asset the fallback pipeline takes them too.
+    for (const char* assetClass : {"", "CsPipelineAsset", "CppPipelineAsset", "CsTemporaryPipelineAsset", "CppTemporaryPipelineAsset"})
+    {
+        std::printf("    %s\n", *assetClass ? assetClass : "fallback");
+        ScriptableObject* asset = *assetClass ? ScriptableObject::CreateInstanceByName(assetClass) : nullptr;
+        HX_REQUIRE(!*assetClass || asset != nullptr);
+        u32 devices = ForEachDevice([&](rhi::Device& device) {
+            rhi::TextureHandle color = device.CreateTexture(
+                {.format = rhi::Format::RGBA8Unorm, .width = size, .height = size, .usage = rhi::TextureRenderTarget | rhi::TextureSampled});
+            rhi::TextureHandle depth = device.CreateTexture({.format = rhi::Format::D32Float, .width = size, .height = size, .usage = rhi::TextureDepthStencil});
+            Graphics::SetDevice(&device);
+            Graphics::SetTarget({color, depth, size, size, rhi::Format::RGBA8Unorm, rhi::Format::D32Float});
+            Graphics::SetAmbientLight(Color(0.25f, 0.25f, 0.25f, 1));
+            GraphicsSettings::SetDefaultRenderPipeline(asset);
+            Graphics::RenderFrame();
+            // The camera drawn into a render texture of the screen's size, with the meshes the drawer queued: the golden
+            // image, its rows bottom first.
+            RunScriptPhase(ScriptMessage::Update);
+            RenderTexture* destination = RenderTexture::New(i32(size), i32(size), 24);
+            StandardRequest request{destination};
+            HX_CHECK(RenderPipeline::SupportsRenderRequest(camera, request));
+            RenderPipeline::SubmitRenderRequest(camera, request);
+            HX_CHECK(camera->targetTexture() == nullptr);
+            const render::GpuRenderTarget* target = render::RenderTargetOf(*destination);
+            HX_REQUIRE(target != nullptr);
+            Array<u32> rows, pixels;
+            rows.Resize(size * size);
+            pixels.Resize(size * size);
+            HX_REQUIRE(device.ReadTexture(target->color, 0, rows.Data(), rows.Size() * 4));
+            for (u32 y = 0; y < size; y++)
+                for (u32 x = 0; x < size; x++)
+                    pixels[y * size + x] = rows[(size - 1 - y) * size + x];
+            HX_CHECK(engine::testing::MatchGolden("ScriptApiScene", pixels.Data(), size, size));
+            DestroyImmediate(destination);
+            Graphics::ReleaseResources();
+            device.Destroy(color);
+            device.Destroy(depth);
+        });
+        std::printf("    %u devices\n", devices);
+        GraphicsSettings::SetDefaultRenderPipeline(nullptr);
+        if (asset)
+            DestroyImmediate(asset);
     }
     DestroyImmediate(host);
     Calls().Clear();
