@@ -347,7 +347,13 @@ namespace helix::scriptcore::testing
             buffer.SetGlobalFloat("_Value", 1);
             bool recorded = buffer.sizeInBytes() > 0;
             buffer.Clear();
-            Calls().Push(Format("pipe:{}/{}/{}/{}/{}/{}/{}/{}-{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{},{}/{}/{}/{}/{}/{}/{}/{}", drawing.GetShaderPassName(0).name(),
+            GraphicsSettings::SetTransparencySortMode(TransparencySortMode::CustomAxis);
+            GraphicsSettings::SetTransparencySortAxis(Vector3(0, 1, 0));
+            GameObject* sortEye = GameObject::Create("SortEye");
+            SortingSettings custom(sortEye->AddComponent<Camera>());
+            GraphicsSettings::SetTransparencySortMode(TransparencySortMode::Default);
+            engine::Object::DestroyImmediate(sortEye);
+            Calls().Push(Format("sort:{},{};pipe:{}/{}/{}/{}/{}/{}/{}/{}-{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{},{}/{}/{}/{}/{}/{}/{}/{}", i32(custom.distanceMetric), text::F(custom.customAxis.y), drawing.GetShaderPassName(0).name(),
                                 drawing.GetShaderPassName(1).name(), drawing.GetShaderPassName(2).name(), i32(drawing.sortingSettings.criteria),
                                 B(drawing.enableInstancing), B(drawing.enableDynamicBatching), drawing.mainLightIndex, filtering.renderQueueRange.lowerBound,
                                 filtering.renderQueueRange.upperBound, filtering.layerMask, filtering.renderingLayerMask, RenderQueueRange::opaque().upperBound,

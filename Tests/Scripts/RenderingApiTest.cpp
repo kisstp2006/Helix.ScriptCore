@@ -15,6 +15,7 @@
 #include <Helix/Testing/Test.h>
 
 #include <cstdio>
+#include <cstdlib>
 
 using namespace helix;
 using namespace helix::engine;
@@ -99,7 +100,12 @@ namespace
                 adapters++;
             for (i32 adapter = adapters ? 0 : -1; adapter < i32(adapters); adapter++)
             {
-                rhi::Device* device = rhi::Device::Create({.backend = b, .adapter = adapter, .vsync = false});
+                // HELIX_RENDER_BATCHING=1: the persistent material and object blocks; HELIX_RENDER_THREAD=1: devices of the
+                // threaded mode (a render thread owns the backend).
+                static const bool batching = std::getenv("HELIX_RENDER_BATCHING") != nullptr;
+                static const bool threaded = std::getenv("HELIX_RENDER_THREAD") != nullptr;
+                GraphicsSettings::SetUseScriptableRenderPipelineBatching(batching);
+                rhi::Device* device = rhi::Device::Create({.backend = b, .adapter = adapter, .vsync = false, .threaded = threaded});
                 if (!device)
                     continue;
                 name[0] = 0;
@@ -302,7 +308,7 @@ HX_TEST(ScriptApi, ThePipelineValuesInBothLanguages)
 {
     HX_REQUIRE(StartScripts());
     HX_CHECK(SameLines("CsPipelineValues", "CppPipelineValues",
-                       "pipe:First//Third/59/True/False/-1/0-5000/-1/4294967295/2500/2501/6/True/2/2/15/3/1.00,2.00/Values/True/True/0/1/True/True"));
+                       "sort:2,1.00;pipe:First//Third/59/True/False/-1/0-5000/-1/4294967295/2500/2501/6/True/2/2/15/3/1.00,2.00/Values/True/True/0/1/True/True"));
 }
 
 namespace
@@ -463,5 +469,47 @@ HX_TEST(ScriptApi, StandardRequestsThroughThePipelinesOfBothLanguages)
             DestroyImmediate(asset);
     }
     DestroyImmediate(host);
+    Calls().Clear();
+}
+
+HX_TEST(ScriptApi, CullingGroupsAndLODGroupsFromCSharp)
+{
+    HX_REQUIRE(StartScripts());
+    engine::testing::TestShaderFolder shaders;
+    constexpr u32 size = 16;
+    u32 devices = ForEachDevice([&](rhi::Device& device) {
+        rhi::TextureHandle color =
+            device.CreateTexture({.format = rhi::Format::RGBA8Unorm, .width = size, .height = size, .usage = rhi::TextureRenderTarget | rhi::TextureSampled});
+        rhi::TextureHandle depth = device.CreateTexture({.format = rhi::Format::D32Float, .width = size, .height = size, .usage = rhi::TextureDepthStencil});
+        Graphics::SetDevice(&device);
+        Graphics::SetTarget({color, depth, size, size, rhi::Format::RGBA8Unorm, rhi::Format::D32Float});
+        Calls().Clear();
+        GameObject* host = GameObject::Create("ProbeHost");
+        host->AddComponent(CSharp("CsCullingProbe").type);
+        // Start (the group and the levels), then a frame culls the probe's camera, then Update queries.
+        RunScriptPhase(ScriptMessage::Update);
+        UpdateWorldMatrices();
+        Graphics::RenderFrame();
+        RunScriptPhase(ScriptMessage::Update);
+        Array<String> lines = Move(Calls());
+        Calls() = Array<String>();
+        const char* expected[] = {"lods:2:0.50:2:0.25:LodB", "query:0:False:0", "cg:0:True:0:True", "cg:1:True:1:True", "cg:2:False:1:False",
+                                  "query:2:False:1"};
+        bool same = lines.Size() == sizeof(expected) / sizeof(expected[0]);
+        for (u32 i = 0; same && i < lines.Size(); i++)
+            same = lines[i] == StringView(expected[i]);
+        if (!same)
+            for (const String& l : lines)
+                std::printf("    %s\n", l.CStr());
+        HX_CHECK(same);
+        DestroyImmediate(host);
+        for (const char* name : {"ProbeEye", "Lods", "LodA", "LodB"})
+            if (GameObject* g = GameObject::Find(name))
+                DestroyImmediate(g);
+        Graphics::ReleaseResources();
+        device.Destroy(color);
+        device.Destroy(depth);
+    });
+    std::printf("    %u devices\n", devices);
     Calls().Clear();
 }

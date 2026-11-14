@@ -58,7 +58,15 @@ namespace HelixEngine.Rendering
             m_CameraPosition = camera.transform.position;
             m_CustomAxis = default;
             m_Criteria = SortingCriteria.None;
-            m_DistanceMetric = camera.orthographic ? DistanceMetric.Orthographic : DistanceMetric.Perspective;
+            m_DistanceMetric = GraphicsSettings.transparencySortMode switch
+            {
+                TransparencySortMode.Perspective => DistanceMetric.Perspective,
+                TransparencySortMode.Orthographic => DistanceMetric.Orthographic,
+                TransparencySortMode.CustomAxis => DistanceMetric.CustomAxis,
+                _ => camera.orthographic ? DistanceMetric.Orthographic : DistanceMetric.Perspective,
+            };
+            if (m_DistanceMetric == DistanceMetric.CustomAxis)
+                m_CustomAxis = GraphicsSettings.transparencySortAxis;
         }
 
         public Matrix4x4 worldToCameraMatrix { get => m_WorldToCameraMatrix; set => m_WorldToCameraMatrix = value; }
@@ -481,6 +489,10 @@ namespace HelixEngine.Rendering
         Vector3 m_Origin;
         byte m_IsOrthographic;
         internal Camera m_Camera;
+        LODParameters m_LODParameters;
+        int m_MaximumVisibleLights;
+        fixed float m_LayerCullDistances[32];
+        byte m_LayerCullSpherical;
 
         public static readonly int maximumCullingPlaneCount = 10;
 
@@ -489,6 +501,33 @@ namespace HelixEngine.Rendering
         public CullingOptions cullingOptions { get => m_CullingOptions; set => m_CullingOptions = value; }
         public Vector3 origin { get => m_Origin; set => m_Origin = value; }
         public bool isOrthographic { get => m_IsOrthographic != 0; set => m_IsOrthographic = (byte)(value ? 1 : 0); }
+        public LODParameters lodParameters { get => m_LODParameters; set => m_LODParameters = value; }
+        /// <summary>At most this many visible lights (directional ones first); -1 for all.</summary>
+        public int maximumVisibleLights { get => m_MaximumVisibleLights; set => m_MaximumVisibleLights = value; }
+        /// <summary>Layer cull distances measured from the origin instead of along the view.</summary>
+        public bool layerCullSpherical { get => m_LayerCullSpherical != 0; set => m_LayerCullSpherical = (byte)(value ? 1 : 0); }
+
+        public float GetLayerCullDistance(int layerIndex)
+        {
+            if (layerIndex < 0 || layerIndex >= 32)
+                throw new ArgumentOutOfRangeException(nameof(layerIndex), $"Layer index should range from 0 to 31, was {layerIndex}");
+            return m_LayerCullDistances[layerIndex];
+        }
+
+        public void SetLayerCullDistance(int layerIndex, float distance)
+        {
+            if (layerIndex < 0 || layerIndex >= 32)
+                throw new ArgumentOutOfRangeException(nameof(layerIndex), $"Layer index should range from 0 to 31, was {layerIndex}");
+            m_LayerCullDistances[layerIndex] = distance;
+        }
+
+        internal float[] LayerCullDistances()
+        {
+            var distances = new float[32];
+            for (int i = 0; i < 32; i++)
+                distances[i] = m_LayerCullDistances[i];
+            return distances;
+        }
 
         public int cullingPlaneCount
         {
@@ -531,6 +570,12 @@ namespace HelixEngine.Rendering
             for (int i = 0; i < 40; i++)
                 if (!m_CullingPlanes[i].Equals(other.m_CullingPlanes[i]))
                     return false;
+            for (int i = 0; i < 32; i++)
+                if (!m_LayerCullDistances[i].Equals(other.m_LayerCullDistances[i]))
+                    return false;
+            if (!m_LODParameters.Equals(other.m_LODParameters) || m_MaximumVisibleLights != other.m_MaximumVisibleLights ||
+                m_LayerCullSpherical != other.m_LayerCullSpherical)
+                return false;
             return m_CullingMask == other.m_CullingMask && m_CullingMatrix.Equals(other.m_CullingMatrix) && m_CullingPlaneCount == other.m_CullingPlaneCount &&
                    m_CullingOptions == other.m_CullingOptions && m_Origin.Equals(other.m_Origin) && m_IsOrthographic == other.m_IsOrthographic &&
                    ReferenceEquals(m_Camera, other.m_Camera);

@@ -176,3 +176,11 @@ if(TEST helix_scriptcore_tests AND HELIX_ENABLE_ASAN AND HELIX_PLATFORM STREQUAL
         set_tests_properties(helix_scriptcore_tests_coreclr PROPERTIES ENVIRONMENT "HELIX_DOTNET_RUNTIME=coreclr;LSAN_OPTIONS=suppressions=${scripting_dir}/Tests/Support/LeakSuppressions.txt")
     endif()
 endif()
+
+# The rendering tests once more with the persistent blocks, and with a render thread (every golden image the same).
+if(TARGET helix_scriptcore_tests AND (HELIX_PLATFORM STREQUAL "windows" OR HELIX_PLATFORM STREQUAL "linux"))
+    add_test(NAME helix_scriptcore_tests_batching COMMAND helix_scriptcore_tests)
+    set_tests_properties(helix_scriptcore_tests_batching PROPERTIES ENVIRONMENT "HELIX_RENDER_BATCHING=1")
+    add_test(NAME helix_scriptcore_tests_render_thread COMMAND helix_scriptcore_tests)
+    set_tests_properties(helix_scriptcore_tests_render_thread PROPERTIES ENVIRONMENT "HELIX_RENDER_BATCHING=1;HELIX_RENDER_THREAD=1")
+endif()

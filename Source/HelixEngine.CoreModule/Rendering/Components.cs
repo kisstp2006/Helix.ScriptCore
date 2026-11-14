@@ -147,6 +147,47 @@ namespace HelixEngine
                                       objectToWorld);
         }
 
+        /// <summary>Instances of a submesh, drawn instanced where the material takes part (enableInstancing and a shader with INSTANCING_ON).</summary>
+        public static void RenderMeshInstanced(in RenderParams rparams, Mesh mesh, int submeshIndex, Matrix4x4[] instanceData, int instanceCount = -1,
+                                               int startInstance = 0)
+        {
+            if (mesh == null)
+                throw new ArgumentNullException(nameof(mesh));
+            if (instanceData == null)
+                throw new ArgumentNullException(nameof(instanceData));
+            int count = instanceCount < 0 ? instanceData.Length - startInstance : instanceCount;
+            if (startInstance < 0 || count < 0 || startInstance + count > instanceData.Length)
+                throw new ArgumentOutOfRangeException(nameof(instanceCount), "the instances lie outside the array");
+            GraphicsNative.RenderMeshInstanced(rparams.material, rparams.camera, rparams.matProps?.m_Block ?? default, rparams.layer, rparams.renderingLayerMask,
+                                               rparams.rendererPriority, rparams.worldBounds, rparams.shadowCastingMode, rparams.receiveShadows, mesh,
+                                               submeshIndex, new ReadOnlySpan<Matrix4x4>(instanceData, startInstance, count).ToArray());
+        }
+
+        public static void RenderMeshInstanced(in RenderParams rparams, Mesh mesh, int submeshIndex, System.Collections.Generic.List<Matrix4x4> instanceData,
+                                               int instanceCount = -1, int startInstance = 0) =>
+            RenderMeshInstanced(rparams, mesh, submeshIndex, instanceData?.ToArray(), instanceCount, startInstance);
+
+        public static void DrawMeshInstanced(Mesh mesh, int submeshIndex, Material material, Matrix4x4[] matrices, int count = -1,
+                                             MaterialPropertyBlock properties = null, ShadowCastingMode castShadows = ShadowCastingMode.On,
+                                             bool receiveShadows = true, int layer = 0, Camera camera = null)
+        {
+            if (matrices == null)
+                throw new ArgumentNullException(nameof(matrices));
+            if (count < 0)
+                count = matrices.Length;
+            if (count > 1023)
+                throw new ArgumentOutOfRangeException(nameof(count), "Count must be in the range of 0 to 1023.");
+            if (material == null || !material.enableInstancing)
+                throw new InvalidOperationException("Material needs to enable instancing for use with DrawMeshInstanced.");
+            var p = new RenderParams(material) { layer = layer, camera = camera, matProps = properties, shadowCastingMode = castShadows, receiveShadows = receiveShadows };
+            RenderMeshInstanced(p, mesh, submeshIndex, matrices, count);
+        }
+
+        public static void DrawMeshInstanced(Mesh mesh, int submeshIndex, Material material, System.Collections.Generic.List<Matrix4x4> matrices,
+                                             MaterialPropertyBlock properties = null, ShadowCastingMode castShadows = ShadowCastingMode.On,
+                                             bool receiveShadows = true, int layer = 0, Camera camera = null) =>
+            DrawMeshInstanced(mesh, submeshIndex, material, matrices?.ToArray(), -1, properties, castShadows, receiveShadows, layer, camera);
+
         public static void DrawMesh(Mesh mesh, Vector3 position, Quaternion rotation, Material material, int layer, Camera camera = null, int submeshIndex = 0,
                                     MaterialPropertyBlock properties = null, bool castShadows = true, bool receiveShadows = true, bool useLightProbes = true) =>
             DrawMesh(mesh, Matrix4x4.TRS(position, rotation, Vector3.one), material, layer, camera, submeshIndex, properties,

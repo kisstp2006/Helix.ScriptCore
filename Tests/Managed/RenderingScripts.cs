@@ -385,7 +385,13 @@ namespace Tests
             buffer.SetGlobalFloat("_Value", 1);
             bool recorded = buffer.sizeInBytes > 0;
             buffer.Clear();
-            Notes.NoteRaw($"pipe:{drawing.GetShaderPassName(0).name}/{drawing.GetShaderPassName(1).name}/{drawing.GetShaderPassName(2).name}/" +
+            GraphicsSettings.transparencySortMode = TransparencySortMode.CustomAxis;
+            GraphicsSettings.transparencySortAxis = new Vector3(0, 1, 0);
+            var sortEye = new GameObject("SortEye");
+            var custom = new SortingSettings(sortEye.AddComponent<Camera>());
+            GraphicsSettings.transparencySortMode = TransparencySortMode.Default;
+            HelixEngine.Object.DestroyImmediate(sortEye);
+            Notes.NoteRaw($"sort:{(int)custom.distanceMetric},{Text.F(custom.customAxis.y)};pipe:{drawing.GetShaderPassName(0).name}/{drawing.GetShaderPassName(1).name}/{drawing.GetShaderPassName(2).name}/" +
                           $"{(int)drawing.sortingSettings.criteria}/{drawing.enableInstancing}/{drawing.enableDynamicBatching}/{drawing.mainLightIndex}/" +
                           $"{filtering.renderQueueRange.lowerBound}-{filtering.renderQueueRange.upperBound}/{filtering.layerMask}/{filtering.renderingLayerMask}/" +
                           $"{RenderQueueRange.opaque.upperBound}/{RenderQueueRange.transparent.lowerBound}/{(int)state.mask}/{state.depthState.writeEnabled}/" +
@@ -395,4 +401,42 @@ namespace Tests
             buffer.Release();
         }
     }
+
+    // A culling group on its own camera (orthographic along +z): its events as notes; a LOD group's levels read back.
+    public class CsCullingProbe : GameBehaviour
+    {
+        CullingGroup m_Group;
+        readonly BoundingSphere[] m_Spheres = { new(new Vector3(0, 0, 3), 1), new(new Vector3(0, 0, 30), 1), new(new Vector3(50, 0, 3), 1) };
+
+        void Start()
+        {
+            var eye = new GameObject("ProbeEye");
+            var cam = eye.AddComponent<Camera>();
+            cam.orthographic = true;
+            cam.orthographicSize = 5;
+            m_Group = new CullingGroup { targetCamera = cam };
+            m_Group.onStateChanged = e => Notes.NoteRaw($"cg:{e.index}:{e.isVisible}:{e.currentDistance}:{e.hasBecomeVisible}");
+            m_Group.SetBoundingSpheres(m_Spheres);
+            m_Group.SetBoundingDistances(new[] { 10f, 50f });
+            m_Group.SetDistanceReferencePoint(Vector3.zero);
+
+            var holder = new GameObject("Lods");
+            var a = new GameObject("LodA").AddComponent<MeshRenderer>();
+            var b = new GameObject("LodB").AddComponent<MeshRenderer>();
+            var lods = holder.AddComponent<LODGroup>();
+            lods.SetLODs(new[] { new LOD(0.5f, new Renderer[] { a }), new LOD(0.1f, new Renderer[] { a, b }) { fadeTransitionWidth = 0.25f } });
+            LOD[] back = lods.GetLODs();
+            Notes.NoteRaw($"lods:{lods.lodCount}:{Text.F(back[0].screenRelativeTransitionHeight)}:{back[1].renderers.Length}:{Text.F(back[1].fadeTransitionWidth)}:{back[1].renderers[1].name}");
+        }
+
+        void Update()
+        {
+            int[] visible = new int[3];
+            int n = m_Group.QueryIndices(true, visible, 0);
+            Notes.NoteRaw($"query:{n}:{m_Group.IsVisible(2)}:{m_Group.GetDistance(1)}");
+        }
+
+        void OnDestroy() => m_Group?.Dispose();
+    }
 }
+

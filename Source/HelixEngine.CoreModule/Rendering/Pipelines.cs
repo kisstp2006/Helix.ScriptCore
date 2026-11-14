@@ -29,8 +29,12 @@ namespace HelixEngine.Rendering
         public CullingResults Cull(ref ScriptableCullingParameters parameters)
         {
             Validate();
+            LODParameters lod = parameters.lodParameters;
             ulong results = RenderPipelineNative.Cull(m_Ptr, parameters.m_Camera, (int)parameters.cullingMask, parameters.cullingMatrix, parameters.Planes(),
-                                                      (int)parameters.cullingOptions, parameters.origin, parameters.isOrthographic);
+                                                      (int)parameters.cullingOptions, parameters.origin, parameters.isOrthographic,
+                                                      new Vector4(lod.fieldOfView, lod.orthoSize, lod.cameraPixelHeight, lod.isOrthographic ? 1 : 0),
+                                                      lod.cameraPosition, parameters.LayerCullDistances(), parameters.layerCullSpherical,
+                                                      parameters.maximumVisibleLights);
             return new CullingResults(results);
         }
 
@@ -130,6 +134,9 @@ namespace HelixEngine.Rendering
                 throw new ArgumentNullException(nameof(commandBuffer));
             RenderPipelineNative.ExecuteCommandBuffer(m_Ptr, commandBuffer.Id);
         }
+
+        /// <summary>The devices have one queue: the commands run in order with the others.</summary>
+        public void ExecuteCommandBufferAsync(CommandBuffer commandBuffer, ComputeQueueType queueType) => ExecuteCommandBuffer(commandBuffer);
 
         public void InvokeOnRenderObjectCallback()
         {
@@ -329,6 +336,26 @@ namespace HelixEngine.Rendering
             get => RenderPipelineNative.DefaultRenderingLayerMask();
             set => RenderPipelineNative.SetDefaultRenderingLayerMask(value);
         }
+
+        /// <summary>Materials and objects keep their blocks in persistent GPU memory, bound by offset (where the device can).</summary>
+        public static bool useScriptableRenderPipelineBatching
+        {
+            get => CullingNative.Batching();
+            set => CullingNative.SetBatching(value);
+        }
+
+        /// <summary>The distance metric of SortingSettings made from a camera (Default: by the camera's projection).</summary>
+        public static TransparencySortMode transparencySortMode
+        {
+            get => (TransparencySortMode)CullingNative.SortMode();
+            set => CullingNative.SetSortMode((int)value);
+        }
+
+        public static Vector3 transparencySortAxis
+        {
+            get => CullingNative.SortAxis();
+            set => CullingNative.SetSortAxis(value);
+        }
     }
 
     /// <summary>A list of commands recorded now and run where it is executed.</summary>
@@ -393,6 +420,20 @@ namespace HelixEngine.Rendering
         public void SetGlobalVector(int nameID, Vector4 value) => RenderPipelineNative.SetGlobalVector(Id, nameID, value);
         public void SetGlobalColor(string name, Color value) => SetGlobalColor(Shader.PropertyToID(name), value);
         public void SetGlobalColor(int nameID, Color value) => RenderPipelineNative.SetGlobalVector(Id, nameID, new Vector4(value.r, value.g, value.b, value.a));
+        public void SetGlobalFloatArray(string propertyName, float[] values) => SetGlobalFloatArray(Shader.PropertyToID(propertyName), values);
+        public void SetGlobalFloatArray(int nameID, float[] values) => RenderPipelineNative.SetGlobalFloatArray(Id, nameID, values ?? throw new ArgumentNullException(nameof(values)));
+        public void SetGlobalFloatArray(string propertyName, System.Collections.Generic.List<float> values) => SetGlobalFloatArray(propertyName, values?.ToArray());
+        public void SetGlobalFloatArray(int nameID, System.Collections.Generic.List<float> values) => SetGlobalFloatArray(nameID, values?.ToArray());
+        public void SetGlobalVectorArray(string propertyName, Vector4[] values) => SetGlobalVectorArray(Shader.PropertyToID(propertyName), values);
+        public void SetGlobalVectorArray(int nameID, Vector4[] values) => RenderPipelineNative.SetGlobalVectorArray(Id, nameID, values ?? throw new ArgumentNullException(nameof(values)));
+        public void SetGlobalVectorArray(string propertyName, System.Collections.Generic.List<Vector4> values) => SetGlobalVectorArray(propertyName, values?.ToArray());
+        public void SetGlobalVectorArray(int nameID, System.Collections.Generic.List<Vector4> values) => SetGlobalVectorArray(nameID, values?.ToArray());
+        public void SetGlobalMatrixArray(string propertyName, Matrix4x4[] values) => SetGlobalMatrixArray(Shader.PropertyToID(propertyName), values);
+        public void SetGlobalMatrixArray(int nameID, Matrix4x4[] values) => RenderPipelineNative.SetGlobalMatrixArray(Id, nameID, values ?? throw new ArgumentNullException(nameof(values)));
+        public void SetGlobalMatrixArray(string propertyName, System.Collections.Generic.List<Matrix4x4> values) => SetGlobalMatrixArray(propertyName, values?.ToArray());
+        public void SetGlobalMatrixArray(int nameID, System.Collections.Generic.List<Matrix4x4> values) => SetGlobalMatrixArray(nameID, values?.ToArray());
+        /// <summary>Front faces turn around for the draws after it (mirrored views).</summary>
+        public void SetInvertCulling(bool invertCulling) => RenderPipelineNative.SetInvertCulling(Id, invertCulling);
         public void SetGlobalMatrix(string name, Matrix4x4 value) => SetGlobalMatrix(Shader.PropertyToID(name), value);
         public void SetGlobalMatrix(int nameID, Matrix4x4 value) => RenderPipelineNative.SetGlobalMatrix(Id, nameID, value);
         public void SetGlobalTexture(string name, RenderTargetIdentifier value) => SetGlobalTexture(Shader.PropertyToID(name), value);
@@ -403,6 +444,23 @@ namespace HelixEngine.Rendering
         public void EnableKeyword(in GlobalKeyword keyword) => RenderPipelineNative.SetKeyword(Id, keyword.name, true);
         public void DisableKeyword(in GlobalKeyword keyword) => RenderPipelineNative.SetKeyword(Id, keyword.name, false);
         public void SetKeyword(in GlobalKeyword keyword, bool value) => RenderPipelineNative.SetKeyword(Id, keyword.name, value);
+
+        public void DrawMeshInstanced(Mesh mesh, int submeshIndex, Material material, int shaderPass, Matrix4x4[] matrices, int count,
+                                      MaterialPropertyBlock properties)
+        {
+            if (matrices == null)
+                throw new ArgumentNullException(nameof(matrices));
+            if (count < 0 || count > matrices.Length)
+                throw new ArgumentOutOfRangeException(nameof(count));
+            RenderPipelineNative.DrawMeshInstanced(Id, mesh, submeshIndex, material, shaderPass, new ReadOnlySpan<Matrix4x4>(matrices, 0, count).ToArray(),
+                                                   properties?.m_Block ?? default);
+        }
+
+        public void DrawMeshInstanced(Mesh mesh, int submeshIndex, Material material, int shaderPass, Matrix4x4[] matrices, int count) =>
+            DrawMeshInstanced(mesh, submeshIndex, material, shaderPass, matrices, count, null);
+
+        public void DrawMeshInstanced(Mesh mesh, int submeshIndex, Material material, int shaderPass, Matrix4x4[] matrices) =>
+            DrawMeshInstanced(mesh, submeshIndex, material, shaderPass, matrices, matrices?.Length ?? 0, null);
 
         public void DrawMesh(Mesh mesh, Matrix4x4 matrix, Material material, int submeshIndex = 0, int shaderPass = -1, MaterialPropertyBlock properties = null)
         {
@@ -566,6 +624,11 @@ namespace HelixEngine
         }
 
         public static RenderPipelineAsset GetRenderPipelineAssetAt(int index) => RenderPipelineNative.GetRenderPipelineAssetAt(index) as RenderPipelineAsset;
+
+        /// <summary>Screen heights of LOD groups are multiplied by it (above 1: detailed levels further away).</summary>
+        public static float lodBias { get => CullingNative.LodBias(); set => CullingNative.SetLodBias(value); }
+        /// <summary>Levels below it are not drawn (the next coarser one is).</summary>
+        public static int maximumLODLevel { get => CullingNative.MaximumLODLevel(); set => CullingNative.SetMaximumLODLevel(value); }
     }
 
     public partial class Camera
@@ -589,6 +652,18 @@ namespace HelixEngine
             cullingParameters.origin = transform.position;
             cullingParameters.isOrthographic = orthographic;
             cullingParameters.m_Camera = this;
+            cullingParameters.cullingOptions = CullingOptions.NeedsLighting | CullingOptions.NeedsReflectionProbes | CullingOptions.ShadowCasters |
+                                               (useOcclusionCulling ? CullingOptions.OcclusionCull : CullingOptions.None);
+            cullingParameters.lodParameters = new LODParameters
+            {
+                isOrthographic = orthographic, cameraPosition = transform.position, fieldOfView = fieldOfView, orthoSize = orthographicSize,
+                cameraPixelHeight = (int)pr.height,
+            };
+            cullingParameters.maximumVisibleLights = -1;
+            float[] distances = layerCullDistances;
+            for (int i = 0; i < 32 && i < distances.Length; i++)
+                cullingParameters.SetLayerCullDistance(i, distances[i]);
+            cullingParameters.layerCullSpherical = layerCullSpherical;
             return true;
         }
     }
@@ -602,6 +677,9 @@ namespace HelixEngine
                 throw new ArgumentNullException(nameof(buffer));
             RenderPipelineNative.ExecuteNow(buffer.Id);
         }
+
+        /// <summary>The devices have one queue: the commands run now, in order.</summary>
+        public static void ExecuteCommandBufferAsync(CommandBuffer buffer, ComputeQueueType queueType) => ExecuteCommandBuffer(buffer);
     }
 }
 
