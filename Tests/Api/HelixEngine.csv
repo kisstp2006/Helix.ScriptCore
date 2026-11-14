@@ -542,10 +542,12 @@ GeometryUtility,CalculateFrustumPlanes,"static void CalculateFrustumPlanes(Camer
 GeometryUtility,TestPlanesAABB,"static bool TestPlanesAABB(Plane[], Bounds)"
 GeometryUtility,TryCreatePlaneFromPolygon,"static bool TryCreatePlaneFromPolygon(Vector3[], out Plane)"
 Graphics,Blit,"static void Blit(Texture, RenderTexture) / static void Blit(Texture, RenderTexture, Material, int = -1) / static void Blit(Texture, RenderTexture, Vector2, Vector2) / static void Blit(Texture, Material, int = -1)"
+Graphics,BlitMultiTap,"static void BlitMultiTap(Texture, RenderTexture, Material, params Vector2[]) / static void BlitMultiTap(Texture, RenderTexture, Material, int, params Vector2[])"
 Graphics,ConvertTexture,"static bool ConvertTexture(Texture, Texture) / static bool ConvertTexture(Texture, int, Texture, int)"
 Graphics,CopyTexture,"static void CopyTexture(Texture, Texture) / static void CopyTexture(Texture, int, Texture, int) / static void CopyTexture(Texture, int, int, Texture, int, int)"
 Graphics,DrawMesh,"static void DrawMesh(Mesh, Vector3, Quaternion, Material, int, Camera = null, int = 0, MaterialPropertyBlock = null, bool = True, bool = True, bool = True) / static void DrawMesh(Mesh, Vector3, Quaternion, Material, int, Camera, int, MaterialPropertyBlock, ShadowCastingMode, bool = True, Transform = null, bool = True) / static void DrawMesh(Mesh, Matrix4x4, Material, int, Camera = null, int = 0, MaterialPropertyBlock = null, bool = True, bool = True, bool = True) / static void DrawMesh(Mesh, Matrix4x4, Material, int, Camera, int, MaterialPropertyBlock, ShadowCastingMode, bool = True, Transform = null, bool = True)"
 Graphics,DrawMeshInstanced,"static void DrawMeshInstanced(Mesh, int, Material, Matrix4x4[], int = -1, MaterialPropertyBlock = null, ShadowCastingMode = On, bool = True, int = 0, Camera = null) / static void DrawMeshInstanced(Mesh, int, Material, List<Matrix4x4>, MaterialPropertyBlock = null, ShadowCastingMode = On, bool = True, int = 0, Camera = null)"
+Graphics,DrawProcedural,"static void DrawProcedural(Material, Bounds, MeshTopology, int, int = 1, Camera = null, MaterialPropertyBlock = null, ShadowCastingMode = On, bool = True, int = 0)"
 Graphics,ExecuteCommandBuffer,static void ExecuteCommandBuffer(CommandBuffer)
 Graphics,ExecuteCommandBufferAsync,"static void ExecuteCommandBufferAsync(CommandBuffer, ComputeQueueType)"
 Graphics,RenderMesh,"static void RenderMesh(ref RenderParams, Mesh, int, Matrix4x4, Nullable<Matrix4x4> = null)"
@@ -803,6 +805,11 @@ LODGroup,lastLODBillboard,bool lastLODBillboard { get; set; }
 LODGroup,localReferencePoint,Vector3 localReferencePoint { get; set; }
 LODGroup,lodCount,int lodCount { get; }
 LODGroup,size,float size { get; set; }
+LayerMask,GetMask,static int GetMask(params string[])
+LayerMask,LayerToName,static string LayerToName(int)
+LayerMask,NameToLayer,static int NameToLayer(string)
+LayerMask,operators,Implicit(LayerMask) / Implicit(int)
+LayerMask,value,int value { get; set; }
 Light,Reset,void Reset()
 Light,bounceIntensity,float bounceIntensity { get; set; }
 Light,color,Color color { get; set; }
@@ -1411,6 +1418,34 @@ Renderer,sortingLayerID,int sortingLayerID { get; set; }
 Renderer,sortingOrder,int sortingOrder { get; set; }
 Renderer,staticShadowCaster,bool staticShadowCaster { get; set; }
 Renderer,worldToLocalMatrix,Matrix4x4 worldToLocalMatrix { get; }
+Rendering.AsyncGPUReadback,Request,"static AsyncGPUReadbackRequest Request(Texture, int = 0, Action<AsyncGPUReadbackRequest> = null) / static AsyncGPUReadbackRequest Request(Texture, int, TextureFormat, Action<AsyncGPUReadbackRequest> = null) / static AsyncGPUReadbackRequest Request(Texture, int, GraphicsFormat, Action<AsyncGPUReadbackRequest> = null)"
+Rendering.AsyncGPUReadback,RequestIntoNativeArray,"static AsyncGPUReadbackRequest RequestIntoNativeArray<T>(ref NativeArray<T>, Texture, int = 0, Action<AsyncGPUReadbackRequest> = null)"
+Rendering.AsyncGPUReadback,WaitAllRequests,static void WaitAllRequests()
+Rendering.AsyncGPUReadbackRequest,GetData,NativeArray<T> GetData<T>(int = 0)
+Rendering.AsyncGPUReadbackRequest,Update,void Update()
+Rendering.AsyncGPUReadbackRequest,WaitForCompletion,void WaitForCompletion()
+Rendering.AsyncGPUReadbackRequest,depth,int depth { get; }
+Rendering.AsyncGPUReadbackRequest,done,bool done { get; }
+Rendering.AsyncGPUReadbackRequest,forcePlayerLoopUpdate,bool forcePlayerLoopUpdate { get; set; }
+Rendering.AsyncGPUReadbackRequest,hasError,bool hasError { get; }
+Rendering.AsyncGPUReadbackRequest,height,int height { get; }
+Rendering.AsyncGPUReadbackRequest,layerCount,int layerCount { get; }
+Rendering.AsyncGPUReadbackRequest,layerDataSize,int layerDataSize { get; }
+Rendering.AsyncGPUReadbackRequest,width,int width { get; }
+Rendering.AttachmentDescriptor,.ctor,"AttachmentDescriptor(GraphicsFormat) / AttachmentDescriptor(RenderTextureFormat) / AttachmentDescriptor(RenderTextureFormat, RenderTargetIdentifier, bool = False, bool = False, bool = False) / AttachmentDescriptor(GraphicsFormat, RenderTargetIdentifier, bool = False, bool = False, bool = False)"
+Rendering.AttachmentDescriptor,ConfigureClear,"void ConfigureClear(Color, float = 1, uint = 0)"
+Rendering.AttachmentDescriptor,ConfigureResolveTarget,void ConfigureResolveTarget(RenderTargetIdentifier)
+Rendering.AttachmentDescriptor,ConfigureTarget,"void ConfigureTarget(RenderTargetIdentifier, bool, bool)"
+Rendering.AttachmentDescriptor,clearColor,Color clearColor { get; set; }
+Rendering.AttachmentDescriptor,clearDepth,float clearDepth { get; set; }
+Rendering.AttachmentDescriptor,clearStencil,uint clearStencil { get; set; }
+Rendering.AttachmentDescriptor,format,RenderTextureFormat format { get; set; }
+Rendering.AttachmentDescriptor,graphicsFormat,GraphicsFormat graphicsFormat { get; set; }
+Rendering.AttachmentDescriptor,loadAction,RenderBufferLoadAction loadAction { get; set; }
+Rendering.AttachmentDescriptor,loadStoreTarget,RenderTargetIdentifier loadStoreTarget { get; set; }
+Rendering.AttachmentDescriptor,operators,"Equality(AttachmentDescriptor, AttachmentDescriptor) / Inequality(AttachmentDescriptor, AttachmentDescriptor)"
+Rendering.AttachmentDescriptor,resolveTarget,RenderTargetIdentifier resolveTarget { get; set; }
+Rendering.AttachmentDescriptor,storeAction,RenderBufferStoreAction storeAction { get; set; }
 Rendering.BlendMode,DstAlpha,Rendering.BlendMode.DstAlpha = 7
 Rendering.BlendMode,DstColor,Rendering.BlendMode.DstColor = 2
 Rendering.BlendMode,One,Rendering.BlendMode.One = 1
@@ -1511,7 +1546,9 @@ Rendering.CommandBuffer,DisableShaderKeyword,void DisableShaderKeyword(string)
 Rendering.CommandBuffer,Dispose,void Dispose()
 Rendering.CommandBuffer,DrawMesh,"void DrawMesh(Mesh, Matrix4x4, Material, int = 0, int = -1, MaterialPropertyBlock = null)"
 Rendering.CommandBuffer,DrawMeshInstanced,"void DrawMeshInstanced(Mesh, int, Material, int, Matrix4x4[], int, MaterialPropertyBlock) / void DrawMeshInstanced(Mesh, int, Material, int, Matrix4x4[], int) / void DrawMeshInstanced(Mesh, int, Material, int, Matrix4x4[])"
+Rendering.CommandBuffer,DrawProcedural,"void DrawProcedural(Matrix4x4, Material, int, MeshTopology, int, int = 1, MaterialPropertyBlock = null)"
 Rendering.CommandBuffer,DrawRenderer,"void DrawRenderer(Renderer, Material, int = 0, int = -1)"
+Rendering.CommandBuffer,DrawRendererList,void DrawRendererList(RendererList)
 Rendering.CommandBuffer,EnableKeyword,void EnableKeyword(ref GlobalKeyword)
 Rendering.CommandBuffer,EnableScissorRect,void EnableScissorRect(Rect)
 Rendering.CommandBuffer,EnableShaderKeyword,void EnableShaderKeyword(string)
@@ -1521,6 +1558,7 @@ Rendering.CommandBuffer,GetTemporaryRT,"void GetTemporaryRT(int, RenderTextureDe
 Rendering.CommandBuffer,GetTemporaryRTArray,"void GetTemporaryRTArray(int, int, int, int, int = 0, FilterMode = Point, RenderTextureFormat = Default, RenderTextureReadWrite = Default, int = 1, bool = False) / void GetTemporaryRTArray(int, int, int, int, int, FilterMode, GraphicsFormat, int = 1, bool = False, bool = False)"
 Rendering.CommandBuffer,Release,void Release()
 Rendering.CommandBuffer,ReleaseTemporaryRT,void ReleaseTemporaryRT(int)
+Rendering.CommandBuffer,RequestAsyncReadback,"void RequestAsyncReadback(Texture, Action<AsyncGPUReadbackRequest>) / void RequestAsyncReadback(Texture, int, Action<AsyncGPUReadbackRequest>)"
 Rendering.CommandBuffer,ResolveAntiAliasedSurface,"void ResolveAntiAliasedSurface(RenderTexture, RenderTexture = null)"
 Rendering.CommandBuffer,SetGlobalColor,"void SetGlobalColor(string, Color) / void SetGlobalColor(int, Color)"
 Rendering.CommandBuffer,SetGlobalFloat,"void SetGlobalFloat(string, float) / void SetGlobalFloat(int, float)"
@@ -1600,6 +1638,12 @@ Rendering.GlobalKeyword,.ctor,GlobalKeyword(string)
 Rendering.GlobalKeyword,Create,static GlobalKeyword Create(string)
 Rendering.GlobalKeyword,ToString,string ToString()
 Rendering.GlobalKeyword,name,string name { get; }
+Rendering.GraphicsSettings,GetRenderPipelineSettings,static T GetRenderPipelineSettings<T>()
+Rendering.GraphicsSettings,GetSettingsForRenderPipeline,static RenderPipelineGlobalSettings GetSettingsForRenderPipeline<T>()
+Rendering.GraphicsSettings,RegisterRenderPipelineSettings,static void RegisterRenderPipelineSettings<T>(RenderPipelineGlobalSettings)
+Rendering.GraphicsSettings,TryGetCurrentRenderPipelineGlobalSettings,static bool TryGetCurrentRenderPipelineGlobalSettings(out RenderPipelineGlobalSettings)
+Rendering.GraphicsSettings,TryGetRenderPipelineSettings,static bool TryGetRenderPipelineSettings<T>(out T)
+Rendering.GraphicsSettings,UnregisterRenderPipelineSettings,static void UnregisterRenderPipelineSettings<T>()
 Rendering.GraphicsSettings,currentRenderPipeline,static RenderPipelineAsset currentRenderPipeline { get; }
 Rendering.GraphicsSettings,defaultRenderPipeline,static RenderPipelineAsset defaultRenderPipeline { get; set; }
 Rendering.GraphicsSettings,defaultRenderingLayerMask,static uint defaultRenderingLayerMask { get; set; }
@@ -1607,6 +1651,8 @@ Rendering.GraphicsSettings,renderPipelineAsset,static RenderPipelineAsset render
 Rendering.GraphicsSettings,transparencySortAxis,static Vector3 transparencySortAxis { get; set; }
 Rendering.GraphicsSettings,transparencySortMode,static TransparencySortMode transparencySortMode { get; set; }
 Rendering.GraphicsSettings,useScriptableRenderPipelineBatching,static bool useScriptableRenderPipelineBatching { get; set; }
+Rendering.IRenderPipelineGraphicsSettings,isAvailableInPlayerBuild,bool isAvailableInPlayerBuild { get; }
+Rendering.IRenderPipelineGraphicsSettings,version,int version { get; }
 Rendering.IndexFormat,UInt16,Rendering.IndexFormat.UInt16 = 0
 Rendering.IndexFormat,UInt32,Rendering.IndexFormat.UInt32 = 1
 Rendering.LODParameters,cameraPixelHeight,int cameraPixelHeight { get; set; }
@@ -1676,6 +1722,7 @@ Rendering.RenderPipeline.StandardRequest,destination,RenderTexture destination
 Rendering.RenderPipeline.StandardRequest,face,CubemapFace face
 Rendering.RenderPipeline.StandardRequest,mipLevel,int mipLevel
 Rendering.RenderPipeline.StandardRequest,slice,int slice
+Rendering.RenderPipelineAsset,pipelineType,Type pipelineType { get; }
 Rendering.RenderPipelineManager,activeRenderPipelineAssetChanged,"static event Action<RenderPipelineAsset, RenderPipelineAsset> activeRenderPipelineAssetChanged"
 Rendering.RenderPipelineManager,activeRenderPipelineTypeChanged,static event Action activeRenderPipelineTypeChanged
 Rendering.RenderPipelineManager,beginCameraRendering,"static event Action<ScriptableRenderContext, Camera> beginCameraRendering"
@@ -1721,6 +1768,37 @@ Rendering.RenderTargetIdentifier,.ctor,"RenderTargetIdentifier(BuiltinRenderText
 Rendering.RenderTargetIdentifier,AllDepthSlices,const int AllDepthSlices
 Rendering.RenderTargetIdentifier,ToString,string ToString()
 Rendering.RenderTargetIdentifier,operators,"Implicit(BuiltinRenderTextureType) / Implicit(string) / Implicit(int) / Implicit(Texture) / Implicit(RenderBuffer) / Equality(RenderTargetIdentifier, RenderTargetIdentifier) / Inequality(RenderTargetIdentifier, RenderTargetIdentifier)"
+Rendering.RendererListParams,.ctor,"RendererListParams(CullingResults, DrawingSettings, FilteringSettings)"
+Rendering.RendererListParams,Invalid,static RendererListParams Invalid
+Rendering.RendererListParams,Validate,void Validate()
+Rendering.RendererListParams,cullingResults,CullingResults cullingResults
+Rendering.RendererListParams,drawSettings,DrawingSettings drawSettings
+Rendering.RendererListParams,filteringSettings,FilteringSettings filteringSettings
+Rendering.RendererListParams,isPassTagName,bool isPassTagName
+Rendering.RendererListParams,operators,"Equality(RendererListParams, RendererListParams) / Inequality(RendererListParams, RendererListParams)"
+Rendering.RendererListParams,stateBlocks,Nullable<NativeArray<RenderStateBlock>> stateBlocks
+Rendering.RendererListParams,tagName,ShaderTagId tagName
+Rendering.RendererListParams,tagValues,Nullable<NativeArray<ShaderTagId>> tagValues
+Rendering.RendererUtils.RendererList,isValid,bool isValid { get; }
+Rendering.RendererUtils.RendererList,nullRendererList,static RendererList nullRendererList
+Rendering.RendererUtils.RendererListDesc,.ctor,"RendererListDesc(ShaderTagId, CullingResults, Camera) / RendererListDesc(ShaderTagId[], CullingResults, Camera)"
+Rendering.RendererUtils.RendererListDesc,ConvertToParameters,static RendererListParams ConvertToParameters(ref RendererListDesc)
+Rendering.RendererUtils.RendererListDesc,IsValid,bool IsValid()
+Rendering.RendererUtils.RendererListDesc,excludeObjectMotionVectors,bool excludeObjectMotionVectors
+Rendering.RendererUtils.RendererListDesc,layerMask,int layerMask
+Rendering.RendererUtils.RendererListDesc,overrideMaterial,Material overrideMaterial
+Rendering.RendererUtils.RendererListDesc,overrideMaterialPassIndex,int overrideMaterialPassIndex
+Rendering.RendererUtils.RendererListDesc,overrideShader,Shader overrideShader
+Rendering.RendererUtils.RendererListDesc,overrideShaderPassIndex,int overrideShaderPassIndex
+Rendering.RendererUtils.RendererListDesc,renderQueueRange,RenderQueueRange renderQueueRange
+Rendering.RendererUtils.RendererListDesc,rendererConfiguration,PerObjectData rendererConfiguration
+Rendering.RendererUtils.RendererListDesc,renderingLayerMask,uint renderingLayerMask
+Rendering.RendererUtils.RendererListDesc,sortingCriteria,SortingCriteria sortingCriteria
+Rendering.RendererUtils.RendererListDesc,stateBlock,Nullable<RenderStateBlock> stateBlock
+Rendering.RendererUtils.RendererListStatus,kRendererListEmpty,Rendering.RendererUtils.RendererListStatus.kRendererListEmpty = 0
+Rendering.RendererUtils.RendererListStatus,kRendererListInvalid,Rendering.RendererUtils.RendererListStatus.kRendererListInvalid = -2
+Rendering.RendererUtils.RendererListStatus,kRendererListPopulated,Rendering.RendererUtils.RendererListStatus.kRendererListPopulated = 1
+Rendering.RendererUtils.RendererListStatus,kRendererListProcessing,Rendering.RendererUtils.RendererListStatus.kRendererListProcessing = -1
 Rendering.RenderingThreadingMode,Direct,Rendering.RenderingThreadingMode.Direct = 0
 Rendering.RenderingThreadingMode,LegacyJobified,Rendering.RenderingThreadingMode.LegacyJobified = 3
 Rendering.RenderingThreadingMode,MultiThreaded,Rendering.RenderingThreadingMode.MultiThreaded = 2
@@ -1743,11 +1821,18 @@ Rendering.ScriptableCullingParameters,maximumCullingPlaneCount,static int maximu
 Rendering.ScriptableCullingParameters,maximumVisibleLights,int maximumVisibleLights { get; set; }
 Rendering.ScriptableCullingParameters,operators,"Equality(ScriptableCullingParameters, ScriptableCullingParameters) / Inequality(ScriptableCullingParameters, ScriptableCullingParameters)"
 Rendering.ScriptableCullingParameters,origin,Vector3 origin { get; set; }
+Rendering.ScriptableRenderContext,BeginRenderPass,"void BeginRenderPass(int, int, int, NativeArray<AttachmentDescriptor>, int = -1)"
+Rendering.ScriptableRenderContext,BeginSubPass,"void BeginSubPass(NativeArray<int>, NativeArray<int>, bool = False) / void BeginSubPass(NativeArray<int>, NativeArray<int>, bool, bool) / void BeginSubPass(NativeArray<int>, bool = False)"
+Rendering.ScriptableRenderContext,CreateRendererList,RendererList CreateRendererList(ref RendererListParams) / RendererList CreateRendererList(RendererListDesc)
 Rendering.ScriptableRenderContext,Cull,CullingResults Cull(ref ScriptableCullingParameters)
 Rendering.ScriptableRenderContext,DrawRenderers,"void DrawRenderers(CullingResults, ref DrawingSettings, ref FilteringSettings) / void DrawRenderers(CullingResults, ref DrawingSettings, ref FilteringSettings, ref RenderStateBlock)"
+Rendering.ScriptableRenderContext,EndRenderPass,void EndRenderPass()
+Rendering.ScriptableRenderContext,EndSubPass,void EndSubPass()
 Rendering.ScriptableRenderContext,ExecuteCommandBuffer,void ExecuteCommandBuffer(CommandBuffer)
 Rendering.ScriptableRenderContext,ExecuteCommandBufferAsync,"void ExecuteCommandBufferAsync(CommandBuffer, ComputeQueueType)"
 Rendering.ScriptableRenderContext,InvokeOnRenderObjectCallback,void InvokeOnRenderObjectCallback()
+Rendering.ScriptableRenderContext,PrepareRendererListsAsync,void PrepareRendererListsAsync(List<RendererList>)
+Rendering.ScriptableRenderContext,QueryRendererListStatus,RendererListStatus QueryRendererListStatus(RendererList)
 Rendering.ScriptableRenderContext,SetupCameraProperties,"void SetupCameraProperties(Camera, bool = False)"
 Rendering.ScriptableRenderContext,Submit,void Submit()
 Rendering.ScriptableRenderContext,operators,"Equality(ScriptableRenderContext, ScriptableRenderContext) / Inequality(ScriptableRenderContext, ScriptableRenderContext)"

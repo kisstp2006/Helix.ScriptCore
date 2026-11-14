@@ -125,6 +125,8 @@ namespace Tests
 
         void Start()
         {
+            Check(LayerMask.GetMask("UI", "Water", "NoSuchLayer") == ((1 << 5) | (1 << 4)) && LayerMask.NameToLayer("UI") == 5 &&
+                  LayerMask.LayerToName(4) == "Water" && LayerMask.LayerToName(40) == "" && ((LayerMask)8).value == 8 && (int)(LayerMask)(1 << 3) == 8, "LayerMask");
             Check(new Vector3(1.234f, 5.678f, 9.012f).ToString() == "(1.23, 5.68, 9.01)", "Vector3.ToString");
             Check(new Vector2(1, 2).ToString() == "(1.00, 2.00)", "Vector2.ToString");
             Check(new Vector3(1, 2, 3).ToString("F1") == "(1.0, 2.0, 3.0)", "Vector3.ToString(F1)");

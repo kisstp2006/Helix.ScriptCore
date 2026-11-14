@@ -513,3 +513,69 @@ HX_TEST(ScriptApi, CullingGroupsAndLODGroupsFromCSharp)
     std::printf("    %u devices\n", devices);
     Calls().Clear();
 }
+
+HX_TEST(ScriptApi, RendererListsRenderPassesAndReadbacksFromCSharp)
+{
+    HX_REQUIRE(StartScripts());
+    engine::testing::TestShaderFolder shaders;
+    constexpr u32 size = 16;
+    ScriptableObject* asset = ScriptableObject::CreateInstanceByName("CsListPipelineAsset");
+    HX_REQUIRE(asset != nullptr);
+    GraphicsSettings::SetDefaultRenderPipeline(asset);
+    u32 devices = ForEachDevice([&](rhi::Device& device) {
+        rhi::TextureHandle color =
+            device.CreateTexture({.format = rhi::Format::RGBA8Unorm, .width = size, .height = size, .usage = rhi::TextureRenderTarget | rhi::TextureSampled});
+        rhi::TextureHandle depth = device.CreateTexture({.format = rhi::Format::D32Float, .width = size, .height = size, .usage = rhi::TextureDepthStencil});
+        Graphics::SetDevice(&device);
+        Graphics::SetTarget({color, depth, size, size, rhi::Format::RGBA8Unorm, rhi::Format::D32Float});
+        Calls().Clear();
+        GameObject* host = GameObject::Create("ListHost");
+        host->AddComponent(CSharp("CsListScene").type);
+        // Per frame: the list (red left), the list with color writes off (black), the native pass (green), the procedural
+        // triangle (white), then lists with readbacks.
+        const u32 left[] = {0xff0000ffu, 0xff000000u, 0xff00ff00u, 0xffffffffu, 0xff0000ffu, 0xff0000ffu, 0xff0000ffu};
+        const u32 right[] = {0xff000000u, 0xff000000u, 0xff00ff00u, 0xffffffffu, 0xff000000u, 0xff000000u, 0xff000000u};
+        Array<u32> pixels;
+        pixels.Resize(size * size);
+        for (u32 frame = 0; frame < 7; frame++)
+        {
+            RunScriptPhase(ScriptMessage::Update);
+            UpdateWorldMatrices();
+            Graphics::RenderFrame();
+            HX_REQUIRE(device.ReadTexture(color, 0, pixels.Data(), pixels.Size() * 4));
+            u32 l = pixels[8 * size + 4], r = pixels[8 * size + 12];
+            if (l != left[frame] || r != right[frame])
+                std::printf("    frame %u: %08x %08x\n", frame, l, r);
+            HX_CHECK(l == left[frame] && r == right[frame]);
+        }
+        Array<String> lines = Move(Calls());
+        Calls() = Array<String>();
+        const char* expected[] = {"settings:True:True:3",
+                                  "list:True:kRendererListPopulated:False:False:3",
+                                  "params:mismatch",
+                                  "rb:False:True",
+                                  "done:True:False:16",
+                                  "cb:True:16x16:1024:255",
+                                  "cmdcb:False:255",
+                                  "into:255:0",
+                                  "unregistered:True"};
+        bool same = lines.Size() == sizeof(expected) / sizeof(expected[0]);
+        for (u32 i = 0; same && i < lines.Size(); i++)
+            same = lines[i] == StringView(expected[i]);
+        if (!same)
+            for (const String& line : lines)
+                std::printf("    %s\n", line.CStr());
+        HX_CHECK(same);
+        DestroyImmediate(host);
+        for (const char* name : {"ListEye", "ListShape"})
+            if (GameObject* g = GameObject::Find(name))
+                DestroyImmediate(g);
+        Graphics::ReleaseResources();
+        device.Destroy(color);
+        device.Destroy(depth);
+    });
+    std::printf("    %u devices\n", devices);
+    GraphicsSettings::SetDefaultRenderPipeline(nullptr);
+    DestroyImmediate(asset);
+    Calls().Clear();
+}

@@ -4,7 +4,9 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using HelixEngine.Experimental.Rendering;
 using HelixEngine.Internal;
+using Helix.Collections;
 using HelixEngine.Rendering;
+using HelixEngine.Rendering.RendererUtils;
 
 namespace HelixEngine.Rendering
 {
@@ -49,74 +51,89 @@ namespace HelixEngine.Rendering
         {
             Validate();
             cullingResults.Validate();
-            SortingSettings sorting = drawingSettings.sortingSettings;
-            var data = new DrawRendererData
-            {
-                worldToCameraMatrix = sorting.worldToCameraMatrix,
-                cameraPosition = sorting.cameraPosition,
-                customAxis = sorting.customAxis,
-                criteria = (int)sorting.criteria,
-                distanceMetric = (int)sorting.distanceMetric,
-                perObjectData = (int)drawingSettings.perObjectData,
-                flags = (drawingSettings.enableDynamicBatching ? 1 : 0) | (drawingSettings.enableInstancing ? 2 : 0),
-                overrideMaterialPassIndex = drawingSettings.overrideMaterialPassIndex,
-                overrideShaderPassIndex = drawingSettings.overrideShaderPassIndex,
-                mainLightIndex = drawingSettings.mainLightIndex,
-                queueLower = filteringSettings.renderQueueRange.lowerBound,
-                queueUpper = filteringSettings.renderQueueRange.upperBound,
-                layerMask = filteringSettings.layerMask,
-                renderingLayerMask = filteringSettings.renderingLayerMask,
-                batchLayerMask = filteringSettings.batchLayerMask,
-                excludeMotionVectorObjects = filteringSettings.excludeMotionVectorObjects ? 1 : 0,
-            };
-            BlendState blend = stateBlock.blendState;
-            RenderTargetBlendState target = blend.blendState0;
-            DepthState depth = stateBlock.depthState;
-            RasterState raster = stateBlock.rasterState;
-            StencilState stencil = stateBlock.stencilState;
-            data.stateMask = (int)stateBlock.mask;
-            data.blendFlags = (blend.separateMRTBlendStates ? 1 : 0) | (blend.alphaToMask ? 2 : 0);
-            data.writeMask = (int)target.writeMask;
-            data.sourceColor = (int)target.sourceColorBlendMode;
-            data.destinationColor = (int)target.destinationColorBlendMode;
-            data.sourceAlpha = (int)target.sourceAlphaBlendMode;
-            data.destinationAlpha = (int)target.destinationAlphaBlendMode;
-            data.colorOperation = (int)target.colorBlendOperation;
-            data.alphaOperation = (int)target.alphaBlendOperation;
-            data.depthWrite = depth.writeEnabled ? 1 : 0;
-            data.depthCompare = (int)depth.compareFunction;
-            data.cullingMode = (int)raster.cullingMode;
-            data.offsetUnits = raster.offsetUnits;
-            data.offsetFactor = raster.offsetFactor;
-            data.rasterFlags = (raster.depthClip ? 1 : 0) | (raster.conservative ? 2 : 0);
-            data.stencilEnabled = stencil.enabled ? 1 : 0;
-            data.stencilReadMask = stencil.readMask;
-            data.stencilWriteMask = stencil.writeMask;
-            data.stencilCompareFront = (int)stencil.compareFunctionFront;
-            data.stencilPassFront = (int)stencil.passOperationFront;
-            data.stencilFailFront = (int)stencil.failOperationFront;
-            data.stencilZFailFront = (int)stencil.zFailOperationFront;
-            data.stencilCompareBack = (int)stencil.compareFunctionBack;
-            data.stencilPassBack = (int)stencil.passOperationBack;
-            data.stencilFailBack = (int)stencil.failOperationBack;
-            data.stencilZFailBack = (int)stencil.zFailOperationBack;
-            data.stencilReference = stateBlock.stencilReference;
-            // The other targets' blend states, seven values each.
-            var blends = new int[7 * 7];
-            RenderTargetBlendState[] others = { blend.blendState1, blend.blendState2, blend.blendState3, blend.blendState4, blend.blendState5, blend.blendState6, blend.blendState7 };
-            for (int i = 0; i < 7; i++)
-            {
-                RenderTargetBlendState b = others[i];
-                blends[i * 7] = (int)b.writeMask;
-                blends[i * 7 + 1] = (int)b.sourceColorBlendMode;
-                blends[i * 7 + 2] = (int)b.destinationColorBlendMode;
-                blends[i * 7 + 3] = (int)b.sourceAlphaBlendMode;
-                blends[i * 7 + 4] = (int)b.destinationAlphaBlendMode;
-                blends[i * 7 + 5] = (int)b.colorBlendOperation;
-                blends[i * 7 + 6] = (int)b.alphaBlendOperation;
-            }
+            DrawRendererData data = DrawPacking.Pack(ref drawingSettings, ref filteringSettings, ref stateBlock, out int[] blends);
             RenderPipelineNative.DrawRenderers(m_Ptr, cullingResults.ptr, data, drawingSettings.PassNames(), drawingSettings.overrideMaterial,
                                                drawingSettings.overrideShader, drawingSettings.fallbackMaterial, blends);
+        }
+
+        /// <summary>A list of what DrawRenderers would draw, drawn where a command buffer's DrawRendererList runs.</summary>
+        public RendererList CreateRendererList(ref RendererListParams param)
+        {
+            Validate();
+            param.Validate();
+            param.cullingResults.Validate();
+            DrawingSettings drawing = param.drawSettings;
+            FilteringSettings filtering = param.filteringSettings;
+            var none = new RenderStateBlock(RenderStateMask.Nothing);
+            DrawRendererData data = DrawPacking.Pack(ref drawing, ref filtering, ref none, out int[] blends);
+            ulong list = RenderPipelineNative.CreateRendererList(m_Ptr, param.cullingResults.ptr, data, drawing.PassNames(), drawing.overrideMaterial,
+                                                                 drawing.overrideShader, drawing.fallbackMaterial, blends, param.tagName, param.isPassTagName);
+            if (list != 0 && param.tagValues.HasValue && param.stateBlocks.HasValue)
+            {
+                NativeArray<ShaderTagId> tags = param.tagValues.Value;
+                NativeArray<RenderStateBlock> states = param.stateBlocks.Value;
+                for (int i = 0; i < tags.Length; i++)
+                {
+                    RenderStateBlock state = states[i];
+                    DrawRendererData d = DrawPacking.Pack(ref drawing, ref filtering, ref state, out int[] b);
+                    RenderPipelineNative.AddRendererListState(m_Ptr, list, tags[i], d, b);
+                }
+            }
+            return new RendererList(list);
+        }
+
+        public RendererList CreateRendererList(RendererListDesc desc)
+        {
+            if (!desc.IsValid())
+                return RendererList.nullRendererList;
+            RendererListParams param = RendererListDesc.ConvertToParameters(desc);
+            RendererList list = CreateRendererList(ref param);
+            param.Dispose();
+            return list;
+        }
+
+        /// <summary>Lists are made at once: populated when they draw something.</summary>
+        public RendererListStatus QueryRendererListStatus(RendererList rendererList) =>
+            !rendererList.isValid ? RendererListStatus.kRendererListInvalid : RendererListStatus.kRendererListPopulated;
+
+        /// <summary>Lists are made at once: nothing to prepare.</summary>
+        public void PrepareRendererListsAsync(List<RendererList> rendererLists) { }
+
+        /// <summary>A pass of subpasses over attachments: ones without a target are temporaries of the pass; drawn as one pass where the device has them.</summary>
+        public void BeginRenderPass(int width, int height, int samples, NativeArray<AttachmentDescriptor> attachments, int depthAttachmentIndex = -1)
+        {
+            Validate();
+            var data = new AttachmentData[attachments.Length];
+            for (int i = 0; i < data.Length; i++)
+                data[i] = attachments[i].Data;
+            RenderPipelineNative.BeginRenderPass(m_Ptr, width, height, samples, data, depthAttachmentIndex);
+        }
+
+        public void BeginSubPass(NativeArray<int> colors, NativeArray<int> inputs, bool isDepthReadOnly = false)
+        {
+            Validate();
+            RenderPipelineNative.BeginSubPass(m_Ptr, colors.ToArray(), inputs.ToArray(), isDepthReadOnly);
+        }
+
+        public void BeginSubPass(NativeArray<int> colors, NativeArray<int> inputs, bool isDepthReadOnly, bool isStencilReadOnly) =>
+            BeginSubPass(colors, inputs, isDepthReadOnly);
+
+        public void BeginSubPass(NativeArray<int> colors, bool isDepthReadOnly = false)
+        {
+            Validate();
+            RenderPipelineNative.BeginSubPass(m_Ptr, colors.ToArray(), new int[0], isDepthReadOnly);
+        }
+
+        public void EndSubPass()
+        {
+            Validate();
+            RenderPipelineNative.EndSubPass(m_Ptr);
+        }
+
+        public void EndRenderPass()
+        {
+            Validate();
+            RenderPipelineNative.EndRenderPass(m_Ptr);
         }
 
         public void SetupCameraProperties(Camera camera, bool stereoSetup = false)
@@ -263,6 +280,9 @@ namespace HelixEngine.Rendering
 
         internal RenderPipeline InternalCreatePipeline() => CreatePipeline();
 
+        /// <summary>The type of pipeline it makes (null: unknown until it made one); GraphicsSettings finds its settings by it.</summary>
+        public virtual Type pipelineType => null;
+
         /// <summary>Its values changed: the pipeline is made again.</summary>
         protected virtual void OnValidate() => RenderPipelineNative.ResetPipeline(this);
 
@@ -312,7 +332,7 @@ namespace HelixEngine.Rendering
         }
     }
 
-    public static class GraphicsSettings
+    public static partial class GraphicsSettings
     {
         /// <summary>The asset when the quality level sets none (null: the engine's fallback pipeline).</summary>
         public static RenderPipelineAsset defaultRenderPipeline
@@ -483,6 +503,22 @@ namespace HelixEngine.Rendering
                 throw new ArgumentNullException(nameof(material));
             RenderPipelineNative.DrawRenderer(Id, renderer, material, submeshIndex, shaderPass);
         }
+
+        public void DrawRendererList(RendererList rendererList) => RenderPipelineNative.DrawRendererList(Id, rendererList.m_Id);
+
+        /// <summary>vertexCount vertices without a mesh: the shader makes them from the vertex (and instance) id.</summary>
+        public void DrawProcedural(Matrix4x4 matrix, Material material, int shaderPass, MeshTopology topology, int vertexCount, int instanceCount = 1,
+                                   MaterialPropertyBlock properties = null)
+        {
+            if (material == null)
+                throw new ArgumentNullException(nameof(material));
+            RenderPipelineNative.DrawProcedural(Id, matrix, material, shaderPass, (int)topology, vertexCount, instanceCount, properties?.m_Block ?? default);
+        }
+
+        public void RequestAsyncReadback(Texture src, Action<AsyncGPUReadbackRequest> callback) => RequestAsyncReadback(src, 0, callback);
+
+        public void RequestAsyncReadback(Texture src, int mipIndex, Action<AsyncGPUReadbackRequest> callback) =>
+            AsyncGPUReadback.Make(src, mipIndex, callback, Id, default);
 
         public void BeginSample(string name) => RenderPipelineNative.BeginSample(Id, name ?? "");
         public void EndSample(string name) => RenderPipelineNative.EndSample(Id, name ?? "");
@@ -680,11 +716,110 @@ namespace HelixEngine
 
         /// <summary>The devices have one queue: the commands run now, in order.</summary>
         public static void ExecuteCommandBufferAsync(CommandBuffer buffer, ComputeQueueType queueType) => ExecuteCommandBuffer(buffer);
+
+        /// <summary>vertexCount vertices without a mesh, drawn by the cameras (or one) like a renderer in bounds.</summary>
+        public static void DrawProcedural(Material material, Bounds bounds, MeshTopology topology, int vertexCount, int instanceCount = 1, Camera camera = null,
+                                          MaterialPropertyBlock properties = null, ShadowCastingMode castShadows = ShadowCastingMode.On, bool receiveShadows = true,
+                                          int layer = 0)
+        {
+            if (material == null)
+                throw new ArgumentNullException(nameof(material));
+            GraphicsNative.DrawProcedural(material, bounds, (int)topology, vertexCount, instanceCount, camera, properties?.m_Block ?? default, layer);
+        }
+
+        /// <summary>A blit whose material reads the offsets (_BlitMultiTapOffsets, _BlitMultiTapCount).</summary>
+        public static void BlitMultiTap(Texture source, RenderTexture dest, Material mat, params Vector2[] offsets)
+        {
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+            if (offsets == null || offsets.Length == 0)
+                throw new ArgumentException("No offsets given", nameof(offsets));
+            GraphicsNative.BlitMultiTap(source, dest, mat, offsets);
+        }
+
+        public static void BlitMultiTap(Texture source, RenderTexture dest, Material mat, int destDepthSlice, params Vector2[] offsets) =>
+            BlitMultiTap(source, dest, mat, offsets);
     }
 }
 
 namespace HelixEngine.Internal
 {
+    /// <summary>Drawing, filtering and state settings as the plain values the engine reads.</summary>
+    static class DrawPacking
+    {
+        internal static DrawRendererData Pack(ref DrawingSettings drawingSettings, ref FilteringSettings filteringSettings, ref RenderStateBlock stateBlock,
+                                              out int[] blends)
+        {
+            SortingSettings sorting = drawingSettings.sortingSettings;
+            var data = new DrawRendererData
+            {
+                worldToCameraMatrix = sorting.worldToCameraMatrix,
+                cameraPosition = sorting.cameraPosition,
+                customAxis = sorting.customAxis,
+                criteria = (int)sorting.criteria,
+                distanceMetric = (int)sorting.distanceMetric,
+                perObjectData = (int)drawingSettings.perObjectData,
+                flags = (drawingSettings.enableDynamicBatching ? 1 : 0) | (drawingSettings.enableInstancing ? 2 : 0),
+                overrideMaterialPassIndex = drawingSettings.overrideMaterialPassIndex,
+                overrideShaderPassIndex = drawingSettings.overrideShaderPassIndex,
+                mainLightIndex = drawingSettings.mainLightIndex,
+                queueLower = filteringSettings.renderQueueRange.lowerBound,
+                queueUpper = filteringSettings.renderQueueRange.upperBound,
+                layerMask = filteringSettings.layerMask,
+                renderingLayerMask = filteringSettings.renderingLayerMask,
+                batchLayerMask = filteringSettings.batchLayerMask,
+                excludeMotionVectorObjects = filteringSettings.excludeMotionVectorObjects ? 1 : 0,
+            };
+            BlendState blend = stateBlock.blendState;
+            RenderTargetBlendState target = blend.blendState0;
+            DepthState depth = stateBlock.depthState;
+            RasterState raster = stateBlock.rasterState;
+            StencilState stencil = stateBlock.stencilState;
+            data.stateMask = (int)stateBlock.mask;
+            data.blendFlags = (blend.separateMRTBlendStates ? 1 : 0) | (blend.alphaToMask ? 2 : 0);
+            data.writeMask = (int)target.writeMask;
+            data.sourceColor = (int)target.sourceColorBlendMode;
+            data.destinationColor = (int)target.destinationColorBlendMode;
+            data.sourceAlpha = (int)target.sourceAlphaBlendMode;
+            data.destinationAlpha = (int)target.destinationAlphaBlendMode;
+            data.colorOperation = (int)target.colorBlendOperation;
+            data.alphaOperation = (int)target.alphaBlendOperation;
+            data.depthWrite = depth.writeEnabled ? 1 : 0;
+            data.depthCompare = (int)depth.compareFunction;
+            data.cullingMode = (int)raster.cullingMode;
+            data.offsetUnits = raster.offsetUnits;
+            data.offsetFactor = raster.offsetFactor;
+            data.rasterFlags = (raster.depthClip ? 1 : 0) | (raster.conservative ? 2 : 0);
+            data.stencilEnabled = stencil.enabled ? 1 : 0;
+            data.stencilReadMask = stencil.readMask;
+            data.stencilWriteMask = stencil.writeMask;
+            data.stencilCompareFront = (int)stencil.compareFunctionFront;
+            data.stencilPassFront = (int)stencil.passOperationFront;
+            data.stencilFailFront = (int)stencil.failOperationFront;
+            data.stencilZFailFront = (int)stencil.zFailOperationFront;
+            data.stencilCompareBack = (int)stencil.compareFunctionBack;
+            data.stencilPassBack = (int)stencil.passOperationBack;
+            data.stencilFailBack = (int)stencil.failOperationBack;
+            data.stencilZFailBack = (int)stencil.zFailOperationBack;
+            data.stencilReference = stateBlock.stencilReference;
+            // The other targets' blend states, seven values each.
+            blends = new int[7 * 7];
+            RenderTargetBlendState[] others = { blend.blendState1, blend.blendState2, blend.blendState3, blend.blendState4, blend.blendState5, blend.blendState6, blend.blendState7 };
+            for (int i = 0; i < 7; i++)
+            {
+                RenderTargetBlendState b = others[i];
+                blends[i * 7] = (int)b.writeMask;
+                blends[i * 7 + 1] = (int)b.sourceColorBlendMode;
+                blends[i * 7 + 2] = (int)b.destinationColorBlendMode;
+                blends[i * 7 + 3] = (int)b.sourceAlphaBlendMode;
+                blends[i * 7 + 4] = (int)b.destinationAlphaBlendMode;
+                blends[i * 7 + 5] = (int)b.colorBlendOperation;
+                blends[i * 7 + 6] = (int)b.alphaBlendOperation;
+            }
+            return data;
+        }
+    }
+
     /// <summary>The C# side of pipelines: the engine makes, renders and disposes C# pipelines and raises the manager's events through these.</summary>
     static unsafe class RenderPipelineBridge
     {
