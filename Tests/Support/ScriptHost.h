@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Cpp/CppDerivedScripts.h>
 #include <Cpp/CppScripts.h>
 
 #include <Helix/Engine/Script/ScriptRuntime.h>

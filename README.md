@@ -36,7 +36,8 @@ repo; scripts are classes deriving from `GameBehaviour` or `ScriptableObject`.
   destroyed; their fields are serialized as GameBehaviour scripts' are (class 114 documents).
 - A game assembly may carry the C# bindings of its C++ game module (Helix.Bindgen's C# output compiled in): the C#
   side loads them when it registers the assembly, so C# reaches the module's classes and C++ scripts through their
-  own classes and derives from the module's classes.
+  own classes and derives from the module's classes. A C# script class may derive from a C++ script class (the C#
+  side marks its objects derived when it makes them, so C++ virtual calls reach the C# overrides).
 - The engine runs one scheduler for both languages: within one execution order the C++ scripts of a phase run first,
   then the C# ones in one call into C#, which calls each script in its own try (an exception is logged with the
   script and its GameObject, the others still run).

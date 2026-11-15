@@ -35,6 +35,8 @@ namespace HelixEngine.Internal
             public Action<object, bool>[] BoolCalls = new Action<object, bool>[s_Messages.Length];
             // Its serialized fields (its C# bases' too), null without any.
             public Action<object, IntPtr> Fields;
+            // It derives from a C++ script class: its objects are that class's (base calls reach the C++ implementation).
+            public bool NativeDerived;
         }
 
         static readonly Dictionary<uint, ScriptType> s_ByIndex = new();
@@ -42,7 +44,7 @@ namespace HelixEngine.Internal
         static ScriptType[] s_Indexed = new ScriptType[64];
         static readonly Dictionary<Type, ScriptType> s_ByType = new();
         static delegate* unmanaged[Cdecl]<int, byte*, int, void> s_Log;
-        static delegate* unmanaged[Cdecl]<byte*, int, byte*, int, byte*, int, uint, uint, int, byte, uint*, uint> s_RegisterClass;
+        static delegate* unmanaged[Cdecl]<byte*, int, byte*, int, byte*, int, uint, uint, int, byte, uint*, byte*, uint> s_RegisterClass;
         static bool s_Started;
 
         static IntPtr Export(string name) => (IntPtr)Host.FindExport(name);
@@ -57,7 +59,7 @@ namespace HelixEngine.Internal
                     return 0;
                 HxModule_HelixEngine.Load(Export);
                 s_Log = (delegate* unmanaged[Cdecl]<int, byte*, int, void>)Export("HxEngine_Log");
-                s_RegisterClass = (delegate* unmanaged[Cdecl]<byte*, int, byte*, int, byte*, int, uint, uint, int, byte, uint*, uint>)Export("HxEngineScripts_RegisterClass");
+                s_RegisterClass = (delegate* unmanaged[Cdecl]<byte*, int, byte*, int, byte*, int, uint, uint, int, byte, uint*, byte*, uint>)Export("HxEngineScripts_RegisterClass");
                 SerializedFields.Start(Export);
                 CoroutineRunner.Start(Export);
                 AwaitableScheduler.Start(Export);
@@ -178,18 +180,20 @@ namespace HelixEngine.Internal
             st.Fields = SerializedFields.ForScript(t);
             uint baseType = Types.OfObject(t.BaseType);
             uint typeId;
+            byte derived;
             byte[] asm = Encoding.UTF8.GetBytes(t.Assembly.GetName().Name ?? "");
             byte[] ns = Encoding.UTF8.GetBytes(t.Namespace ?? "");
             byte[] name = Encoding.UTF8.GetBytes(t.Name);
             uint index;
             fixed (byte* a = asm, n = ns, c = name)
-                index = s_RegisterClass(a, asm.Length, n, ns.Length, c, name.Length, baseType, mask, order, (byte)(st.Fields != null ? 1 : 0), &typeId);
+                index = s_RegisterClass(a, asm.Length, n, ns.Length, c, name.Length, baseType, mask, order, (byte)((st.Fields != null ? 1 : 0) | (t.IsAbstract ? 2 : 0)), &typeId, &derived);
             if (index == uint.MaxValue)
             {
                 Log(4, $"{t.FullName}: its script class could not be registered");
                 return null;
             }
             st.Index = index;
+            st.NativeDerived = derived != 0;
             Types.Register(t, typeId, generated: false);
             s_ByIndex[index] = st;
             if (index >= s_Indexed.Length)
@@ -204,7 +208,9 @@ namespace HelixEngine.Internal
         {
             Type[] parameters = takesBool ? new[] { typeof(bool) } : Type.EmptyTypes;
             const BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
-            for (Type c = t; c != null && !Types.IsGenerated(c); c = c.BaseType)
+            // Up to the engine's classes: the generated classes of game modules (C++ script classes C# derives from)
+            // have no message methods of their own but the hand written parts of them.
+            for (Type c = t; c != null && !(Types.IsGenerated(c) && c.Assembly == typeof(Object).Assembly); c = c.BaseType)
             {
                 MethodInfo m = c.GetMethod(name, flags, null, parameters, null);
                 if (m != null && m.ReturnType == typeof(void) && !m.IsGenericMethodDefinition)
@@ -322,6 +328,7 @@ namespace HelixEngine.Internal
                 // the reference; the engine is not to be used there).
                 var o = (Object)RuntimeHelpers.GetUninitializedObject(st.Type);
                 o.m_HxId = objectId;
+                o.m_HxDerived = st.NativeDerived;
                 ConstructorInfo ctor = st.Type.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, Type.EmptyTypes);
                 ctor?.Invoke(o, null);
                 Objects.Remember(o, objectId);

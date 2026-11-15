@@ -26,4 +26,8 @@
       <Private>false</Private>
     </Reference>
   </ItemGroup>
+  <!-- The C# classes of the test program's C++ scripts (Helix.Bindgen's output). -->
+  <ItemGroup Condition="'$(HelixModuleBindings)' != ''">
+    <Compile Include="$(HelixModuleBindings)" />
+  </ItemGroup>
 </Project>

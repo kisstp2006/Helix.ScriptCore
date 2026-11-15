@@ -59,20 +59,30 @@ if(TARGET helix_scriptcore_tests OR TARGET helix_scriptcore_bench)
     include("${HELIX_BINDGEN_ROOT}/CMake/HelixBindgen.cmake")
     set(tests_dir "${CMAKE_CURRENT_SOURCE_DIR}/Tests")
     set(script_tests_dll "${scriptcore_artifacts}/bin/HelixEngine.ScriptTests/release/HelixEngine.ScriptTests.dll")
+    set(engine_source "${engine_dir}/Source")
+    set(engine_binding_headers "${engine_source}/Helix/Engine/Object/EntityId.h" "${engine_source}/Helix/Engine/Object/Object.h"
+        "${engine_source}/Helix/Engine/GameObject/GameObject.h" "${engine_source}/Helix/Engine/Script/GameBehaviour.h"
+        "${engine_source}/Helix/Engine/Script/ScriptableObject.h")
+    # The test program's C++ scripts (its own game module) and their C# classes, which the C# test scripts derive from.
+    set(test_bindings_cs "")
+    set(test_bindings_argument "")
+    if(TARGET helix_scriptcore_tests)
+        helix_bindgen(helix_scriptcore_tests MODULE ScriptCoreTests NAMESPACE ScriptCoreTests KIND NativeGame
+                      HEADERS "${tests_dir}/Cpp/CppScripts.h" "${tests_dir}/Cpp/CppRenderingScripts.h" "${tests_dir}/Cpp/CppDerivedScripts.h"
+                      REFERENCES ${engine_binding_headers} REFERENCE_NAMESPACE HelixEngine INCLUDE_ROOTS "${tests_dir}" "${engine_source}"
+                      CS_OUTPUT test_bindings_cs)
+        set(test_bindings_argument "-p:HelixModuleBindings=${test_bindings_cs}")
+    endif()
     file(GLOB_RECURSE script_tests_sources CONFIGURE_DEPENDS "${tests_dir}/Managed/*.cs" "${tests_dir}/Managed/*.csproj")
     list(FILTER script_tests_sources EXCLUDE REGEX "/(bin|obj)/")
     add_custom_command(
         OUTPUT "${script_tests_dll}"
         COMMAND "${HELIX_DOTNET}" build "${tests_dir}/Managed/HelixEngine.ScriptTests.csproj" -c Release --artifacts-path "${scriptcore_artifacts}"
-                --nologo -v quiet "-p:HelixCoreModule=${core_module_dll}" ${runtime_arguments}
-        DEPENDS ${script_tests_sources} "${core_module_dll}"
+                --nologo -v quiet "-p:HelixCoreModule=${core_module_dll}" ${runtime_arguments} ${test_bindings_argument}
+        DEPENDS ${script_tests_sources} "${core_module_dll}" ${test_bindings_cs}
         COMMENT "Building the C# test scripts")
     add_custom_target(helix_scriptcore_test_scripts DEPENDS "${script_tests_dll}")
     add_dependencies(helix_scriptcore_test_scripts helix_core_module)
-    set(engine_source "${engine_dir}/Source")
-    set(engine_binding_headers "${engine_source}/Helix/Engine/Object/EntityId.h" "${engine_source}/Helix/Engine/Object/Object.h"
-        "${engine_source}/Helix/Engine/GameObject/GameObject.h" "${engine_source}/Helix/Engine/Script/GameBehaviour.h"
-        "${engine_source}/Helix/Engine/Script/ScriptableObject.h")
     foreach(target IN ITEMS helix_scriptcore_tests helix_scriptcore_bench)
         if(TARGET ${target})
             add_dependencies(${target} helix_scriptcore_test_scripts)
@@ -87,8 +97,6 @@ if(TARGET helix_scriptcore_tests OR TARGET helix_scriptcore_bench)
         if(TARGET helix_scriptcore_tests_web)
             add_dependencies(helix_scriptcore_tests_web helix_scriptcore_test_scripts helix_core_module)
         endif()
-        helix_bindgen(helix_scriptcore_tests MODULE ScriptCoreTests NAMESPACE ScriptCoreTests KIND NativeGame
-                      HEADERS "${tests_dir}/Cpp/CppScripts.h" "${tests_dir}/Cpp/CppRenderingScripts.h" REFERENCES ${engine_binding_headers} REFERENCE_NAMESPACE HelixEngine INCLUDE_ROOTS "${tests_dir}" "${engine_source}")
     endif()
     if(TARGET helix_scriptcore_tests AND TARGET helix_engine_shared)
         # A game module loaded at run time: its file name is its module name.

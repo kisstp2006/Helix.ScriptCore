@@ -532,6 +532,52 @@ HX_TEST(Scripts, DerivedCSharpScriptFields)
     Calls().Clear();
 }
 
+HX_TEST(Scripts, CSharpScriptsDeriveFromCppScripts)
+{
+    HX_REQUIRE(StartScripts());
+    Calls().Clear();
+    // Objects of classes of their own below the C++ classes, made as Bindgen's derived C++ classes.
+    const ScriptClass& shape = CSharp("CsShape");
+    const ScriptClass& mover = CSharp("CsMover");
+    HX_CHECK(shape.nativeBase == Cpp("CppShape").index && IsDerivedFrom(shape.engineClass, Cpp("CppShape").engineClass));
+    HX_CHECK(mover.nativeBase == Cpp("CppMover").index && IsDerivedFrom(mover.engineClass, Cpp("CppMover").engineClass));
+    GameObject* driver = GameObject::Create("Driver");
+    HX_REQUIRE(AddScript(driver, CSharp("CsDerivedTests")) != nullptr);
+    Frame();
+    // The C# Awake instead of the C++ one, the C++ OnEnable; the virtual from C++ and C#; a copy keeps both languages' fields.
+    HX_CHECK(Expect({"Driver:shape:True:0:1:1:[cs:shape:5]:cs:shape:5", "Driver:copy:CsShape:5:2:2:[cs:shape:5]:cs", "Driver:figure:3/2:2:3/2"}));
+    DestroyImmediate(driver);
+    // A class abstract in C++ is not made itself.
+    HX_CHECK(Cpp("CppFigure").engineClass != 0 && (GetClass(Cpp("CppFigure").engineClass).flags & ClassAbstract) != 0);
+    HX_CHECK(ScriptableObject::CreateInstance(Cpp("CppFigure").type) == nullptr);
+
+    // A C# GameBehaviour below a C++ one: the C++ Start, the C# Update calling the C++ Step, which calls the C# Speed.
+    GameObject* g = GameObject::Create("Mover");
+    auto* m = static_cast<CppMover*>(AddScript(g, mover));
+    HX_REQUIRE(m != nullptr && IsDerivedFrom(m->ClassIndex(), mover.engineClass));
+    Frame();
+    Frame();
+    HX_CHECK(m->starts == 1 && m->distance == 6.0f);
+    DestroyImmediate(g);
+
+    // In files: the C++ class's fields, then the C# class's.
+    Scene s = SceneManager::CreateScene("CsMoverScene");
+    GameObject* holder = LoadedRoot(s, ScriptScene(mover, "e0000000000000000000000000000020", "  starts: 2\n  distance: 1.5\n  factor: 4\n"));
+    HX_REQUIRE(holder != nullptr);
+    auto* loaded = static_cast<CppMover*>(holder->GetComponent(mover.engineClass));
+    HX_REQUIRE(loaded != nullptr && loaded->script() == &mover);
+    HX_CHECK(loaded->starts == 2 && loaded->distance == 1.5f);
+    loaded->Step();
+    HX_CHECK(loaded->distance == 5.5f);
+    String text, error;
+    HX_REQUIRE(WriteSceneYaml(s, text, error));
+    HX_CHECK(text.View().Contains("  starts: 2\n  distance: 5.5\n  factor: 4\n"));
+    SceneManager::UnloadSceneAsync(s);
+    SceneManager::ProcessSceneLoads();
+    ForgetSceneScripts();
+    Calls().Clear();
+}
+
 HX_TEST(Scripts, SerializeReferenceGraphs)
 {
     HX_REQUIRE(StartScripts());
