@@ -466,6 +466,10 @@ CullingGroupEvent,index,int index { get; }
 CullingGroupEvent,isVisible,bool isVisible { get; }
 CullingGroupEvent,previousDistance,int previousDistance { get; }
 CullingGroupEvent,wasVisible,bool wasVisible { get; }
+Cursor,.ctor,Cursor()
+Cursor,SetCursor,"static void SetCursor(Texture2D, Vector2, CursorMode)"
+CursorMode,Auto,CursorMode.Auto = 0
+CursorMode,ForceSoftware,CursorMode.ForceSoftware = 1
 CustomYieldInstruction,Current,object Current { get; }
 CustomYieldInstruction,MoveNext,bool MoveNext()
 CustomYieldInstruction,Reset,void Reset()

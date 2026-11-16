@@ -110,9 +110,12 @@ namespace HelixEngine.Internal
             }
         }
 
-        /// <summary>The script classes of an assembly (GameBehaviour and ScriptableObject classes that are not generic), bases first.</summary>
+        /// <summary>The script classes of an assembly (GameBehaviour and ScriptableObject classes that are not generic), bases first.
+        /// Then its module initializers run and the assembly's listeners hear of it (OnAssembly).</summary>
         public static int RegisterAssembly(Assembly assembly)
         {
+            // The engine libraries it references first: their modules' bindings and their module initializers.
+            PrepareReferences(assembly, new HashSet<Assembly>());
             LoadModuleBindings(assembly);
             var types = new List<Type>();
             foreach (Type t in assembly.GetTypes())
@@ -124,7 +127,73 @@ namespace HelixEngine.Internal
             foreach (Type t in types)
                 if (Register(t) != null)
                     count++;
+            if (!s_Assemblies.Contains(assembly))
+            {
+                s_Assemblies.Add(assembly);
+                Action<Assembly>[] listeners = s_AssemblyListeners.ToArray();
+                // A library that finds its own attributes in scripts (the UI's element types) sets itself up in its module
+                // initializer (run with the references above, or here for the assembly itself) and listens from there.
+                RuntimeHelpers.RunModuleConstructor(assembly.ManifestModule.ModuleHandle);
+                foreach (Action<Assembly> listener in listeners)
+                    Listen(listener, assembly);
+            }
             return count;
+        }
+
+        // The non-framework assemblies an assembly references (and theirs): their game modules' bindings loaded and their
+        // module initializers run, the referenced ones first.
+        static void PrepareReferences(Assembly assembly, HashSet<Assembly> seen)
+        {
+            if (!seen.Add(assembly))
+                return;
+            foreach (AssemblyName name in assembly.GetReferencedAssemblies())
+            {
+                string n = name.Name ?? "";
+                if (n.StartsWith("System", StringComparison.Ordinal) || n.StartsWith("Microsoft", StringComparison.Ordinal) || n == "netstandard" ||
+                    n == "mscorlib")
+                    continue;
+                Assembly referenced;
+                try
+                {
+                    referenced = (System.Runtime.Loader.AssemblyLoadContext.GetLoadContext(assembly) ?? System.Runtime.Loader.AssemblyLoadContext.Default)
+                                     .LoadFromAssemblyName(name);
+                }
+                catch (Exception)
+                {
+                    continue;
+                }
+                // The engine's own module took its bindings when it started.
+                if (referenced == typeof(ScriptBridge).Assembly)
+                    continue;
+                PrepareReferences(referenced, seen);
+                LoadModuleBindings(referenced);
+                RuntimeHelpers.RunModuleConstructor(referenced.ManifestModule.ModuleHandle);
+            }
+        }
+
+        static readonly List<Assembly> s_Assemblies = new();
+        static readonly List<Action<Assembly>> s_AssemblyListeners = new();
+
+        /// <summary>Every assembly the engine registered so far, and each one it registers later, reaches the listener.</summary>
+        public static void OnAssembly(Action<Assembly> listener)
+        {
+            if (listener == null || s_AssemblyListeners.Contains(listener))
+                return;
+            s_AssemblyListeners.Add(listener);
+            foreach (Assembly a in s_Assemblies.ToArray())
+                Listen(listener, a);
+        }
+
+        static void Listen(Action<Assembly> listener, Assembly assembly)
+        {
+            try
+            {
+                listener(assembly);
+            }
+            catch (Exception e)
+            {
+                Log(4, $"{assembly.GetName().Name}: {e}");
+            }
         }
 
         static readonly HashSet<Type> s_ModuleBindings = new();
