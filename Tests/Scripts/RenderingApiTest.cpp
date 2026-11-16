@@ -10,6 +10,7 @@
 #include <Helix/Engine/Rendering/Graphics.h>
 #include <Helix/Engine/Rendering/Implementation/RenderCore.h>
 #include <Helix/Engine/Rendering/Pipeline/RenderPipeline.h>
+#include <Helix/Engine/Shader/ComputeShader.h>
 #include <Helix/Platform/IO/FileSystem.h>
 #include <Helix/Platform/Window/Window.h>
 #include <Helix/Testing/Test.h>
@@ -718,4 +719,28 @@ HX_TEST(ScriptApi, ShadowCascadesInCSharp)
     for (const char* name : {"ShadowEye", "ShadowSun", "ShadowCaster", "ShadowSpot", "ShadowPoint", "ShadowProbe"})
         if (GameObject* g = GameObject::Find(name))
             DestroyImmediate(g);
+}
+
+HX_TEST(ScriptApi, ComputeShadersAndBuffersInBothLanguages)
+{
+    HX_REQUIRE(StartScripts());
+    engine::testing::TestShaderFolder shaders;
+    constexpr u32 size = 16;
+    u32 ran = 0;
+    ForEachDevice([&](rhi::Device& device) {
+        if (!device.Caps().compute || !device.Caps().storageBuffers)
+            return;
+        rhi::TextureHandle color =
+            device.CreateTexture({.format = rhi::Format::RGBA8Unorm, .width = size, .height = size, .usage = rhi::TextureRenderTarget | rhi::TextureSampled});
+        Graphics::SetDevice(&device);
+        Graphics::SetTarget({color, {}, size, size, rhi::Format::RGBA8Unorm, rhi::Format::Unknown});
+        ran++;
+        HX_CHECK(SameLines("CsCompute", "CppCompute", "compute:0:64,1,1:True:3.00:31.00:4.50:8:4:True"));
+        if (ComputeShader* cs = ComputeShader::Find("Tests/Fill"))
+            cs->ClearVariants();
+        Graphics::ReleaseResources();
+        device.Destroy(color);
+    });
+    std::printf("    %u compute devices\n", ran);
+    Calls().Clear();
 }

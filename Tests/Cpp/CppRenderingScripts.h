@@ -2,6 +2,8 @@
 
 #include <Cpp/CppScripts.h>
 #include <Helix/Engine/Rendering/Pipeline/RenderPipeline.h>
+#include <Helix/Engine/Rendering/Pipeline/CommandBuffer.h>
+#include <Helix/Engine/Shader/ComputeShader.h>
 
 // The scenarios of Managed/RenderingScripts.cs on the C++ script API: the same lines.
 namespace helix::scriptcore::testing
@@ -362,6 +364,49 @@ namespace helix::scriptcore::testing
                                 parameters.cullingPlaneCount, text::F(plane.normal.y), text::F(plane.distance), buffer.name(), B(empty), B(recorded),
                                 buffer.sizeInBytes(), GraphicsSettings::defaultRenderingLayerMask(), B(GraphicsSettings::currentRenderPipeline() == nullptr),
                                 B(RenderPipelineManager::currentAsset() == nullptr)));
+        }
+    };
+
+    // The same as CsCompute through the engine's types.
+    HX_CLASS(Namespace = "ScriptCoreTests")
+    class CppCompute : public ::HelixEngine::GameBehaviour
+    {
+        void Start()
+        {
+            using namespace text;
+            engine::ComputeShader* cs = engine::ComputeShader::Find("Tests/Fill");
+            i32 k = cs->FindKernel("Scale");
+            u32 x, y, z;
+            cs->GetKernelThreadGroupSizes(k, x, y, z);
+            bool missing = cs->KernelIndex("Nope") < 0;
+            engine::GraphicsBuffer* input = engine::GraphicsBuffer::Create(engine::GraphicsBufferTarget::Structured, 0, 8, 4);
+            engine::GraphicsBuffer* output = engine::GraphicsBuffer::Create(engine::GraphicsBufferTarget::Structured, 0, 8, 4);
+            const f32 values[] = {0, 1, 2, 3, 4, 5, 6, 7};
+            input->SetData(values, sizeof(values), 0);
+            cs->SetFloat("scale", 2);
+            cs->SetInt("offset", 1);
+            cs->SetInt("count", 8);
+            cs->SetVector("bias", Vector4(0.5f, 0, 0, 0));
+            cs->SetBuffer(k, "input", input);
+            cs->SetBuffer(k, "output", output);
+            engine::LocalKeyword doubled(cs, "Doubled");
+            cs->EnableKeyword(doubled);
+            cs->Dispatch(k, 1, 1, 1);
+            f32 got[8] = {};
+            output->GetData(got, sizeof(got), 0);
+            cs->DisableKeyword(doubled);
+            engine::CommandBuffer cb;
+            const f32 ones[] = {1, 1, 1, 1, 1, 1, 1, 1};
+            cb.SetBufferData(input->Id(), ones, sizeof(ones), 0);
+            cb.SetComputeFloatParam(cs, engine::PropertyToID("scale"), 3);
+            cb.DispatchCompute(cs, k, 1, 1, 1);
+            engine::Graphics::ExecuteCommandBuffer(cb);
+            f32 after[8] = {};
+            output->GetData(after, sizeof(after), 0);
+            Calls().Push(Format("compute:{}:{},{},{}:{}:{}:{}:{}:{}:{}:{}", k, x, y, z, B(missing), F(got[0]), F(got[7]), F(after[0]), input->count(),
+                                output->stride(), B(doubled.isValid())));
+            engine::GraphicsBuffer::Release(input);
+            engine::GraphicsBuffer::Release(output);
         }
     };
 }

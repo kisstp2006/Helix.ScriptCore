@@ -782,6 +782,25 @@ namespace HelixEngine.Rendering
             }
         }
 
+        /// <summary>For each visible renderer in order its light indices, then its probes' indices, as ints.</summary>
+        public void FillLightAndReflectionProbeIndices(ComputeBuffer computeBuffer)
+        {
+            Validate();
+            if (computeBuffer == null)
+                throw new ArgumentNullException(nameof(computeBuffer));
+            if (!RenderPipelineNative.FillLightAndReflectionProbeIndices(ptr, computeBuffer.m_Ptr))
+                throw new ArgumentException("The buffer is too small for the light and reflection probe indices.", nameof(computeBuffer));
+        }
+
+        public void FillLightAndReflectionProbeIndices(GraphicsBuffer buffer)
+        {
+            Validate();
+            if (buffer == null)
+                throw new ArgumentNullException(nameof(buffer));
+            if (!RenderPipelineNative.FillLightAndReflectionProbeIndices(ptr, buffer.m_Ptr))
+                throw new ArgumentException("The buffer is too small for the light and reflection probe indices.", nameof(buffer));
+        }
+
         public unsafe NativeArray<VisibleLight> visibleLights
         {
             get

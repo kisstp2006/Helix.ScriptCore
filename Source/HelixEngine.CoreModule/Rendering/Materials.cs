@@ -5,7 +5,7 @@ using HelixEngine.Internal;
 namespace HelixEngine
 {
     /// <summary>Values on top of a renderer's materials (not an Object): its native block lives while this does.</summary>
-    public sealed class MaterialPropertyBlock
+    public sealed partial class MaterialPropertyBlock
     {
         internal PropertyBlockId m_Block;
 

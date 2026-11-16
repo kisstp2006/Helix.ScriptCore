@@ -516,5 +516,53 @@ namespace Tests
 
         void OnDestroy() => m_Group?.Dispose();
     }
-}
 
+    // Compute shaders and buffers: a dispatch with values, buffers and a keyword, then a command buffer's.
+    public class CsCompute : GameBehaviour
+    {
+        void Start()
+        {
+            ComputeShader cs = null;
+            foreach (ComputeShader c in Resources.FindObjectsOfTypeAll<ComputeShader>())
+                if (c.name == "Tests/Fill")
+                    cs = c;
+            int k = cs.FindKernel("Scale");
+            cs.GetKernelThreadGroupSizes(k, out uint x, out uint y, out uint z);
+            bool threw = false;
+            try
+            {
+                cs.FindKernel("Nope");
+            }
+            catch (System.ArgumentException)
+            {
+                threw = true;
+            }
+            var input = new ComputeBuffer(8, 4);
+            var output = new GraphicsBuffer(GraphicsBuffer.Target.Structured, 8, 4);
+            input.SetData(new float[] { 0, 1, 2, 3, 4, 5, 6, 7 });
+            cs.SetFloat("scale", 2);
+            cs.SetInt("offset", 1);
+            cs.SetInt("count", 8);
+            cs.SetVector("bias", new Vector4(0.5f, 0, 0, 0));
+            cs.SetBuffer(k, "input", input);
+            cs.SetBuffer(k, "output", output);
+            var doubled = new HelixEngine.Rendering.LocalKeyword(cs, "Doubled");
+            cs.EnableKeyword(doubled);
+            cs.Dispatch(k, 1, 1, 1);
+            float[] got = new float[8];
+            output.GetData(got);
+            cs.DisableKeyword(doubled);
+            var cb = new HelixEngine.Rendering.CommandBuffer();
+            cb.SetBufferData(input, new float[] { 1, 1, 1, 1, 1, 1, 1, 1 });
+            cb.SetComputeFloatParam(cs, "scale", 3);
+            cb.DispatchCompute(cs, k, 1, 1, 1);
+            Graphics.ExecuteCommandBuffer(cb);
+            float[] after = new float[8];
+            output.GetData(after);
+            Notes.NoteRaw($"compute:{k}:{x},{y},{z}:{threw}:{Text.F(got[0])}:{Text.F(got[7])}:{Text.F(after[0])}:{input.count}:{output.stride}:{doubled.isValid}");
+            cb.Release();
+            input.Release();
+            output.Release();
+        }
+    }
+}

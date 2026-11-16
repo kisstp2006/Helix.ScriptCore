@@ -457,7 +457,7 @@ namespace HelixEngine.Rendering
     }
 
     /// <summary>A list of commands recorded now and run where it is executed.</summary>
-    public class CommandBuffer : IDisposable
+    public partial class CommandBuffer : IDisposable
     {
         ulong m_Ptr;
         // A native buffer this one borrowed (it does not destroy it).

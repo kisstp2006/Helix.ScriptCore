@@ -12,6 +12,14 @@ namespace Helix.Interop
     /// </summary>
     public static class RenderingInterop
     {
+        /// <summary>The native buffer of a graphics or compute buffer (0: null).</summary>
+        public static ulong IdOf(GraphicsBuffer buffer) => buffer?.m_Ptr ?? 0;
+
+        public static ulong IdOf(ComputeBuffer buffer) => buffer?.m_Ptr ?? 0;
+
+        /// <summary>A graphics buffer over a native one native code made and keeps (0: null): Release leaves it be.</summary>
+        public static GraphicsBuffer BorrowGraphicsBuffer(ulong buffer) => buffer != 0 ? new GraphicsBuffer(buffer) : null;
+
         /// <summary>The native buffer of a command buffer.</summary>
         public static ulong IdOf(CommandBuffer buffer) => buffer?.Id ?? 0;
 

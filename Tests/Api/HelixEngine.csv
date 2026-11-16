@@ -119,22 +119,32 @@ Camera,allCameras,static Camera[] allCameras { get; }
 Camera,allCamerasCount,static int allCamerasCount { get; }
 Camera,allowHDR,bool allowHDR { get; set; }
 Camera,allowMSAA,bool allowMSAA { get; set; }
+Camera,anamorphism,float anamorphism { get; set; }
+Camera,aperture,float aperture { get; set; }
 Camera,aspect,float aspect { get; set; }
 Camera,backgroundColor,Color backgroundColor { get; set; }
+Camera,barrelClipping,float barrelClipping { get; set; }
+Camera,bladeCount,int bladeCount { get; set; }
 Camera,cameraToWorldMatrix,Matrix4x4 cameraToWorldMatrix { get; }
 Camera,cameraType,CameraType cameraType { get; set; }
 Camera,clearFlags,CameraClearFlags clearFlags { get; set; }
 Camera,cullingMask,int cullingMask { get; set; }
 Camera,cullingMatrix,Matrix4x4 cullingMatrix { get; set; }
 Camera,current,static Camera current { get; }
+Camera,curvature,Vector2 curvature { get; set; }
 Camera,depth,float depth { get; set; }
 Camera,depthTextureMode,DepthTextureMode depthTextureMode { get; set; }
 Camera,eventMask,int eventMask { get; set; }
 Camera,farClipPlane,float farClipPlane { get; set; }
 Camera,fieldOfView,float fieldOfView { get; set; }
+Camera,focalLength,float focalLength { get; set; }
+Camera,focusDistance,float focusDistance { get; set; }
 Camera,forceIntoRenderTexture,bool forceIntoRenderTexture { get; set; }
+Camera,gateFit,CameraGateFitMode gateFit { get; set; }
+Camera,iso,int iso { get; set; }
 Camera,layerCullDistances,float[] layerCullDistances { get; set; }
 Camera,layerCullSpherical,bool layerCullSpherical { get; set; }
+Camera,lensShift,Vector2 lensShift { get; set; }
 Camera,main,static Camera main { get; }
 Camera,nearClipPlane,float nearClipPlane { get; set; }
 Camera,nonJitteredProjectionMatrix,Matrix4x4 nonJitteredProjectionMatrix { get; set; }
@@ -148,9 +158,12 @@ Camera,rect,Rect rect { get; set; }
 Camera,scaledPixelHeight,int scaledPixelHeight { get; }
 Camera,scaledPixelWidth,int scaledPixelWidth { get; }
 Camera,scene,Scene scene { get; set; }
+Camera,sensorSize,Vector2 sensorSize { get; set; }
+Camera,shutterSpeed,float shutterSpeed { get; set; }
 Camera,targetDisplay,int targetDisplay { get; set; }
 Camera,targetTexture,RenderTexture targetTexture { get; set; }
 Camera,useOcclusionCulling,bool useOcclusionCulling { get; set; }
+Camera,usePhysicalProperties,bool usePhysicalProperties { get; set; }
 Camera,worldToCameraMatrix,Matrix4x4 worldToCameraMatrix { get; set; }
 Camera.MonoOrStereoscopicEye,Left,Camera.MonoOrStereoscopicEye.Left = 0
 Camera.MonoOrStereoscopicEye,Mono,Camera.MonoOrStereoscopicEye.Mono = 2
@@ -159,6 +172,11 @@ CameraClearFlags,Depth,CameraClearFlags.Depth = 3
 CameraClearFlags,Nothing,CameraClearFlags.Nothing = 4
 CameraClearFlags,Skybox,CameraClearFlags.Skybox = 1
 CameraClearFlags,SolidColor,CameraClearFlags.SolidColor = 2
+CameraGateFitMode,Fill,CameraGateFitMode.Fill = 3
+CameraGateFitMode,Horizontal,CameraGateFitMode.Horizontal = 2
+CameraGateFitMode,None,CameraGateFitMode.None = 0
+CameraGateFitMode,Overscan,CameraGateFitMode.Overscan = 4
+CameraGateFitMode,Vertical,CameraGateFitMode.Vertical = 1
 CameraType,Game,CameraType.Game = 1
 CameraType,Preview,CameraType.Preview = 4
 CameraType,Reflection,CameraType.Reflection = 16
@@ -362,6 +380,52 @@ Component,TryGetComponent,"bool TryGetComponent(Type, out Component) / bool TryG
 Component,gameObject,GameObject gameObject { get; }
 Component,tag,string tag { get; set; }
 Component,transform,Transform transform { get; }
+ComputeBuffer,.ctor,"ComputeBuffer(int, int) / ComputeBuffer(int, int, ComputeBufferType) / ComputeBuffer(int, int, ComputeBufferType, ComputeBufferMode)"
+ComputeBuffer,Dispose,void Dispose()
+ComputeBuffer,GetData,"void GetData(Array) / void GetData(Array, int, int, int)"
+ComputeBuffer,GetNativeBufferPtr,IntPtr GetNativeBufferPtr()
+ComputeBuffer,IsValid,bool IsValid()
+ComputeBuffer,Release,void Release()
+ComputeBuffer,SetCounterValue,void SetCounterValue(uint)
+ComputeBuffer,SetData,"void SetData(Array) / void SetData<T>(List<T>) / void SetData<T>(NativeArray<T>) / void SetData(Array, int, int, int) / void SetData<T>(List<T>, int, int, int) / void SetData<T>(NativeArray<T>, int, int, int)"
+ComputeBuffer,count,int count { get; }
+ComputeBuffer,name,string name { get; set; }
+ComputeBuffer,stride,int stride { get; }
+ComputeBufferMode,Dynamic,ComputeBufferMode.Dynamic = 1
+ComputeBufferMode,Immutable,ComputeBufferMode.Immutable = 0
+ComputeBufferMode,SubUpdates,ComputeBufferMode.SubUpdates = 4
+ComputeBufferType,Append,ComputeBufferType.Append = 2
+ComputeBufferType,Constant,ComputeBufferType.Constant = 8
+ComputeBufferType,Counter,ComputeBufferType.Counter = 4
+ComputeBufferType,Default,ComputeBufferType.Default = 0
+ComputeBufferType,IndirectArguments,ComputeBufferType.IndirectArguments = 256
+ComputeBufferType,Raw,ComputeBufferType.Raw = 1
+ComputeBufferType,Structured,ComputeBufferType.Structured = 16
+ComputeShader,DisableKeyword,void DisableKeyword(string) / void DisableKeyword(LocalKeyword)
+ComputeShader,Dispatch,"void Dispatch(int, int, int, int)"
+ComputeShader,DispatchIndirect,"void DispatchIndirect(int, ComputeBuffer, uint = 0) / void DispatchIndirect(int, GraphicsBuffer, uint = 0)"
+ComputeShader,EnableKeyword,void EnableKeyword(string) / void EnableKeyword(LocalKeyword)
+ComputeShader,FindKernel,int FindKernel(string)
+ComputeShader,GetKernelThreadGroupSizes,"void GetKernelThreadGroupSizes(int, out uint, out uint, out uint)"
+ComputeShader,HasKernel,bool HasKernel(string)
+ComputeShader,IsKeywordEnabled,bool IsKeywordEnabled(string) / bool IsKeywordEnabled(LocalKeyword)
+ComputeShader,IsSupported,bool IsSupported(int)
+ComputeShader,SetBool,"void SetBool(string, bool) / void SetBool(int, bool)"
+ComputeShader,SetBuffer,"void SetBuffer(int, string, ComputeBuffer) / void SetBuffer(int, int, ComputeBuffer) / void SetBuffer(int, string, GraphicsBuffer) / void SetBuffer(int, int, GraphicsBuffer) / void SetBuffer(int, string, GraphicsBufferHandle) / void SetBuffer(int, int, GraphicsBufferHandle)"
+ComputeShader,SetFloat,"void SetFloat(string, float) / void SetFloat(int, float)"
+ComputeShader,SetFloats,"void SetFloats(string, float[]) / void SetFloats(int, float[])"
+ComputeShader,SetInt,"void SetInt(string, int) / void SetInt(int, int)"
+ComputeShader,SetInts,"void SetInts(string, int[]) / void SetInts(int, int[])"
+ComputeShader,SetKeyword,"void SetKeyword(LocalKeyword, bool)"
+ComputeShader,SetMatrix,"void SetMatrix(string, Matrix4x4) / void SetMatrix(int, Matrix4x4)"
+ComputeShader,SetMatrixArray,"void SetMatrixArray(string, Matrix4x4[]) / void SetMatrixArray(int, Matrix4x4[])"
+ComputeShader,SetTexture,"void SetTexture(int, string, Texture) / void SetTexture(int, int, Texture) / void SetTexture(int, string, Texture, int) / void SetTexture(int, int, Texture, int)"
+ComputeShader,SetTextureFromGlobal,"void SetTextureFromGlobal(int, string, string) / void SetTextureFromGlobal(int, int, int)"
+ComputeShader,SetVector,"void SetVector(string, Vector4) / void SetVector(int, Vector4)"
+ComputeShader,SetVectorArray,"void SetVectorArray(string, Vector4[]) / void SetVectorArray(int, Vector4[])"
+ComputeShader,enabledKeywords,LocalKeyword[] enabledKeywords { get; }
+ComputeShader,keywordSpace,LocalKeywordSpace keywordSpace { get; }
+ComputeShader,shaderKeywords,string[] shaderKeywords { get; set; }
 Cubemap,.ctor,"Cubemap(int, TextureFormat, bool) / Cubemap(int, TextureFormat, bool, bool) / Cubemap(int, TextureFormat, int) / Cubemap(int, TextureFormat, int, bool)"
 Cubemap,Apply,"void Apply(bool = True, bool = False)"
 Cubemap,CopyPixels,"void CopyPixels(Texture, int, int, int, int)"
@@ -568,6 +632,44 @@ Graphics,RenderMeshInstanced,"static void RenderMeshInstanced(ref RenderParams, 
 Graphics,SetRenderTarget,"static void SetRenderTarget(RenderTexture) / static void SetRenderTarget(RenderBuffer, RenderBuffer)"
 Graphics,activeColorBuffer,static RenderBuffer activeColorBuffer { get; }
 Graphics,activeDepthBuffer,static RenderBuffer activeDepthBuffer { get; }
+GraphicsBuffer,.ctor,"GraphicsBuffer(GraphicsBuffer.Target, int, int) / GraphicsBuffer(GraphicsBuffer.Target, GraphicsBuffer.UsageFlags, int, int)"
+GraphicsBuffer,Dispose,void Dispose()
+GraphicsBuffer,GetData,"void GetData(Array) / void GetData(Array, int, int, int)"
+GraphicsBuffer,GetNativeBufferPtr,IntPtr GetNativeBufferPtr()
+GraphicsBuffer,IsValid,bool IsValid()
+GraphicsBuffer,Release,void Release()
+GraphicsBuffer,SetCounterValue,void SetCounterValue(uint)
+GraphicsBuffer,SetData,"void SetData(Array) / void SetData<T>(List<T>) / void SetData<T>(NativeArray<T>) / void SetData(Array, int, int, int) / void SetData<T>(List<T>, int, int, int) / void SetData<T>(NativeArray<T>, int, int, int)"
+GraphicsBuffer,bufferHandle,GraphicsBufferHandle bufferHandle { get; }
+GraphicsBuffer,count,int count { get; }
+GraphicsBuffer,name,string name { get; set; }
+GraphicsBuffer,stride,int stride { get; }
+GraphicsBuffer,target,GraphicsBuffer.Target target { get; }
+GraphicsBuffer,usageFlags,GraphicsBuffer.UsageFlags usageFlags { get; }
+GraphicsBuffer.IndirectDrawArgs,instanceCount,uint instanceCount
+GraphicsBuffer.IndirectDrawArgs,size,const int size
+GraphicsBuffer.IndirectDrawArgs,startInstance,uint startInstance
+GraphicsBuffer.IndirectDrawArgs,startVertex,uint startVertex
+GraphicsBuffer.IndirectDrawArgs,vertexCountPerInstance,uint vertexCountPerInstance
+GraphicsBuffer.IndirectDrawIndexedArgs,baseVertexIndex,uint baseVertexIndex
+GraphicsBuffer.IndirectDrawIndexedArgs,indexCountPerInstance,uint indexCountPerInstance
+GraphicsBuffer.IndirectDrawIndexedArgs,instanceCount,uint instanceCount
+GraphicsBuffer.IndirectDrawIndexedArgs,size,const int size
+GraphicsBuffer.IndirectDrawIndexedArgs,startIndex,uint startIndex
+GraphicsBuffer.IndirectDrawIndexedArgs,startInstance,uint startInstance
+GraphicsBuffer.Target,Append,GraphicsBuffer.Target.Append = 64
+GraphicsBuffer.Target,Constant,GraphicsBuffer.Target.Constant = 512
+GraphicsBuffer.Target,CopyDestination,GraphicsBuffer.Target.CopyDestination = 8
+GraphicsBuffer.Target,CopySource,GraphicsBuffer.Target.CopySource = 4
+GraphicsBuffer.Target,Counter,GraphicsBuffer.Target.Counter = 128
+GraphicsBuffer.Target,Index,GraphicsBuffer.Target.Index = 2
+GraphicsBuffer.Target,IndirectArguments,GraphicsBuffer.Target.IndirectArguments = 256
+GraphicsBuffer.Target,Raw,GraphicsBuffer.Target.Raw = 32
+GraphicsBuffer.Target,Structured,GraphicsBuffer.Target.Structured = 16
+GraphicsBuffer.Target,Vertex,GraphicsBuffer.Target.Vertex = 1
+GraphicsBuffer.UsageFlags,LockBufferForWrite,GraphicsBuffer.UsageFlags.LockBufferForWrite = 1
+GraphicsBuffer.UsageFlags,None,GraphicsBuffer.UsageFlags.None = 0
+GraphicsBufferHandle,operators,"Equality(GraphicsBufferHandle, GraphicsBufferHandle) / Inequality(GraphicsBufferHandle, GraphicsBufferHandle)"
 Helix.Collections.Allocator,AudioKernel,Helix.Collections.Allocator.AudioKernel = 5
 Helix.Collections.Allocator,Domain,Helix.Collections.Allocator.Domain = 6
 Helix.Collections.Allocator,FirstUserIndex,Helix.Collections.Allocator.FirstUserIndex = 64
@@ -898,6 +1000,7 @@ Material,HasTexture,bool HasTexture(string) / bool HasTexture(int)
 Material,HasVector,bool HasVector(string) / bool HasVector(int)
 Material,IsKeywordEnabled,bool IsKeywordEnabled(string) / bool IsKeywordEnabled(LocalKeyword)
 Material,Lerp,"void Lerp(Material, Material, float)"
+Material,SetBuffer,"void SetBuffer(string, ComputeBuffer) / void SetBuffer(int, ComputeBuffer) / void SetBuffer(string, GraphicsBuffer) / void SetBuffer(int, GraphicsBuffer)"
 Material,SetColor,"void SetColor(int, Color) / void SetColor(string, Color)"
 Material,SetColorArray,"void SetColorArray(string, List<Color>) / void SetColorArray(int, List<Color>) / void SetColorArray(string, Color[]) / void SetColorArray(int, Color[])"
 Material,SetFloat,"void SetFloat(int, float) / void SetFloat(string, float)"
@@ -952,6 +1055,7 @@ MaterialPropertyBlock,HasMatrix,bool HasMatrix(string) / bool HasMatrix(int)
 MaterialPropertyBlock,HasProperty,bool HasProperty(string) / bool HasProperty(int)
 MaterialPropertyBlock,HasTexture,bool HasTexture(string) / bool HasTexture(int)
 MaterialPropertyBlock,HasVector,bool HasVector(string) / bool HasVector(int)
+MaterialPropertyBlock,SetBuffer,"void SetBuffer(string, ComputeBuffer) / void SetBuffer(int, ComputeBuffer) / void SetBuffer(string, GraphicsBuffer) / void SetBuffer(int, GraphicsBuffer)"
 MaterialPropertyBlock,SetColor,"void SetColor(string, Color) / void SetColor(int, Color)"
 MaterialPropertyBlock,SetFloat,"void SetFloat(string, float) / void SetFloat(int, float)"
 MaterialPropertyBlock,SetFloatArray,"void SetFloatArray(string, float[]) / void SetFloatArray(int, float[]) / void SetFloatArray(string, List<float>) / void SetFloatArray(int, List<float>)"
@@ -1605,16 +1709,17 @@ Rendering.CommandBuffer,Blit,"void Blit(RenderTargetIdentifier, RenderTargetIden
 Rendering.CommandBuffer,Clear,void Clear()
 Rendering.CommandBuffer,ClearRenderTarget,"void ClearRenderTarget(bool, bool, Color, float = 1) / void ClearRenderTarget(RTClearFlags, Color, float = 1, uint = 0)"
 Rendering.CommandBuffer,CopyTexture,"void CopyTexture(RenderTargetIdentifier, RenderTargetIdentifier) / void CopyTexture(RenderTargetIdentifier, int, RenderTargetIdentifier, int) / void CopyTexture(RenderTargetIdentifier, int, int, RenderTargetIdentifier, int, int)"
-Rendering.CommandBuffer,DisableKeyword,void DisableKeyword(ref GlobalKeyword)
+Rendering.CommandBuffer,DisableKeyword,"void DisableKeyword(ComputeShader, ref LocalKeyword) / void DisableKeyword(ref GlobalKeyword)"
 Rendering.CommandBuffer,DisableScissorRect,void DisableScissorRect()
 Rendering.CommandBuffer,DisableShaderKeyword,void DisableShaderKeyword(string)
+Rendering.CommandBuffer,DispatchCompute,"void DispatchCompute(ComputeShader, int, int, int, int) / void DispatchCompute(ComputeShader, int, ComputeBuffer, uint) / void DispatchCompute(ComputeShader, int, GraphicsBuffer, uint)"
 Rendering.CommandBuffer,Dispose,void Dispose()
 Rendering.CommandBuffer,DrawMesh,"void DrawMesh(Mesh, Matrix4x4, Material, int = 0, int = -1, MaterialPropertyBlock = null)"
 Rendering.CommandBuffer,DrawMeshInstanced,"void DrawMeshInstanced(Mesh, int, Material, int, Matrix4x4[], int, MaterialPropertyBlock) / void DrawMeshInstanced(Mesh, int, Material, int, Matrix4x4[], int) / void DrawMeshInstanced(Mesh, int, Material, int, Matrix4x4[])"
 Rendering.CommandBuffer,DrawProcedural,"void DrawProcedural(Matrix4x4, Material, int, MeshTopology, int, int = 1, MaterialPropertyBlock = null)"
 Rendering.CommandBuffer,DrawRenderer,"void DrawRenderer(Renderer, Material, int = 0, int = -1)"
 Rendering.CommandBuffer,DrawRendererList,void DrawRendererList(RendererList)
-Rendering.CommandBuffer,EnableKeyword,void EnableKeyword(ref GlobalKeyword)
+Rendering.CommandBuffer,EnableKeyword,"void EnableKeyword(ComputeShader, ref LocalKeyword) / void EnableKeyword(ref GlobalKeyword)"
 Rendering.CommandBuffer,EnableScissorRect,void EnableScissorRect(Rect)
 Rendering.CommandBuffer,EnableShaderKeyword,void EnableShaderKeyword(string)
 Rendering.CommandBuffer,EndSample,void EndSample(string)
@@ -1625,6 +1730,18 @@ Rendering.CommandBuffer,Release,void Release()
 Rendering.CommandBuffer,ReleaseTemporaryRT,void ReleaseTemporaryRT(int)
 Rendering.CommandBuffer,RequestAsyncReadback,"void RequestAsyncReadback(Texture, Action<AsyncGPUReadbackRequest>) / void RequestAsyncReadback(Texture, int, Action<AsyncGPUReadbackRequest>)"
 Rendering.CommandBuffer,ResolveAntiAliasedSurface,"void ResolveAntiAliasedSurface(RenderTexture, RenderTexture = null)"
+Rendering.CommandBuffer,SetBufferData,"void SetBufferData(ComputeBuffer, Array) / void SetBufferData(ComputeBuffer, Array, int, int, int) / void SetBufferData(GraphicsBuffer, Array) / void SetBufferData(GraphicsBuffer, Array, int, int, int) / void SetBufferData<T>(GraphicsBuffer, List<T>) / void SetBufferData<T>(ComputeBuffer, List<T>) / void SetBufferData<T>(GraphicsBuffer, NativeArray<T>) / void SetBufferData<T>(ComputeBuffer, NativeArray<T>)"
+Rendering.CommandBuffer,SetComputeBufferParam,"void SetComputeBufferParam(ComputeShader, int, string, ComputeBuffer) / void SetComputeBufferParam(ComputeShader, int, int, ComputeBuffer) / void SetComputeBufferParam(ComputeShader, int, string, GraphicsBuffer) / void SetComputeBufferParam(ComputeShader, int, int, GraphicsBuffer) / void SetComputeBufferParam(ComputeShader, int, string, GraphicsBufferHandle) / void SetComputeBufferParam(ComputeShader, int, int, GraphicsBufferHandle)"
+Rendering.CommandBuffer,SetComputeFloatParam,"void SetComputeFloatParam(ComputeShader, string, float) / void SetComputeFloatParam(ComputeShader, int, float)"
+Rendering.CommandBuffer,SetComputeFloatParams,"void SetComputeFloatParams(ComputeShader, string, params float[]) / void SetComputeFloatParams(ComputeShader, int, params float[])"
+Rendering.CommandBuffer,SetComputeIntParam,"void SetComputeIntParam(ComputeShader, string, int) / void SetComputeIntParam(ComputeShader, int, int)"
+Rendering.CommandBuffer,SetComputeIntParams,"void SetComputeIntParams(ComputeShader, string, params int[]) / void SetComputeIntParams(ComputeShader, int, params int[])"
+Rendering.CommandBuffer,SetComputeMatrixArrayParam,"void SetComputeMatrixArrayParam(ComputeShader, string, Matrix4x4[]) / void SetComputeMatrixArrayParam(ComputeShader, int, Matrix4x4[])"
+Rendering.CommandBuffer,SetComputeMatrixParam,"void SetComputeMatrixParam(ComputeShader, string, Matrix4x4) / void SetComputeMatrixParam(ComputeShader, int, Matrix4x4)"
+Rendering.CommandBuffer,SetComputeTextureParam,"void SetComputeTextureParam(ComputeShader, int, string, RenderTargetIdentifier) / void SetComputeTextureParam(ComputeShader, int, int, RenderTargetIdentifier) / void SetComputeTextureParam(ComputeShader, int, string, RenderTargetIdentifier, int) / void SetComputeTextureParam(ComputeShader, int, int, RenderTargetIdentifier, int)"
+Rendering.CommandBuffer,SetComputeVectorArrayParam,"void SetComputeVectorArrayParam(ComputeShader, string, Vector4[]) / void SetComputeVectorArrayParam(ComputeShader, int, Vector4[])"
+Rendering.CommandBuffer,SetComputeVectorParam,"void SetComputeVectorParam(ComputeShader, string, Vector4) / void SetComputeVectorParam(ComputeShader, int, Vector4)"
+Rendering.CommandBuffer,SetGlobalBuffer,"void SetGlobalBuffer(string, ComputeBuffer) / void SetGlobalBuffer(int, ComputeBuffer) / void SetGlobalBuffer(string, GraphicsBuffer) / void SetGlobalBuffer(int, GraphicsBuffer)"
 Rendering.CommandBuffer,SetGlobalColor,"void SetGlobalColor(string, Color) / void SetGlobalColor(int, Color)"
 Rendering.CommandBuffer,SetGlobalDepthBias,"void SetGlobalDepthBias(float, float)"
 Rendering.CommandBuffer,SetGlobalFloat,"void SetGlobalFloat(string, float) / void SetGlobalFloat(int, float)"
@@ -1637,7 +1754,7 @@ Rendering.CommandBuffer,SetGlobalTexture,"void SetGlobalTexture(string, RenderTa
 Rendering.CommandBuffer,SetGlobalVector,"void SetGlobalVector(string, Vector4) / void SetGlobalVector(int, Vector4)"
 Rendering.CommandBuffer,SetGlobalVectorArray,"void SetGlobalVectorArray(string, Vector4[]) / void SetGlobalVectorArray(int, Vector4[]) / void SetGlobalVectorArray(string, List<Vector4>) / void SetGlobalVectorArray(int, List<Vector4>)"
 Rendering.CommandBuffer,SetInvertCulling,void SetInvertCulling(bool)
-Rendering.CommandBuffer,SetKeyword,"void SetKeyword(ref GlobalKeyword, bool)"
+Rendering.CommandBuffer,SetKeyword,"void SetKeyword(ComputeShader, ref LocalKeyword, bool) / void SetKeyword(ref GlobalKeyword, bool)"
 Rendering.CommandBuffer,SetRenderTarget,"void SetRenderTarget(RenderTargetIdentifier) / void SetRenderTarget(RenderTargetIdentifier, RenderBufferLoadAction, RenderBufferStoreAction) / void SetRenderTarget(RenderTargetIdentifier, RenderBufferLoadAction, RenderBufferStoreAction, RenderBufferLoadAction, RenderBufferStoreAction) / void SetRenderTarget(RenderTargetIdentifier, int) / void SetRenderTarget(RenderTargetIdentifier, int, CubemapFace) / void SetRenderTarget(RenderTargetIdentifier, int, CubemapFace, int) / void SetRenderTarget(RenderTargetIdentifier, RenderTargetIdentifier) / void SetRenderTarget(RenderTargetIdentifier, RenderTargetIdentifier, int) / void SetRenderTarget(RenderTargetIdentifier, RenderTargetIdentifier, int, CubemapFace) / void SetRenderTarget(RenderTargetIdentifier, RenderTargetIdentifier, int, CubemapFace, int) / void SetRenderTarget(RenderTargetIdentifier, RenderBufferLoadAction, RenderBufferStoreAction, RenderTargetIdentifier, RenderBufferLoadAction, RenderBufferStoreAction) / void SetRenderTarget(RenderTargetIdentifier[], RenderTargetIdentifier) / void SetRenderTarget(RenderTargetIdentifier[], RenderTargetIdentifier, int, CubemapFace, int)"
 Rendering.CommandBuffer,SetViewProjectionMatrices,"void SetViewProjectionMatrices(Matrix4x4, Matrix4x4)"
 Rendering.CommandBuffer,SetViewport,void SetViewport(Rect)
@@ -1670,6 +1787,7 @@ Rendering.CullingOptions,Stereo,Rendering.CullingOptions.Stereo = 16
 Rendering.CullingResults,ComputeDirectionalShadowMatricesAndCullingPrimitives,"bool ComputeDirectionalShadowMatricesAndCullingPrimitives(int, int, int, Vector3, int, float, out Matrix4x4, out Matrix4x4, out ShadowSplitData)"
 Rendering.CullingResults,ComputePointShadowMatricesAndCullingPrimitives,"bool ComputePointShadowMatricesAndCullingPrimitives(int, CubemapFace, float, out Matrix4x4, out Matrix4x4, out ShadowSplitData)"
 Rendering.CullingResults,ComputeSpotShadowMatricesAndCullingPrimitives,"bool ComputeSpotShadowMatricesAndCullingPrimitives(int, out Matrix4x4, out Matrix4x4, out ShadowSplitData)"
+Rendering.CullingResults,FillLightAndReflectionProbeIndices,void FillLightAndReflectionProbeIndices(ComputeBuffer) / void FillLightAndReflectionProbeIndices(GraphicsBuffer)
 Rendering.CullingResults,GetLightIndexMap,NativeArray<int> GetLightIndexMap(Allocator)
 Rendering.CullingResults,GetShadowCasterBounds,"bool GetShadowCasterBounds(int, out Bounds)"
 Rendering.CullingResults,SetLightIndexMap,void SetLightIndexMap(NativeArray<int>)
@@ -1749,7 +1867,7 @@ Rendering.LODParameters,orthoSize,float orthoSize { get; set; }
 Rendering.LightShadowCasterCullingInfo,projectionType,BatchCullingProjectionType projectionType
 Rendering.LightShadowCasterCullingInfo,splitExclusionMask,ushort splitExclusionMask
 Rendering.LightShadowCasterCullingInfo,splitRange,RangeInt splitRange
-Rendering.LocalKeyword,.ctor,"LocalKeyword(Shader, string)"
+Rendering.LocalKeyword,.ctor,"LocalKeyword(ComputeShader, string) / LocalKeyword(Shader, string)"
 Rendering.LocalKeyword,ToString,string ToString()
 Rendering.LocalKeyword,isDynamic,bool isDynamic { get; }
 Rendering.LocalKeyword,isOverridable,bool isOverridable { get; }
@@ -2258,6 +2376,7 @@ Shader,GetPropertyTextureDimension,TextureDimension GetPropertyTextureDimension(
 Shader,GetPropertyType,ShaderPropertyType GetPropertyType(int)
 Shader,IsKeywordEnabled,static bool IsKeywordEnabled(string) / static bool IsKeywordEnabled(GlobalKeyword)
 Shader,PropertyToID,static int PropertyToID(string)
+Shader,SetGlobalBuffer,"static void SetGlobalBuffer(string, ComputeBuffer) / static void SetGlobalBuffer(int, ComputeBuffer) / static void SetGlobalBuffer(string, GraphicsBuffer) / static void SetGlobalBuffer(int, GraphicsBuffer)"
 Shader,SetGlobalColor,"static void SetGlobalColor(string, Color) / static void SetGlobalColor(int, Color)"
 Shader,SetGlobalFloat,"static void SetGlobalFloat(string, float) / static void SetGlobalFloat(int, float)"
 Shader,SetGlobalFloatArray,"static void SetGlobalFloatArray(string, List<float>) / static void SetGlobalFloatArray(int, List<float>) / static void SetGlobalFloatArray(string, float[]) / static void SetGlobalFloatArray(int, float[])"
