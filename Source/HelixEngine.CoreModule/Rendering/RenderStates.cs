@@ -493,6 +493,11 @@ namespace HelixEngine.Rendering
         int m_MaximumVisibleLights;
         fixed float m_LayerCullDistances[32];
         byte m_LayerCullSpherical;
+        float m_ShadowDistance;
+        float m_ShadowNearPlaneOffset;
+        byte m_ConservativeEnclosingSphere;
+        int m_NumIterationsEnclosingSphere;
+        ReflectionProbeSortingCriteria m_ReflectionProbeSortingCriteria;
 
         public static readonly int maximumCullingPlaneCount = 10;
 
@@ -506,6 +511,20 @@ namespace HelixEngine.Rendering
         public int maximumVisibleLights { get => m_MaximumVisibleLights; set => m_MaximumVisibleLights = value; }
         /// <summary>Layer cull distances measured from the origin instead of along the view.</summary>
         public bool layerCullSpherical { get => m_LayerCullSpherical != 0; set => m_LayerCullSpherical = (byte)(value ? 1 : 0); }
+        /// <summary>How far from the camera shadows are drawn (the cascades split it).</summary>
+        public float shadowDistance { get => m_ShadowDistance; set => m_ShadowDistance = value; }
+        /// <summary>How far toward the light the casters of a split are kept.</summary>
+        public float shadowNearPlaneOffset { get => m_ShadowNearPlaneOffset; set => m_ShadowNearPlaneOffset = value; }
+        /// <summary>A cascade's sphere tightened around the split's corners instead of the stable one on the view axis.</summary>
+        public bool conservativeEnclosingSphere { get => m_ConservativeEnclosingSphere != 0; set => m_ConservativeEnclosingSphere = (byte)(value ? 1 : 0); }
+        /// <summary>The order of the visible reflection probes.</summary>
+        public ReflectionProbeSortingCriteria reflectionProbeSortingCriteria
+        {
+            get => m_ReflectionProbeSortingCriteria;
+            set => m_ReflectionProbeSortingCriteria = value;
+        }
+        /// <summary>The refinements of the conservative sphere.</summary>
+        public int numIterationsEnclosingSphere { get => m_NumIterationsEnclosingSphere; set => m_NumIterationsEnclosingSphere = value; }
 
         public float GetLayerCullDistance(int layerIndex)
         {
@@ -588,6 +607,42 @@ namespace HelixEngine.Rendering
     }
 
     /// <summary>A light that passed culling: the engine's memory as it is (the layout of the engine's VisibleLight).</summary>
+    /// <summary>A reflection probe the camera sees.</summary>
+    public struct VisibleReflectionProbe : IEquatable<VisibleReflectionProbe>
+    {
+        // Written by the engine (the memory is its own).
+        Bounds m_Bounds;
+        Matrix4x4 m_LocalToWorldMatrix;
+        Vector4 m_HdrData;
+        Vector3 m_Center;
+        float m_BlendDistance;
+        int m_Importance;
+        int m_BoxProjection;
+#pragma warning disable CS0649
+        ulong m_TextureId;
+        ulong m_ProbeId;
+#pragma warning restore CS0649
+
+        public Bounds bounds { get => m_Bounds; set => m_Bounds = value; }
+        public Matrix4x4 localToWorldMatrix { get => m_LocalToWorldMatrix; set => m_LocalToWorldMatrix = value; }
+        public Vector4 hdrData { get => m_HdrData; set => m_HdrData = value; }
+        public Vector3 center { get => m_Center; set => m_Center = value; }
+        public float blendDistance { get => m_BlendDistance; set => m_BlendDistance = value; }
+        public int importance { get => m_Importance; set => m_Importance = value; }
+        public bool isBoxProjection { get => m_BoxProjection != 0; set => m_BoxProjection = value ? 1 : 0; }
+        public Texture texture => RenderPipelineNative.TextureOf(m_TextureId);
+        public ReflectionProbe reflectionProbe => RenderPipelineNative.ReflectionProbeOf(m_ProbeId);
+
+        public bool Equals(VisibleReflectionProbe other) =>
+            m_Bounds.Equals(other.m_Bounds) && m_LocalToWorldMatrix.Equals(other.m_LocalToWorldMatrix) && m_HdrData.Equals(other.m_HdrData) &&
+            m_Center.Equals(other.m_Center) && m_BlendDistance.Equals(other.m_BlendDistance) && m_Importance == other.m_Importance &&
+            m_BoxProjection == other.m_BoxProjection && m_TextureId == other.m_TextureId && m_ProbeId == other.m_ProbeId;
+        public override bool Equals(object obj) => obj is VisibleReflectionProbe other && Equals(other);
+        public override int GetHashCode() => HashCode.Combine(m_Bounds, m_HdrData, m_Center, m_BlendDistance, m_Importance, m_BoxProjection, m_TextureId, m_ProbeId);
+        public static bool operator ==(VisibleReflectionProbe left, VisibleReflectionProbe right) => left.Equals(right);
+        public static bool operator !=(VisibleReflectionProbe left, VisibleReflectionProbe right) => !left.Equals(right);
+    }
+
     public struct VisibleLight : IEquatable<VisibleLight>
     {
         // Written by the engine (the memory is its own).
@@ -627,6 +682,105 @@ namespace HelixEngine.Rendering
         internal ulong ptr;
 
         internal CullingResults(ulong p) => ptr = p;
+
+        /// <summary>The index of each visible light in the per object light lists (PerObjectData.LightIndices).</summary>
+        public unsafe NativeArray<int> GetLightIndexMap(Allocator allocator)
+        {
+            Validate();
+            RenderPipelineNative.VisibleLights(ptr, out int count);
+            var map = new NativeArray<int>(count, allocator, NativeArrayOptions.UninitializedMemory);
+            if (count > 0)
+                RenderPipelineNative.GetLightIndexMap(ptr, (ulong)map.GetUnsafePtr(), count);
+            return map;
+        }
+
+        /// <summary>Sets the index of each visible light in the per object light lists; -1 leaves a light out of them.</summary>
+        public unsafe void SetLightIndexMap(NativeArray<int> lightIndexMap)
+        {
+            Validate();
+            RenderPipelineNative.SetLightIndexMap(ptr, (ulong)lightIndexMap.GetUnsafeReadOnlyPtr(), lightIndexMap.Length);
+        }
+
+        /// <summary>The per object light indices of all visible renderers.</summary>
+        public int lightIndexCount
+        {
+            get
+            {
+                Validate();
+                return RenderPipelineNative.LightIndexCount(ptr);
+            }
+        }
+
+        /// <summary>The bounds of a visible light's shadow casters (false: it has none).</summary>
+        public bool GetShadowCasterBounds(int lightIndex, out Bounds outBounds)
+        {
+            Validate();
+            outBounds = default;
+            return RenderPipelineNative.ShadowCasterBounds(ptr, lightIndex, ref outBounds);
+        }
+
+        /// <summary>A cascade of a directional light: the light's view and projection fitting the split of the shadow
+        /// distance, and the split's culling sphere and planes.</summary>
+        public unsafe bool ComputeDirectionalShadowMatricesAndCullingPrimitives(int activeLightIndex, int splitIndex, int splitCount, Vector3 splitRatio,
+                                                                                int shadowResolution, float shadowNearPlaneOffset, out Matrix4x4 viewMatrix,
+                                                                                out Matrix4x4 projMatrix, out ShadowSplitData shadowSplitData)
+        {
+            Validate();
+            viewMatrix = default;
+            projMatrix = default;
+            ShadowSplitData split = default;
+            bool ok = RenderPipelineNative.DirectionalShadowMatrices(ptr, activeLightIndex, splitIndex, splitCount, splitRatio, shadowResolution,
+                                                                     shadowNearPlaneOffset, ref viewMatrix, ref projMatrix, (ulong)(&split));
+            shadowSplitData = split;
+            return ok;
+        }
+
+        /// <summary>A spot light's view along its axis, the perspective over its cone and the split's culling.</summary>
+        public unsafe bool ComputeSpotShadowMatricesAndCullingPrimitives(int activeLightIndex, out Matrix4x4 viewMatrix, out Matrix4x4 projMatrix,
+                                                                         out ShadowSplitData shadowSplitData)
+        {
+            Validate();
+            viewMatrix = default;
+            projMatrix = default;
+            ShadowSplitData split = default;
+            bool ok = RenderPipelineNative.SpotShadowMatrices(ptr, activeLightIndex, ref viewMatrix, ref projMatrix, (ulong)(&split));
+            shadowSplitData = split;
+            return ok;
+        }
+
+        /// <summary>A point light's cube face: the view along the face's axis and a 90 degree perspective widened by fovBias.</summary>
+        public unsafe bool ComputePointShadowMatricesAndCullingPrimitives(int activeLightIndex, CubemapFace cubemapFace, float fovBias, out Matrix4x4 viewMatrix,
+                                                                          out Matrix4x4 projMatrix, out ShadowSplitData shadowSplitData)
+        {
+            Validate();
+            viewMatrix = default;
+            projMatrix = default;
+            ShadowSplitData split = default;
+            bool ok = RenderPipelineNative.PointShadowMatrices(ptr, activeLightIndex, (int)cubemapFace, fovBias, ref viewMatrix, ref projMatrix, (ulong)(&split));
+            shadowSplitData = split;
+            return ok;
+        }
+
+        /// <summary>The visible reflection probes, in the order of the culling's sorting criteria.</summary>
+        public unsafe NativeArray<VisibleReflectionProbe> visibleReflectionProbes
+        {
+            get
+            {
+                Validate();
+                ulong data = RenderPipelineNative.VisibleReflectionProbes(ptr, out int count);
+                return NativeArrayUnsafeUtility.ConvertExistingDataToNativeArray<VisibleReflectionProbe>((void*)data, count, Allocator.None);
+            }
+        }
+
+        /// <summary>The per object lights and reflection probes of all visible renderers.</summary>
+        public int lightAndReflectionProbeIndexCount
+        {
+            get
+            {
+                Validate();
+                return RenderPipelineNative.LightAndReflectionProbeIndexCount(ptr);
+            }
+        }
 
         public unsafe NativeArray<VisibleLight> visibleLights
         {

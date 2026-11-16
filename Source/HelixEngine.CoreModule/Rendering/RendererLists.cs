@@ -483,6 +483,8 @@ namespace HelixEngine.Rendering
             return settings != null;
         }
 
+        internal static bool HasSettingsFor(Type type) => SettingsOf(type) != null;
+
         // The settings of a type or of its nearest base pipeline type that has some.
         static RenderPipelineGlobalSettings SettingsOf(Type type)
         {

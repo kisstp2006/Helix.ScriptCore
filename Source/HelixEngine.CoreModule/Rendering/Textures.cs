@@ -68,4 +68,38 @@ namespace HelixEngine
             SetPixelDataRaw(data.GetSubArray(sourceDataStartIndex, data.Length - sourceDataStartIndex).Reinterpret<byte>(size), mipLevel);
         }
     }
+
+    public partial class Cubemap
+    {
+        /// <summary>The pixels of a mip of a face as T where they are (writes change the cubemap; Apply uploads them).</summary>
+        public unsafe NativeArray<T> GetPixelData<T>(int mipLevel, CubemapFace face) where T : struct
+        {
+            ulong address = PixelDataAddress(mipLevel, face);
+            int bytes = PixelDataSize(mipLevel, face);
+            if (address == 0)
+                throw new ArgumentException($"Cubemap '{name}' has no pixel data for face {face} mip {mipLevel} (it is not readable or the mip does not exist)");
+            int size = UnsafeUtility.SizeOf<T>();
+            if (bytes % size != 0)
+                throw new ArgumentException($"Cubemap '{name}' face {face} mip {mipLevel} size ({bytes}) is not a multiple of type {typeof(T)} size ({size})");
+            return NativeArrayUnsafeUtility.ConvertExistingDataToNativeArray<T>((void*)address, bytes / size, Allocator.None);
+        }
+
+        public void SetPixelData<T>(T[] data, int mipLevel, CubemapFace face, int sourceDataStartIndex = 0) where T : struct
+        {
+            if (data == null)
+                throw new ArgumentNullException(nameof(data));
+            if (sourceDataStartIndex < 0 || sourceDataStartIndex > data.Length)
+                throw new ArgumentOutOfRangeException(nameof(sourceDataStartIndex), "sourceDataStartIndex must be within the data");
+            var view = new NativeArray<byte>(MemoryMarshal.AsBytes(data.AsSpan(sourceDataStartIndex)).ToArray(), Allocator.Temp);
+            SetPixelDataRaw(view, mipLevel, face);
+            view.Dispose();
+        }
+
+        public void SetPixelData<T>(NativeArray<T> data, int mipLevel, CubemapFace face, int sourceDataStartIndex = 0) where T : struct
+        {
+            if (sourceDataStartIndex < 0 || sourceDataStartIndex > data.Length)
+                throw new ArgumentOutOfRangeException(nameof(sourceDataStartIndex), "sourceDataStartIndex must be within the data");
+            SetPixelDataRaw(data.GetSubArray(sourceDataStartIndex, data.Length - sourceDataStartIndex).Reinterpret<byte>(UnsafeUtility.SizeOf<T>()), mipLevel, face);
+        }
+    }
 }

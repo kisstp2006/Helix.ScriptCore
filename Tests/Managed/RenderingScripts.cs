@@ -335,6 +335,84 @@ namespace Tests
         }
     }
 
+    // A pipeline's global settings: registered for its type by the asset's EnsureGlobalSettings, before the engine
+    // makes the pipeline; the pipeline answers them as its defaultSettings.
+    [Serializable]
+    public class CsGraphicsSetting : IRenderPipelineGraphicsSettings
+    {
+        public int version => 3;
+    }
+
+    public class CsGlobalSettings : RenderPipelineGlobalSettings
+    {
+        readonly System.Collections.Generic.List<IRenderPipelineGraphicsSettings> m_List = new() { new CsGraphicsSetting() };
+
+        protected override System.Collections.Generic.List<IRenderPipelineGraphicsSettings> settingsList => m_List;
+    }
+
+    public class CsSettingsPipeline : RenderPipeline
+    {
+        public override RenderPipelineGlobalSettings defaultSettings => GraphicsSettings.GetSettingsForRenderPipeline<CsSettingsPipeline>();
+
+        protected override void Render(ScriptableRenderContext context, Camera[] cameras)
+        {
+            bool found = GraphicsSettings.TryGetRenderPipelineSettings(out CsGraphicsSetting setting);
+            Notes.NoteRaw($"settings:{defaultSettings is CsGlobalSettings}:{(found ? setting.version : -1)}:{RenderPipelineManager.currentPipeline == this}");
+        }
+    }
+
+    public class CsSettingsPipelineAsset : RenderPipelineAsset
+    {
+        public override Type pipelineType => typeof(CsSettingsPipeline);
+
+        protected override bool requiresCompatibleRenderPipelineGlobalSettings => true;
+
+        protected override void EnsureGlobalSettings()
+        {
+            Notes.NoteRaw("EnsureGlobalSettings");
+            if (GraphicsSettings.GetSettingsForRenderPipeline<CsSettingsPipeline>() == null)
+                GraphicsSettings.RegisterRenderPipelineSettings<CsSettingsPipeline>(ScriptableObject.CreateInstance<CsGlobalSettings>());
+        }
+
+        protected override RenderPipeline CreatePipeline()
+        {
+            Notes.NoteRaw("CreatePipeline");
+            return new CsSettingsPipeline();
+        }
+    }
+
+    // The scene's ambient light and reflection settings from C#, with SphericalHarmonicsL2.
+    public class CsAmbientTests : GameBehaviour
+    {
+        void Start()
+        {
+            var flat = new SphericalHarmonicsL2();
+            flat.AddAmbientLight(new Color(0.2f, 0.4f, 0.6f, 1));
+            var sun = new SphericalHarmonicsL2();
+            sun.AddDirectionalLight(Vector3.up, Color.white, 2);
+            var results = new Color[2];
+            (flat + sun * 0.5f).Evaluate(new[] { Vector3.up, Vector3.down }, results);
+            Notes.NoteRaw($"sh:{Text.F(results[0].r)}:{Text.F(results[1].b)}:{flat == flat * 1.0f}:{Text.F(flat[1, 0])}");
+            RenderSettings.ambientMode = AmbientMode.Flat;
+            RenderSettings.ambientLight = new Color(0.1f, 0.2f, 0.3f, 1);
+            var probe = RenderSettings.ambientProbe;
+            probe.Evaluate(new[] { Vector3.forward }, results = new Color[1]);
+            RenderSettings.defaultReflectionMode = DefaultReflectionMode.Custom;
+            RenderSettings.reflectionIntensity = 2;
+            RenderSettings.reflectionBounces = 3;
+            Notes.NoteRaw($"settings:{RenderSettings.ambientMode}:{Text.F(results[0].g)}:{Text.C(RenderSettings.ambientSkyColor)}:" +
+                          $"{RenderSettings.defaultReflectionMode}:{Text.F(RenderSettings.reflectionIntensity)}:{RenderSettings.reflectionBounces}");
+            RenderSettings.ambientMode = AmbientMode.Custom;
+            RenderSettings.ambientProbe = flat;
+            Notes.NoteRaw($"custom:{RenderSettings.ambientProbe == flat}");
+            RenderSettings.ambientMode = AmbientMode.Skybox;
+            RenderSettings.defaultReflectionMode = DefaultReflectionMode.Skybox;
+            RenderSettings.reflectionIntensity = 1;
+            RenderSettings.reflectionBounces = 1;
+            RenderSettings.ambientProbe = new SphericalHarmonicsL2();
+        }
+    }
+
     public class CsTemporaryPipelineAsset : RenderPipelineAsset
     {
         protected override RenderPipeline CreatePipeline()

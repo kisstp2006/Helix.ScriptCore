@@ -362,6 +362,18 @@ Component,TryGetComponent,"bool TryGetComponent(Type, out Component) / bool TryG
 Component,gameObject,GameObject gameObject { get; }
 Component,tag,string tag { get; set; }
 Component,transform,Transform transform { get; }
+Cubemap,.ctor,"Cubemap(int, TextureFormat, bool) / Cubemap(int, TextureFormat, bool, bool) / Cubemap(int, TextureFormat, int) / Cubemap(int, TextureFormat, int, bool)"
+Cubemap,Apply,"void Apply(bool = True, bool = False)"
+Cubemap,CopyPixels,"void CopyPixels(Texture, int, int, int, int)"
+Cubemap,GetPixel,"Color GetPixel(CubemapFace, int, int, int = 0)"
+Cubemap,GetPixelData,"NativeArray<T> GetPixelData<T>(int, CubemapFace)"
+Cubemap,GetPixels,"Color[] GetPixels(CubemapFace, int = 0)"
+Cubemap,SetPixel,"void SetPixel(CubemapFace, int, int, Color, int = 0)"
+Cubemap,SetPixelData,"void SetPixelData<T>(T[], int, CubemapFace, int = 0) / void SetPixelData<T>(NativeArray<T>, int, CubemapFace, int = 0)"
+Cubemap,SetPixels,"void SetPixels(Color[], CubemapFace, int = 0)"
+Cubemap,SmoothEdges,void SmoothEdges(int = 1)
+Cubemap,dimension,TextureDimension dimension { get; set; }
+Cubemap,format,TextureFormat format { get; }
 CubemapFace,NegativeX,CubemapFace.NegativeX = 1
 CubemapFace,NegativeY,CubemapFace.NegativeY = 3
 CubemapFace,NegativeZ,CubemapFace.NegativeZ = 5
@@ -506,6 +518,7 @@ FullScreenMode,ExclusiveFullScreen,FullScreenMode.ExclusiveFullScreen = 0
 FullScreenMode,FullScreenWindow,FullScreenMode.FullScreenWindow = 1
 FullScreenMode,MaximizedWindow,FullScreenMode.MaximizedWindow = 2
 FullScreenMode,Windowed,FullScreenMode.Windowed = 3
+GL,GetGPUProjectionMatrix,"static Matrix4x4 GetGPUProjectionMatrix(Matrix4x4, bool)"
 GameBehaviour,StartCoroutine,"Coroutine StartCoroutine(IEnumerator) / Coroutine StartCoroutine(string, object = null)"
 GameBehaviour,StopAllCoroutines,void StopAllCoroutines()
 GameBehaviour,StopCoroutine,void StopCoroutine(IEnumerator) / void StopCoroutine(Coroutine) / void StopCoroutine(string)
@@ -1233,6 +1246,10 @@ Random,rotation,static Quaternion rotation { get; }
 Random,rotationUniform,static Quaternion rotationUniform { get; }
 Random,state,static Random.State state { get; set; }
 Random,value,static float value { get; }
+RangeInt,.ctor,"RangeInt(int, int)"
+RangeInt,end,int end { get; }
+RangeInt,length,int length
+RangeInt,start,int start
 Ray,.ctor,"Ray(Vector3, Vector3)"
 Ray,GetPoint,Vector3 GetPoint(float)
 Ray,ToString,"string ToString() / string ToString(string) / string ToString(string, IFormatProvider)"
@@ -1287,6 +1304,32 @@ RectInt.PositionEnumerator,Current,Vector2Int Current { get; }
 RectInt.PositionEnumerator,GetEnumerator,RectInt.PositionEnumerator GetEnumerator()
 RectInt.PositionEnumerator,MoveNext,bool MoveNext()
 RectInt.PositionEnumerator,Reset,void Reset()
+ReflectionProbe,Reset,void Reset()
+ReflectionProbe,backgroundColor,Color backgroundColor { get; set; }
+ReflectionProbe,bakedTexture,Texture bakedTexture { get; set; }
+ReflectionProbe,blendDistance,float blendDistance { get; set; }
+ReflectionProbe,bounds,Bounds bounds { get; }
+ReflectionProbe,boxProjection,bool boxProjection { get; set; }
+ReflectionProbe,center,Vector3 center { get; set; }
+ReflectionProbe,clearFlags,ReflectionProbeClearFlags clearFlags { get; set; }
+ReflectionProbe,cullingMask,int cullingMask { get; set; }
+ReflectionProbe,customBakedTexture,Texture customBakedTexture { get; set; }
+ReflectionProbe,farClipPlane,float farClipPlane { get; set; }
+ReflectionProbe,hdr,bool hdr { get; set; }
+ReflectionProbe,importance,int importance { get; set; }
+ReflectionProbe,intensity,float intensity { get; set; }
+ReflectionProbe,maxBakedCubemapResolution,static int maxBakedCubemapResolution { get; }
+ReflectionProbe,minBakedCubemapResolution,static int minBakedCubemapResolution { get; }
+ReflectionProbe,mode,ReflectionProbeMode mode { get; set; }
+ReflectionProbe,nearClipPlane,float nearClipPlane { get; set; }
+ReflectionProbe,refreshMode,ReflectionProbeRefreshMode refreshMode { get; set; }
+ReflectionProbe,renderDynamicObjects,bool renderDynamicObjects { get; set; }
+ReflectionProbe,resolution,int resolution { get; set; }
+ReflectionProbe,shadowDistance,float shadowDistance { get; set; }
+ReflectionProbe,size,Vector3 size { get; set; }
+ReflectionProbe,texture,Texture texture { get; }
+ReflectionProbe,textureHDRDecodeValues,Vector4 textureHDRDecodeValues { get; }
+ReflectionProbe,timeSlicingMode,ReflectionProbeTimeSlicingMode timeSlicingMode { get; set; }
 RefreshRate,denominator,uint denominator
 RefreshRate,numerator,uint numerator
 RenderBuffer,GetNativeRenderBufferPtr,IntPtr GetNativeRenderBufferPtr()
@@ -1300,6 +1343,19 @@ RenderParams,rendererPriority,int rendererPriority { get; set; }
 RenderParams,renderingLayerMask,uint renderingLayerMask { get; set; }
 RenderParams,shadowCastingMode,ShadowCastingMode shadowCastingMode { get; set; }
 RenderParams,worldBounds,Bounds worldBounds { get; set; }
+RenderSettings,ambientEquatorColor,static Color ambientEquatorColor { get; set; }
+RenderSettings,ambientGroundColor,static Color ambientGroundColor { get; set; }
+RenderSettings,ambientIntensity,static float ambientIntensity { get; set; }
+RenderSettings,ambientLight,static Color ambientLight { get; set; }
+RenderSettings,ambientMode,static AmbientMode ambientMode { get; set; }
+RenderSettings,ambientProbe,static SphericalHarmonicsL2 ambientProbe { get; set; }
+RenderSettings,ambientSkyColor,static Color ambientSkyColor { get; set; }
+RenderSettings,customReflectionTexture,static Texture customReflectionTexture { get; set; }
+RenderSettings,defaultReflectionMode,static DefaultReflectionMode defaultReflectionMode { get; set; }
+RenderSettings,defaultReflectionResolution,static int defaultReflectionResolution { get; set; }
+RenderSettings,reflectionBounces,static int reflectionBounces { get; set; }
+RenderSettings,reflectionIntensity,static float reflectionIntensity { get; set; }
+RenderSettings,skybox,static Material skybox { get; set; }
 RenderTexture,.ctor,"RenderTexture(RenderTextureDescriptor) / RenderTexture(int, int, int) / RenderTexture(int, int, int, RenderTextureFormat) / RenderTexture(int, int, int, RenderTextureFormat, RenderTextureReadWrite) / RenderTexture(int, int, int, GraphicsFormat) / RenderTexture(RenderTexture)"
 RenderTexture,Create,bool Create()
 RenderTexture,DiscardContents,"void DiscardContents() / void DiscardContents(bool, bool)"
@@ -1390,6 +1446,7 @@ RenderTextureMemoryless,None,RenderTextureMemoryless.None = 0
 RenderTextureReadWrite,Default,RenderTextureReadWrite.Default = 0
 RenderTextureReadWrite,Linear,RenderTextureReadWrite.Linear = 1
 RenderTextureReadWrite,sRGB,RenderTextureReadWrite.sRGB = 2
+Renderer,GetClosestReflectionProbes,void GetClosestReflectionProbes(List<ReflectionProbeBlendInfo>)
 Renderer,GetMaterials,void GetMaterials(List<Material>)
 Renderer,GetPropertyBlock,"void GetPropertyBlock(MaterialPropertyBlock) / void GetPropertyBlock(MaterialPropertyBlock, int)"
 Renderer,GetSharedMaterials,void GetSharedMaterials(List<Material>)
@@ -1409,6 +1466,7 @@ Renderer,localToWorldMatrix,Matrix4x4 localToWorldMatrix { get; }
 Renderer,material,Material material { get; set; }
 Renderer,materials,Material[] materials { get; set; }
 Renderer,receiveShadows,bool receiveShadows { get; set; }
+Renderer,reflectionProbeUsage,ReflectionProbeUsage reflectionProbeUsage { get; set; }
 Renderer,rendererPriority,int rendererPriority { get; set; }
 Renderer,renderingLayerMask,uint renderingLayerMask { get; set; }
 Renderer,shadowCastingMode,ShadowCastingMode shadowCastingMode { get; set; }
@@ -1418,6 +1476,10 @@ Renderer,sortingLayerID,int sortingLayerID { get; set; }
 Renderer,sortingOrder,int sortingOrder { get; set; }
 Renderer,staticShadowCaster,bool staticShadowCaster { get; set; }
 Renderer,worldToLocalMatrix,Matrix4x4 worldToLocalMatrix { get; }
+Rendering.AmbientMode,Custom,Rendering.AmbientMode.Custom = 4
+Rendering.AmbientMode,Flat,Rendering.AmbientMode.Flat = 3
+Rendering.AmbientMode,Skybox,Rendering.AmbientMode.Skybox = 0
+Rendering.AmbientMode,Trilight,Rendering.AmbientMode.Trilight = 1
 Rendering.AsyncGPUReadback,Request,"static AsyncGPUReadbackRequest Request(Texture, int = 0, Action<AsyncGPUReadbackRequest> = null) / static AsyncGPUReadbackRequest Request(Texture, int, TextureFormat, Action<AsyncGPUReadbackRequest> = null) / static AsyncGPUReadbackRequest Request(Texture, int, GraphicsFormat, Action<AsyncGPUReadbackRequest> = null)"
 Rendering.AsyncGPUReadback,RequestIntoNativeArray,"static AsyncGPUReadbackRequest RequestIntoNativeArray<T>(ref NativeArray<T>, Texture, int = 0, Action<AsyncGPUReadbackRequest> = null)"
 Rendering.AsyncGPUReadback,WaitAllRequests,static void WaitAllRequests()
@@ -1446,6 +1508,9 @@ Rendering.AttachmentDescriptor,loadStoreTarget,RenderTargetIdentifier loadStoreT
 Rendering.AttachmentDescriptor,operators,"Equality(AttachmentDescriptor, AttachmentDescriptor) / Inequality(AttachmentDescriptor, AttachmentDescriptor)"
 Rendering.AttachmentDescriptor,resolveTarget,RenderTargetIdentifier resolveTarget { get; set; }
 Rendering.AttachmentDescriptor,storeAction,RenderBufferStoreAction storeAction { get; set; }
+Rendering.BatchCullingProjectionType,Orthographic,Rendering.BatchCullingProjectionType.Orthographic = 2
+Rendering.BatchCullingProjectionType,Perspective,Rendering.BatchCullingProjectionType.Perspective = 1
+Rendering.BatchCullingProjectionType,Unknown,Rendering.BatchCullingProjectionType.Unknown = 0
 Rendering.BlendMode,DstAlpha,Rendering.BlendMode.DstAlpha = 7
 Rendering.BlendMode,DstColor,Rendering.BlendMode.DstColor = 2
 Rendering.BlendMode,One,Rendering.BlendMode.One = 1
@@ -1561,6 +1626,7 @@ Rendering.CommandBuffer,ReleaseTemporaryRT,void ReleaseTemporaryRT(int)
 Rendering.CommandBuffer,RequestAsyncReadback,"void RequestAsyncReadback(Texture, Action<AsyncGPUReadbackRequest>) / void RequestAsyncReadback(Texture, int, Action<AsyncGPUReadbackRequest>)"
 Rendering.CommandBuffer,ResolveAntiAliasedSurface,"void ResolveAntiAliasedSurface(RenderTexture, RenderTexture = null)"
 Rendering.CommandBuffer,SetGlobalColor,"void SetGlobalColor(string, Color) / void SetGlobalColor(int, Color)"
+Rendering.CommandBuffer,SetGlobalDepthBias,"void SetGlobalDepthBias(float, float)"
 Rendering.CommandBuffer,SetGlobalFloat,"void SetGlobalFloat(string, float) / void SetGlobalFloat(int, float)"
 Rendering.CommandBuffer,SetGlobalFloatArray,"void SetGlobalFloatArray(string, float[]) / void SetGlobalFloatArray(int, float[]) / void SetGlobalFloatArray(string, List<float>) / void SetGlobalFloatArray(int, List<float>)"
 Rendering.CommandBuffer,SetGlobalInt,"void SetGlobalInt(string, int) / void SetGlobalInt(int, int)"
@@ -1601,8 +1667,19 @@ Rendering.CullingOptions,None,Rendering.CullingOptions.None = 0
 Rendering.CullingOptions,OcclusionCull,Rendering.CullingOptions.OcclusionCull = 2
 Rendering.CullingOptions,ShadowCasters,Rendering.CullingOptions.ShadowCasters = 64
 Rendering.CullingOptions,Stereo,Rendering.CullingOptions.Stereo = 16
+Rendering.CullingResults,ComputeDirectionalShadowMatricesAndCullingPrimitives,"bool ComputeDirectionalShadowMatricesAndCullingPrimitives(int, int, int, Vector3, int, float, out Matrix4x4, out Matrix4x4, out ShadowSplitData)"
+Rendering.CullingResults,ComputePointShadowMatricesAndCullingPrimitives,"bool ComputePointShadowMatricesAndCullingPrimitives(int, CubemapFace, float, out Matrix4x4, out Matrix4x4, out ShadowSplitData)"
+Rendering.CullingResults,ComputeSpotShadowMatricesAndCullingPrimitives,"bool ComputeSpotShadowMatricesAndCullingPrimitives(int, out Matrix4x4, out Matrix4x4, out ShadowSplitData)"
+Rendering.CullingResults,GetLightIndexMap,NativeArray<int> GetLightIndexMap(Allocator)
+Rendering.CullingResults,GetShadowCasterBounds,"bool GetShadowCasterBounds(int, out Bounds)"
+Rendering.CullingResults,SetLightIndexMap,void SetLightIndexMap(NativeArray<int>)
+Rendering.CullingResults,lightAndReflectionProbeIndexCount,int lightAndReflectionProbeIndexCount { get; }
+Rendering.CullingResults,lightIndexCount,int lightIndexCount { get; }
 Rendering.CullingResults,operators,"Equality(CullingResults, CullingResults) / Inequality(CullingResults, CullingResults)"
 Rendering.CullingResults,visibleLights,NativeArray<VisibleLight> visibleLights { get; }
+Rendering.CullingResults,visibleReflectionProbes,NativeArray<VisibleReflectionProbe> visibleReflectionProbes { get; }
+Rendering.DefaultReflectionMode,Custom,Rendering.DefaultReflectionMode.Custom = 1
+Rendering.DefaultReflectionMode,Skybox,Rendering.DefaultReflectionMode.Skybox = 0
 Rendering.DepthState,.ctor,"DepthState(bool = True, CompareFunction = Less)"
 Rendering.DepthState,compareFunction,CompareFunction compareFunction { get; set; }
 Rendering.DepthState,defaultValue,static DepthState defaultValue { get; }
@@ -1638,6 +1715,14 @@ Rendering.GlobalKeyword,.ctor,GlobalKeyword(string)
 Rendering.GlobalKeyword,Create,static GlobalKeyword Create(string)
 Rendering.GlobalKeyword,ToString,string ToString()
 Rendering.GlobalKeyword,name,string name { get; }
+Rendering.GraphicsDeviceType,Direct3D11,Rendering.GraphicsDeviceType.Direct3D11 = 2
+Rendering.GraphicsDeviceType,Direct3D12,Rendering.GraphicsDeviceType.Direct3D12 = 18
+Rendering.GraphicsDeviceType,Metal,Rendering.GraphicsDeviceType.Metal = 16
+Rendering.GraphicsDeviceType,Null,Rendering.GraphicsDeviceType.Null = 4
+Rendering.GraphicsDeviceType,OpenGLCore,Rendering.GraphicsDeviceType.OpenGLCore = 17
+Rendering.GraphicsDeviceType,OpenGLES2,Rendering.GraphicsDeviceType.OpenGLES2 = 8
+Rendering.GraphicsDeviceType,OpenGLES3,Rendering.GraphicsDeviceType.OpenGLES3 = 11
+Rendering.GraphicsDeviceType,Vulkan,Rendering.GraphicsDeviceType.Vulkan = 21
 Rendering.GraphicsSettings,GetRenderPipelineSettings,static T GetRenderPipelineSettings<T>()
 Rendering.GraphicsSettings,GetSettingsForRenderPipeline,static RenderPipelineGlobalSettings GetSettingsForRenderPipeline<T>()
 Rendering.GraphicsSettings,RegisterRenderPipelineSettings,static void RegisterRenderPipelineSettings<T>(RenderPipelineGlobalSettings)
@@ -1661,6 +1746,9 @@ Rendering.LODParameters,fieldOfView,float fieldOfView { get; set; }
 Rendering.LODParameters,isOrthographic,bool isOrthographic { get; set; }
 Rendering.LODParameters,operators,"Equality(LODParameters, LODParameters) / Inequality(LODParameters, LODParameters)"
 Rendering.LODParameters,orthoSize,float orthoSize { get; set; }
+Rendering.LightShadowCasterCullingInfo,projectionType,BatchCullingProjectionType projectionType
+Rendering.LightShadowCasterCullingInfo,splitExclusionMask,ushort splitExclusionMask
+Rendering.LightShadowCasterCullingInfo,splitRange,RangeInt splitRange
 Rendering.LocalKeyword,.ctor,"LocalKeyword(Shader, string)"
 Rendering.LocalKeyword,ToString,string ToString()
 Rendering.LocalKeyword,isDynamic,bool isDynamic { get; }
@@ -1707,6 +1795,28 @@ Rendering.RasterState,depthClip,bool depthClip { get; set; }
 Rendering.RasterState,offsetFactor,float offsetFactor { get; set; }
 Rendering.RasterState,offsetUnits,int offsetUnits { get; set; }
 Rendering.RasterState,operators,"Equality(RasterState, RasterState) / Inequality(RasterState, RasterState)"
+Rendering.ReflectionProbeBlendInfo,operators,"Equality(ReflectionProbeBlendInfo, ReflectionProbeBlendInfo) / Inequality(ReflectionProbeBlendInfo, ReflectionProbeBlendInfo)"
+Rendering.ReflectionProbeBlendInfo,probe,ReflectionProbe probe
+Rendering.ReflectionProbeBlendInfo,weight,float weight
+Rendering.ReflectionProbeClearFlags,Skybox,Rendering.ReflectionProbeClearFlags.Skybox = 1
+Rendering.ReflectionProbeClearFlags,SolidColor,Rendering.ReflectionProbeClearFlags.SolidColor = 2
+Rendering.ReflectionProbeMode,Baked,Rendering.ReflectionProbeMode.Baked = 0
+Rendering.ReflectionProbeMode,Custom,Rendering.ReflectionProbeMode.Custom = 2
+Rendering.ReflectionProbeMode,Realtime,Rendering.ReflectionProbeMode.Realtime = 1
+Rendering.ReflectionProbeRefreshMode,EveryFrame,Rendering.ReflectionProbeRefreshMode.EveryFrame = 1
+Rendering.ReflectionProbeRefreshMode,OnAwake,Rendering.ReflectionProbeRefreshMode.OnAwake = 0
+Rendering.ReflectionProbeRefreshMode,ViaScripting,Rendering.ReflectionProbeRefreshMode.ViaScripting = 2
+Rendering.ReflectionProbeSortingCriteria,Importance,Rendering.ReflectionProbeSortingCriteria.Importance = 1
+Rendering.ReflectionProbeSortingCriteria,ImportanceThenSize,Rendering.ReflectionProbeSortingCriteria.ImportanceThenSize = 3
+Rendering.ReflectionProbeSortingCriteria,None,Rendering.ReflectionProbeSortingCriteria.None = 0
+Rendering.ReflectionProbeSortingCriteria,Size,Rendering.ReflectionProbeSortingCriteria.Size = 2
+Rendering.ReflectionProbeTimeSlicingMode,AllFacesAtOnce,Rendering.ReflectionProbeTimeSlicingMode.AllFacesAtOnce = 0
+Rendering.ReflectionProbeTimeSlicingMode,IndividualFaces,Rendering.ReflectionProbeTimeSlicingMode.IndividualFaces = 1
+Rendering.ReflectionProbeTimeSlicingMode,NoTimeSlicing,Rendering.ReflectionProbeTimeSlicingMode.NoTimeSlicing = 2
+Rendering.ReflectionProbeUsage,BlendProbes,Rendering.ReflectionProbeUsage.BlendProbes = 1
+Rendering.ReflectionProbeUsage,BlendProbesAndSkybox,Rendering.ReflectionProbeUsage.BlendProbesAndSkybox = 2
+Rendering.ReflectionProbeUsage,Off,Rendering.ReflectionProbeUsage.Off = 0
+Rendering.ReflectionProbeUsage,Simple,Rendering.ReflectionProbeUsage.Simple = 3
 Rendering.RenderBufferLoadAction,Clear,Rendering.RenderBufferLoadAction.Clear = 1
 Rendering.RenderBufferLoadAction,DontCare,Rendering.RenderBufferLoadAction.DontCare = 2
 Rendering.RenderBufferLoadAction,Load,Rendering.RenderBufferLoadAction.Load = 0
@@ -1716,13 +1826,19 @@ Rendering.RenderBufferStoreAction,Store,Rendering.RenderBufferStoreAction.Store 
 Rendering.RenderBufferStoreAction,StoreAndResolve,Rendering.RenderBufferStoreAction.StoreAndResolve = 2
 Rendering.RenderPipeline,SubmitRenderRequest,"static void SubmitRenderRequest<RequestData>(Camera, RequestData)"
 Rendering.RenderPipeline,SupportsRenderRequest,"static bool SupportsRenderRequest<RequestData>(Camera, RequestData)"
+Rendering.RenderPipeline,defaultSettings,RenderPipelineGlobalSettings defaultSettings { get; }
 Rendering.RenderPipeline,disposed,bool disposed { get; }
 Rendering.RenderPipeline.StandardRequest,.ctor,StandardRequest()
 Rendering.RenderPipeline.StandardRequest,destination,RenderTexture destination
 Rendering.RenderPipeline.StandardRequest,face,CubemapFace face
 Rendering.RenderPipeline.StandardRequest,mipLevel,int mipLevel
 Rendering.RenderPipeline.StandardRequest,slice,int slice
+Rendering.RenderPipelineAsset,defaultLineMaterial,Material defaultLineMaterial { get; }
+Rendering.RenderPipelineAsset,defaultMaterial,Material defaultMaterial { get; }
+Rendering.RenderPipelineAsset,defaultParticleMaterial,Material defaultParticleMaterial { get; }
+Rendering.RenderPipelineAsset,defaultShader,Shader defaultShader { get; }
 Rendering.RenderPipelineAsset,pipelineType,Type pipelineType { get; }
+Rendering.RenderPipelineAsset,renderPipelineShaderTag,string renderPipelineShaderTag { get; }
 Rendering.RenderPipelineManager,activeRenderPipelineAssetChanged,"static event Action<RenderPipelineAsset, RenderPipelineAsset> activeRenderPipelineAssetChanged"
 Rendering.RenderPipelineManager,activeRenderPipelineTypeChanged,static event Action activeRenderPipelineTypeChanged
 Rendering.RenderPipelineManager,beginCameraRendering,"static event Action<ScriptableRenderContext, Camera> beginCameraRendering"
@@ -1810,6 +1926,7 @@ Rendering.ScriptableCullingParameters,GetCullingPlane,Plane GetCullingPlane(int)
 Rendering.ScriptableCullingParameters,GetLayerCullDistance,float GetLayerCullDistance(int)
 Rendering.ScriptableCullingParameters,SetCullingPlane,"void SetCullingPlane(int, Plane)"
 Rendering.ScriptableCullingParameters,SetLayerCullDistance,"void SetLayerCullDistance(int, float)"
+Rendering.ScriptableCullingParameters,conservativeEnclosingSphere,bool conservativeEnclosingSphere { get; set; }
 Rendering.ScriptableCullingParameters,cullingMask,uint cullingMask { get; set; }
 Rendering.ScriptableCullingParameters,cullingMatrix,Matrix4x4 cullingMatrix { get; set; }
 Rendering.ScriptableCullingParameters,cullingOptions,CullingOptions cullingOptions { get; set; }
@@ -1819,13 +1936,21 @@ Rendering.ScriptableCullingParameters,layerCullSpherical,bool layerCullSpherical
 Rendering.ScriptableCullingParameters,lodParameters,LODParameters lodParameters { get; set; }
 Rendering.ScriptableCullingParameters,maximumCullingPlaneCount,static int maximumCullingPlaneCount
 Rendering.ScriptableCullingParameters,maximumVisibleLights,int maximumVisibleLights { get; set; }
+Rendering.ScriptableCullingParameters,numIterationsEnclosingSphere,int numIterationsEnclosingSphere { get; set; }
 Rendering.ScriptableCullingParameters,operators,"Equality(ScriptableCullingParameters, ScriptableCullingParameters) / Inequality(ScriptableCullingParameters, ScriptableCullingParameters)"
 Rendering.ScriptableCullingParameters,origin,Vector3 origin { get; set; }
+Rendering.ScriptableCullingParameters,reflectionProbeSortingCriteria,ReflectionProbeSortingCriteria reflectionProbeSortingCriteria { get; set; }
+Rendering.ScriptableCullingParameters,shadowDistance,float shadowDistance { get; set; }
+Rendering.ScriptableCullingParameters,shadowNearPlaneOffset,float shadowNearPlaneOffset { get; set; }
 Rendering.ScriptableRenderContext,BeginRenderPass,"void BeginRenderPass(int, int, int, NativeArray<AttachmentDescriptor>, int = -1)"
 Rendering.ScriptableRenderContext,BeginSubPass,"void BeginSubPass(NativeArray<int>, NativeArray<int>, bool = False) / void BeginSubPass(NativeArray<int>, NativeArray<int>, bool, bool) / void BeginSubPass(NativeArray<int>, bool = False)"
 Rendering.ScriptableRenderContext,CreateRendererList,RendererList CreateRendererList(ref RendererListParams) / RendererList CreateRendererList(RendererListDesc)
+Rendering.ScriptableRenderContext,CreateShadowRendererList,RendererList CreateShadowRendererList(ref ShadowDrawingSettings)
+Rendering.ScriptableRenderContext,CreateSkyboxRendererList,RendererList CreateSkyboxRendererList(Camera)
 Rendering.ScriptableRenderContext,Cull,CullingResults Cull(ref ScriptableCullingParameters)
+Rendering.ScriptableRenderContext,CullShadowCasters,"void CullShadowCasters(CullingResults, ShadowCastersCullingInfos)"
 Rendering.ScriptableRenderContext,DrawRenderers,"void DrawRenderers(CullingResults, ref DrawingSettings, ref FilteringSettings) / void DrawRenderers(CullingResults, ref DrawingSettings, ref FilteringSettings, ref RenderStateBlock)"
+Rendering.ScriptableRenderContext,DrawSkybox,void DrawSkybox(Camera)
 Rendering.ScriptableRenderContext,EndRenderPass,void EndRenderPass()
 Rendering.ScriptableRenderContext,EndSubPass,void EndSubPass()
 Rendering.ScriptableRenderContext,ExecuteCommandBuffer,void ExecuteCommandBuffer(CommandBuffer)
@@ -1862,13 +1987,35 @@ Rendering.ShaderTagId,.ctor,ShaderTagId(string)
 Rendering.ShaderTagId,name,string name { get; }
 Rendering.ShaderTagId,none,static ShaderTagId none
 Rendering.ShaderTagId,operators,"Explicit(string) / Explicit(ShaderTagId) / Equality(ShaderTagId, ShaderTagId) / Inequality(ShaderTagId, ShaderTagId)"
+Rendering.ShadowCastersCullingInfos,perLightInfos,NativeArray<LightShadowCasterCullingInfo> perLightInfos
+Rendering.ShadowCastersCullingInfos,splitBuffer,NativeArray<ShadowSplitData> splitBuffer
 Rendering.ShadowCastingMode,Off,Rendering.ShadowCastingMode.Off = 0
 Rendering.ShadowCastingMode,On,Rendering.ShadowCastingMode.On = 1
 Rendering.ShadowCastingMode,ShadowsOnly,Rendering.ShadowCastingMode.ShadowsOnly = 3
 Rendering.ShadowCastingMode,TwoSided,Rendering.ShadowCastingMode.TwoSided = 2
+Rendering.ShadowDrawingSettings,.ctor,"ShadowDrawingSettings(CullingResults, int, BatchCullingProjectionType = Unknown)"
+Rendering.ShadowDrawingSettings,batchLayerMask,uint batchLayerMask
+Rendering.ShadowDrawingSettings,cullingResults,CullingResults cullingResults
+Rendering.ShadowDrawingSettings,lightIndex,int lightIndex
+Rendering.ShadowDrawingSettings,objectsFilter,ShadowObjectsFilter objectsFilter
+Rendering.ShadowDrawingSettings,operators,"Equality(ShadowDrawingSettings, ShadowDrawingSettings) / Inequality(ShadowDrawingSettings, ShadowDrawingSettings)"
+Rendering.ShadowDrawingSettings,splitIndex,int splitIndex
+Rendering.ShadowDrawingSettings,useRenderingLayerMaskTest,bool useRenderingLayerMaskTest
+Rendering.ShadowObjectsFilter,AllObjects,Rendering.ShadowObjectsFilter.AllObjects = 0
+Rendering.ShadowObjectsFilter,DynamicOnly,Rendering.ShadowObjectsFilter.DynamicOnly = 1
+Rendering.ShadowObjectsFilter,StaticOnly,Rendering.ShadowObjectsFilter.StaticOnly = 2
 Rendering.ShadowSamplingMode,CompareDepths,Rendering.ShadowSamplingMode.CompareDepths = 0
 Rendering.ShadowSamplingMode,None,Rendering.ShadowSamplingMode.None = 2
 Rendering.ShadowSamplingMode,RawDepth,Rendering.ShadowSamplingMode.RawDepth = 1
+Rendering.ShadowSplitData,GetCullingPlane,Plane GetCullingPlane(int)
+Rendering.ShadowSplitData,SetCullingPlane,"void SetCullingPlane(int, Plane)"
+Rendering.ShadowSplitData,cullingMatrix,Matrix4x4 cullingMatrix { get; set; }
+Rendering.ShadowSplitData,cullingNearPlane,float cullingNearPlane { get; set; }
+Rendering.ShadowSplitData,cullingPlaneCount,int cullingPlaneCount { get; set; }
+Rendering.ShadowSplitData,cullingSphere,Vector4 cullingSphere { get; set; }
+Rendering.ShadowSplitData,maximumCullingPlaneCount,const int maximumCullingPlaneCount
+Rendering.ShadowSplitData,operators,"Equality(ShadowSplitData, ShadowSplitData) / Inequality(ShadowSplitData, ShadowSplitData)"
+Rendering.ShadowSplitData,shadowCascadeBlendCullingFactor,float shadowCascadeBlendCullingFactor { get; set; }
 Rendering.SortingCriteria,BackToFront,Rendering.SortingCriteria.BackToFront = 4
 Rendering.SortingCriteria,CanvasOrder,Rendering.SortingCriteria.CanvasOrder = 32
 Rendering.SortingCriteria,CommonOpaque,Rendering.SortingCriteria.CommonOpaque = 59
@@ -1886,6 +2033,12 @@ Rendering.SortingSettings,customAxis,Vector3 customAxis { get; set; }
 Rendering.SortingSettings,distanceMetric,DistanceMetric distanceMetric { get; set; }
 Rendering.SortingSettings,operators,"Equality(SortingSettings, SortingSettings) / Inequality(SortingSettings, SortingSettings)"
 Rendering.SortingSettings,worldToCameraMatrix,Matrix4x4 worldToCameraMatrix { get; set; }
+Rendering.SphericalHarmonicsL2,AddAmbientLight,void AddAmbientLight(Color)
+Rendering.SphericalHarmonicsL2,AddDirectionalLight,"void AddDirectionalLight(Vector3, Color, float)"
+Rendering.SphericalHarmonicsL2,Clear,void Clear()
+Rendering.SphericalHarmonicsL2,Evaluate,"void Evaluate(Vector3[], Color[])"
+Rendering.SphericalHarmonicsL2,operators,"Multiply(SphericalHarmonicsL2, float) / Multiply(float, SphericalHarmonicsL2) / Addition(SphericalHarmonicsL2, SphericalHarmonicsL2) / Equality(SphericalHarmonicsL2, SphericalHarmonicsL2) / Inequality(SphericalHarmonicsL2, SphericalHarmonicsL2)"
+Rendering.SphericalHarmonicsL2,this[],"float this[][int, int] { get; set; }"
 Rendering.StencilOp,DecrementSaturate,Rendering.StencilOp.DecrementSaturate = 4
 Rendering.StencilOp,DecrementWrap,Rendering.StencilOp.DecrementWrap = 7
 Rendering.StencilOp,IncrementSaturate,Rendering.StencilOp.IncrementSaturate = 3
@@ -1972,6 +2125,16 @@ Rendering.VisibleLight,operators,"Equality(VisibleLight, VisibleLight) / Inequal
 Rendering.VisibleLight,range,float range { get; set; }
 Rendering.VisibleLight,screenRect,Rect screenRect { get; set; }
 Rendering.VisibleLight,spotAngle,float spotAngle { get; set; }
+Rendering.VisibleReflectionProbe,blendDistance,float blendDistance { get; set; }
+Rendering.VisibleReflectionProbe,bounds,Bounds bounds { get; set; }
+Rendering.VisibleReflectionProbe,center,Vector3 center { get; set; }
+Rendering.VisibleReflectionProbe,hdrData,Vector4 hdrData { get; set; }
+Rendering.VisibleReflectionProbe,importance,int importance { get; set; }
+Rendering.VisibleReflectionProbe,isBoxProjection,bool isBoxProjection { get; set; }
+Rendering.VisibleReflectionProbe,localToWorldMatrix,Matrix4x4 localToWorldMatrix { get; set; }
+Rendering.VisibleReflectionProbe,operators,"Equality(VisibleReflectionProbe, VisibleReflectionProbe) / Inequality(VisibleReflectionProbe, VisibleReflectionProbe)"
+Rendering.VisibleReflectionProbe,reflectionProbe,ReflectionProbe reflectionProbe { get; }
+Rendering.VisibleReflectionProbe,texture,Texture texture { get; }
 Resolution,height,int height
 Resolution,refreshRateRatio,RefreshRate refreshRateRatio
 Resolution,width,int width
@@ -2118,6 +2281,8 @@ Shader,renderQueue,int renderQueue { get; }
 Shader,subshaderCount,int subshaderCount { get; }
 Space,Self,Space.Self = 1
 Space,World,Space.World = 0
+SystemInfo,SupportsRenderTextureFormat,static bool SupportsRenderTextureFormat(RenderTextureFormat)
+SystemInfo,graphicsDeviceType,static GraphicsDeviceType graphicsDeviceType { get; }
 SystemInfo,renderingThreadingMode,static RenderingThreadingMode renderingThreadingMode { get; }
 Texture,GenerateAllMips,static int GenerateAllMips
 Texture,IncrementUpdateCount,void IncrementUpdateCount()

@@ -36,7 +36,10 @@ namespace HelixEngine.Rendering
                                                       (int)parameters.cullingOptions, parameters.origin, parameters.isOrthographic,
                                                       new Vector4(lod.fieldOfView, lod.orthoSize, lod.cameraPixelHeight, lod.isOrthographic ? 1 : 0),
                                                       lod.cameraPosition, parameters.LayerCullDistances(), parameters.layerCullSpherical,
-                                                      parameters.maximumVisibleLights);
+                                                      parameters.maximumVisibleLights,
+                                                      new Vector4(parameters.shadowDistance, parameters.shadowNearPlaneOffset,
+                                                                  parameters.conservativeEnclosingSphere ? 1 : 0, parameters.numIterationsEnclosingSphere),
+                                                      (int)parameters.reflectionProbeSortingCriteria);
             return new CullingResults(results);
         }
 
@@ -90,6 +93,42 @@ namespace HelixEngine.Rendering
             RendererList list = CreateRendererList(ref param);
             param.Dispose();
             return list;
+        }
+
+        /// <summary>The shadow casters of each split of each light: those inside the split's culling planes.</summary>
+        public unsafe void CullShadowCasters(CullingResults cullingResults, ShadowCastersCullingInfos infos)
+        {
+            Validate();
+            cullingResults.Validate();
+            RenderPipelineNative.CullShadowCasters(m_Ptr, cullingResults.ptr, (ulong)Helix.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafeReadOnlyPtr(infos.perLightInfos), infos.perLightInfos.Length,
+                                                   (ulong)Helix.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafeReadOnlyPtr(infos.splitBuffer), infos.splitBuffer.Length);
+        }
+
+        /// <summary>The ShadowCaster passes of a visible light's shadow casters (of the split, after CullShadowCasters).</summary>
+        public RendererList CreateShadowRendererList(ref ShadowDrawingSettings settings)
+        {
+            Validate();
+            settings.cullingResults.Validate();
+            return new RendererList(RenderPipelineNative.CreateShadowRendererList(m_Ptr, settings.cullingResults.ptr, settings.lightIndex, settings.splitIndex,
+                                                                                  (int)settings.objectsFilter, settings.batchLayerMask, (int)settings.projectionType));
+        }
+
+        /// <summary>The skybox of RenderSettings around the camera (an empty list without one), drawn at the far plane.</summary>
+        public RendererList CreateSkyboxRendererList(Camera camera)
+        {
+            Validate();
+            if (camera == null)
+                throw new ArgumentNullException(nameof(camera));
+            return new RendererList(RenderPipelineNative.CreateSkyboxRendererList(m_Ptr, camera));
+        }
+
+        /// <summary>The camera's skybox (RenderSettings.skybox) drawn where the commands before it ran.</summary>
+        public void DrawSkybox(Camera camera)
+        {
+            Validate();
+            if (camera == null)
+                throw new ArgumentNullException(nameof(camera));
+            RenderPipelineNative.DrawSkybox(m_Ptr, camera);
         }
 
         /// <summary>Lists are made at once: populated when they draw something.</summary>
@@ -193,6 +232,9 @@ namespace HelixEngine.Rendering
 
         public bool disposed { get; private set; }
 
+        /// <summary>The global settings of this pipeline's type (none by default).</summary>
+        public virtual RenderPipelineGlobalSettings defaultSettings => null;
+
         protected virtual void Dispose(bool disposing)
         {
         }
@@ -276,9 +318,44 @@ namespace HelixEngine.Rendering
     /// <summary>A ScriptableObject that makes a pipeline; set it in GraphicsSettings or QualitySettings.</summary>
     public abstract class RenderPipelineAsset : ScriptableObject
     {
+        protected RenderPipelineAsset() { }
+
+        // The wrapper of an asset whose class is C++ (a native pipeline's asset: its C# class derives from this one).
+        protected internal RenderPipelineAsset(global::Helix.Interop.ObjectId id) : base(id) { }
+
         protected abstract RenderPipeline CreatePipeline();
 
+        /// <summary>The material new objects get (none by default).</summary>
+        public virtual Material defaultMaterial => null;
+
+        /// <summary>The shader of new materials (none by default).</summary>
+        public virtual Shader defaultShader => null;
+
+        /// <summary>The material of new particle systems (none by default).</summary>
+        public virtual Material defaultParticleMaterial => null;
+
+        /// <summary>The material of new line and trail renderers (none by default).</summary>
+        public virtual Material defaultLineMaterial => null;
+
+        /// <summary>The value of the RenderPipeline tag of the SubShaders this pipeline draws (empty: any).</summary>
+        public virtual string renderPipelineShaderTag => string.Empty;
+
         internal RenderPipeline InternalCreatePipeline() => CreatePipeline();
+
+        /// <summary>Before the engine makes the pipeline: the pipeline's global settings are made or found (registered
+        /// for its type).</summary>
+        protected virtual void EnsureGlobalSettings() { }
+
+        /// <summary>Whether the pipeline needs global settings of its type (an error when EnsureGlobalSettings found none).</summary>
+        protected virtual bool requiresCompatibleRenderPipelineGlobalSettings => false;
+
+        internal void InternalEnsureGlobalSettings()
+        {
+            EnsureGlobalSettings();
+            Type type = pipelineType;
+            if (requiresCompatibleRenderPipelineGlobalSettings && type != null && !GraphicsSettings.HasSettingsFor(type))
+                Debug.LogError($"{GetType().Name}: the pipeline needs global settings of {type.Name} and there are none.");
+        }
 
         /// <summary>The type of pipeline it makes (null: unknown until it made one); GraphicsSettings finds its settings by it.</summary>
         public virtual Type pipelineType => null;
@@ -301,7 +378,8 @@ namespace HelixEngine.Rendering
         public static event Action<RenderPipelineAsset, RenderPipelineAsset> activeRenderPipelineAssetChanged;
         public static event Action activeRenderPipelineTypeChanged;
 
-        /// <summary>The C# pipeline rendering now (null for the engine's fallback pipeline and for C++ pipelines).</summary>
+        /// <summary>The C# pipeline rendering now (for a C++ pipeline the C# pipeline its asset's C# class makes; null for
+        /// the engine's fallback pipeline).</summary>
         public static RenderPipeline currentPipeline => s_CurrentPipeline != null && !s_CurrentPipeline.disposed ? s_CurrentPipeline : null;
 
         internal static void Raise(uint kind, ulong context)
@@ -382,8 +460,17 @@ namespace HelixEngine.Rendering
     public class CommandBuffer : IDisposable
     {
         ulong m_Ptr;
+        // A native buffer this one borrowed (it does not destroy it).
+        readonly bool m_Borrowed;
 
         public CommandBuffer() => m_Ptr = RenderPipelineNative.CreateBuffer();
+
+        internal CommandBuffer(ulong borrowed)
+        {
+            m_Ptr = borrowed;
+            m_Borrowed = true;
+            GC.SuppressFinalize(this);
+        }
 
         ~CommandBuffer() => Dispose(false);
 
@@ -405,7 +492,7 @@ namespace HelixEngine.Rendering
 
         void Dispose(bool disposing)
         {
-            if (m_Ptr != 0)
+            if (m_Ptr != 0 && !m_Borrowed)
                 RenderPipelineNative.DestroyBuffer(m_Ptr);
             m_Ptr = 0;
         }
@@ -454,6 +541,8 @@ namespace HelixEngine.Rendering
         public void SetGlobalMatrixArray(int nameID, System.Collections.Generic.List<Matrix4x4> values) => SetGlobalMatrixArray(nameID, values?.ToArray());
         /// <summary>Front faces turn around for the draws after it (mirrored views).</summary>
         public void SetInvertCulling(bool invertCulling) => RenderPipelineNative.SetInvertCulling(Id, invertCulling);
+        /// <summary>A depth bias (constant, and by slope) added to the draws after it, until set again (0, 0: none).</summary>
+        public void SetGlobalDepthBias(float bias, float slopeBias) => RenderPipelineNative.SetGlobalDepthBias(Id, bias, slopeBias);
         public void SetGlobalMatrix(string name, Matrix4x4 value) => SetGlobalMatrix(Shader.PropertyToID(name), value);
         public void SetGlobalMatrix(int nameID, Matrix4x4 value) => RenderPipelineNative.SetGlobalMatrix(Id, nameID, value);
         public void SetGlobalTexture(string name, RenderTargetIdentifier value) => SetGlobalTexture(Shader.PropertyToID(name), value);
@@ -700,6 +789,10 @@ namespace HelixEngine
             for (int i = 0; i < 32 && i < distances.Length; i++)
                 cullingParameters.SetLayerCullDistance(i, distances[i]);
             cullingParameters.layerCullSpherical = layerCullSpherical;
+            cullingParameters.shadowDistance = farClipPlane;
+            cullingParameters.shadowNearPlaneOffset = 3;
+            cullingParameters.numIterationsEnclosingSphere = 64;
+            cullingParameters.reflectionProbeSortingCriteria = ReflectionProbeSortingCriteria.ImportanceThenSize;
             return true;
         }
     }
@@ -828,14 +921,16 @@ namespace HelixEngine.Internal
             var set = (delegate* unmanaged[Cdecl]<void**, uint, byte>)export("HxEngineRendering_SetManaged");
             if (set == null)
                 return;
-            void** table = (void**)NativeMemory.Alloc((nuint)(6 * sizeof(void*)));
+            void** table = (void**)NativeMemory.Alloc((nuint)(8 * sizeof(void*)));
             table[0] = (void*)(delegate* unmanaged[Cdecl]<ulong, ulong>)&Create;
             table[1] = (void*)(delegate* unmanaged[Cdecl]<ulong, ulong, void>)&Render;
             table[2] = (void*)(delegate* unmanaged[Cdecl]<ulong, void>)&Dispose;
             table[3] = (void*)(delegate* unmanaged[Cdecl]<uint, ulong, void>)&Raise;
             table[4] = (void*)(delegate* unmanaged[Cdecl]<ulong, ulong, byte>)&Supports;
             table[5] = (void*)(delegate* unmanaged[Cdecl]<ulong, ulong, ulong, void>)&Process;
-            set(table, 6);
+            table[6] = (void*)(delegate* unmanaged[Cdecl]<ulong, uint, void>)&Ensure;
+            table[7] = (void*)(delegate* unmanaged[Cdecl]<ulong, uint, ulong>)&View;
+            set(table, 8);
         }
 
         [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
@@ -854,6 +949,46 @@ namespace HelixEngine.Internal
                     Debug.LogError($"{asset.GetType().Name}.CreatePipeline returned null.");
                     return 0;
                 }
+                RenderPipelineManager.s_CurrentPipeline = pipeline;
+                return (ulong)GCHandle.ToIntPtr(GCHandle.Alloc(pipeline));
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                return 0;
+            }
+        }
+
+        // The asset of a pipeline about to be made (its object id and native type: a C++ asset may have no wrapper yet).
+        static RenderPipelineAsset AssetOf(ulong id, uint type)
+        {
+            object asset = global::Helix.Interop.Objects.Wrap<Object>(id, type);
+            return asset as RenderPipelineAsset;
+        }
+
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+        static void Ensure(ulong id, uint type)
+        {
+            try
+            {
+                AssetOf(id, type)?.InternalEnsureGlobalSettings();
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+        }
+
+        // The C# pipeline of a C++ pipeline's asset: what RenderPipelineManager.currentPipeline answers while the C++
+        // one renders (the C# class's CreatePipeline; none when it makes none).
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+        static ulong View(ulong id, uint type)
+        {
+            try
+            {
+                RenderPipeline pipeline = AssetOf(id, type)?.InternalCreatePipeline();
+                if (pipeline == null)
+                    return 0;
                 RenderPipelineManager.s_CurrentPipeline = pipeline;
                 return (ulong)GCHandle.ToIntPtr(GCHandle.Alloc(pipeline));
             }

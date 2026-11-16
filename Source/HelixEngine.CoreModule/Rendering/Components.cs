@@ -26,6 +26,18 @@ namespace HelixEngine
             GetPropertyBlock(properties.m_Block, materialIndex);
         }
 
+        /// <summary>The probes this renderer reflects (of the enabled ones), at most two, with their weights.</summary>
+        public void GetClosestReflectionProbes(List<ReflectionProbeBlendInfo> result)
+        {
+            if (result == null)
+                throw new ArgumentNullException(nameof(result));
+            result.Clear();
+            ReflectionProbe[] probes = RenderPipelineNative.ClosestReflectionProbes(this);
+            float[] weights = RenderPipelineNative.ClosestReflectionProbeWeights(this);
+            for (int i = 0; i < probes.Length && i < weights.Length; i++)
+                result.Add(new ReflectionProbeBlendInfo { probe = probes[i], weight = weights[i] });
+        }
+
         public void GetMaterials(List<Material> m) => Fill(m, materials);
         public void GetSharedMaterials(List<Material> m) => Fill(m, sharedMaterials);
         public void SetMaterials(List<Material> materials) => this.materials = Items(materials);

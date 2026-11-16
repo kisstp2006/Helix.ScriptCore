@@ -184,3 +184,71 @@ namespace Tests
         }
     }
 }
+
+namespace Tests
+{
+    // The skybox from C#: through the context's skybox list (mode 0) or DrawSkybox (mode 1), behind a black clear.
+    public class CsSkyPipeline : RenderPipeline
+    {
+        public static int mode;
+
+        protected override void Render(ScriptableRenderContext context, Camera[] cameras)
+        {
+            foreach (Camera camera in cameras)
+            {
+                if (camera.name != "SkyEye")
+                    continue;
+                context.SetupCameraProperties(camera);
+                var cmd = new CommandBuffer { name = "Sky" };
+                cmd.ClearRenderTarget(true, true, Color.black);
+                if (mode == 0)
+                    cmd.DrawRendererList(context.CreateSkyboxRendererList(camera));
+                context.ExecuteCommandBuffer(cmd);
+                cmd.Release();
+                if (mode == 1)
+                    context.DrawSkybox(camera);
+                context.Submit();
+            }
+        }
+    }
+
+    public class CsSkyPipelineAsset : RenderPipelineAsset
+    {
+        protected override RenderPipeline CreatePipeline() => new CsSkyPipeline();
+        public override Type pipelineType => typeof(CsSkyPipeline);
+    }
+
+    // A camera looking +Z into Skybox/Cubemap with a cube of six colors (+Z cyan); the mode turns each frame.
+    public class CsSkyScene : GameBehaviour
+    {
+        Cubemap m_Cube;
+        Material m_Sky;
+
+        void Start()
+        {
+            var eye = new GameObject("SkyEye");
+            var cam = eye.AddComponent<Camera>();
+            cam.fieldOfView = 60;
+            m_Cube = new Cubemap(1, TextureFormat.RGBA32, false) { filterMode = FilterMode.Point };
+            Color[] colors = { Color.red, Color.green, Color.blue, Color.yellow, Color.cyan, Color.magenta };
+            for (int f = 0; f < 6; f++)
+                m_Cube.SetPixel((CubemapFace)f, 0, 0, colors[f]);
+            m_Cube.Apply(false);
+            m_Sky = new Material(Shader.Find("Skybox/Cubemap"));
+            m_Sky.SetTexture("_Tex", m_Cube);
+            RenderSettings.skybox = m_Sky;
+            CsSkyPipeline.mode = -1;
+        }
+
+        void Update() => CsSkyPipeline.mode++;
+
+        void OnDestroy()
+        {
+            RenderSettings.skybox = null;
+            DestroyImmediate(m_Sky);
+            DestroyImmediate(m_Cube);
+            if (GameObject.Find("SkyEye") is GameObject eye)
+                DestroyImmediate(eye);
+        }
+    }
+}

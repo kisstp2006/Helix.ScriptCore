@@ -412,6 +412,57 @@ HX_TEST(ScriptApi, ScriptablePipelinesOfBothLanguagesDrawTheGoldenImage)
     Calls().Clear();
 }
 
+HX_TEST(ScriptApi, GlobalSettingsAreEnsuredBeforeThePipelineIsMade)
+{
+    // The asset's EnsureGlobalSettings registers the pipeline's settings before CreatePipeline; the pipeline finds
+    // them (defaultSettings, GraphicsSettings.TryGetRenderPipelineSettings) and is RenderPipelineManager's current one.
+    HX_REQUIRE(StartScripts());
+    engine::testing::TestShaderFolder shaders;
+    GameObject* eye = GameObject::Create("SettingsEye");
+    eye->AddComponent<Camera>();
+    ScriptableObject* asset = ScriptableObject::CreateInstanceByName("CsSettingsPipelineAsset");
+    HX_REQUIRE(asset != nullptr);
+    constexpr u32 size = 8;
+    u32 devices = ForEachDevice([&](rhi::Device& device) {
+        rhi::TextureHandle color = device.CreateTexture({.format = rhi::Format::RGBA8Unorm, .width = size, .height = size, .usage = rhi::TextureRenderTarget});
+        Graphics::SetDevice(&device);
+        Graphics::SetTarget({color, {}, size, size, rhi::Format::RGBA8Unorm, rhi::Format::Unknown});
+        Calls().Clear();
+        GraphicsSettings::SetDefaultRenderPipeline(asset);
+        Graphics::RenderFrame();
+        bool same = Calls().Size() == 3 && Calls()[0] == StringView("EnsureGlobalSettings") && Calls()[1] == StringView("CreatePipeline") &&
+                    Calls()[2] == StringView("settings:True:3:True");
+        if (!same)
+            for (const String& l : Calls())
+                std::printf("    %s\n", l.CStr());
+        HX_CHECK(same);
+        GraphicsSettings::SetDefaultRenderPipeline(nullptr);
+        Graphics::ReleaseResources();
+        device.Destroy(color);
+    });
+    std::printf("    %u devices\n", devices);
+    DestroyImmediate(asset);
+    DestroyImmediate(eye);
+    Calls().Clear();
+}
+
+HX_TEST(ScriptApi, AmbientLightAndReflectionSettingsFromCSharp)
+{
+    HX_REQUIRE(StartScripts());
+    Calls().Clear();
+    GameObject* host = GameObject::Create("AmbientHost");
+    host->AddComponent(CSharp("CsAmbientTests").type);
+    RunScriptPhase(ScriptMessage::Update);
+    bool same = Calls().Size() == 3 && Calls()[0] == StringView("sh:1.26:0.66:True:1.42") &&
+                Calls()[1] == StringView("settings:Flat:0.20:(0.10,0.20,0.30,1.00):Custom:1.00:3") && Calls()[2] == StringView("custom:True");
+    if (!same)
+        for (const String& l : Calls())
+            std::printf("    %s\n", l.CStr());
+    HX_CHECK(same);
+    DestroyImmediate(host);
+    Calls().Clear();
+}
+
 HX_TEST(ScriptApi, StandardRequestsThroughThePipelinesOfBothLanguages)
 {
     HX_REQUIRE(StartScripts());
@@ -578,4 +629,93 @@ HX_TEST(ScriptApi, RendererListsRenderPassesAndReadbacksFromCSharp)
     GraphicsSettings::SetDefaultRenderPipeline(nullptr);
     DestroyImmediate(asset);
     Calls().Clear();
+}
+
+HX_TEST(ScriptApi, TheSkyboxFromCSharp)
+{
+    // A C# pipeline draws RenderSettings.skybox (Skybox/Cubemap set from C#) through the context's skybox list, then
+    // through DrawSkybox: the camera sees the cube's +Z side both times.
+    HX_REQUIRE(StartScripts());
+    engine::testing::TestShaderFolder shaders;
+    constexpr u32 size = 16;
+    ScriptableObject* asset = ScriptableObject::CreateInstanceByName("CsSkyPipelineAsset");
+    HX_REQUIRE(asset != nullptr);
+    GraphicsSettings::SetDefaultRenderPipeline(asset);
+    u32 devices = ForEachDevice([&](rhi::Device& device) {
+        rhi::TextureHandle color =
+            device.CreateTexture({.format = rhi::Format::RGBA8Unorm, .width = size, .height = size, .usage = rhi::TextureRenderTarget | rhi::TextureSampled});
+        rhi::TextureHandle depth = device.CreateTexture({.format = rhi::Format::D32Float, .width = size, .height = size, .usage = rhi::TextureDepthStencil});
+        Graphics::SetDevice(&device);
+        Graphics::SetTarget({color, depth, size, size, rhi::Format::RGBA8Unorm, rhi::Format::D32Float});
+        GameObject* host = GameObject::Create("SkyHost");
+        host->AddComponent(CSharp("CsSkyScene").type);
+        Array<u32> pixels;
+        pixels.Resize(size * size);
+        for (u32 frame = 0; frame < 2; frame++)
+        {
+            RunScriptPhase(ScriptMessage::Update);
+            UpdateWorldMatrices();
+            Graphics::RenderFrame();
+            HX_REQUIRE(device.ReadTexture(color, 0, pixels.Data(), pixels.Size() * 4));
+            u32 centre = pixels[8 * size + 8];
+            if (centre != 0xffffff00u)
+                std::printf("    frame %u: %08x\n", frame, centre);
+            HX_CHECK(centre == 0xffffff00u);
+        }
+        DestroyImmediate(host);
+        Graphics::ReleaseResources();
+        device.Destroy(color);
+        device.Destroy(depth);
+    });
+    std::printf("    %u devices\n", devices);
+    GraphicsSettings::SetDefaultRenderPipeline(nullptr);
+    DestroyImmediate(asset);
+}
+
+HX_TEST(ScriptApi, ShadowCascadesInCSharp)
+{
+    // The C# shadow API: the caster's bounds, two cascades, the casters culled per split and drawn by the shadow
+    // lists; a split whose planes leave the caster out draws nothing. The light index map: the three lights in the
+    // caster's per object lights until the map leaves them out. A spot's and a point light's matrices, the global
+    // depth bias; the reflection probe around the caster seen, counted (no lights in the map now) and reflected.
+    HX_REQUIRE(StartScripts());
+    engine::testing::TestShaderFolder shaders;
+    GameObject* host = GameObject::Create("ShadowHost");
+    host->AddComponent(CSharp("CsShadowScene").type);
+    RunScriptPhase(ScriptMessage::Update);
+    ScriptableObject* asset = ScriptableObject::CreateInstanceByName("CsShadowPipelineAsset");
+    HX_REQUIRE(asset != nullptr);
+    constexpr u32 size = 16;
+    ForEachDevice([&](rhi::Device& device) {
+        rhi::TextureHandle color =
+            device.CreateTexture({.format = rhi::Format::RGBA8Unorm, .width = size, .height = size, .usage = rhi::TextureRenderTarget | rhi::TextureSampled});
+        rhi::TextureHandle depth = device.CreateTexture({.format = rhi::Format::D32Float, .width = size, .height = size, .usage = rhi::TextureDepthStencil});
+        Graphics::SetDevice(&device);
+        Graphics::SetTarget({color, depth, size, size, rhi::Format::RGBA8Unorm, rhi::Format::D32Float});
+        GraphicsSettings::SetDefaultRenderPipeline(asset);
+        Calls().Clear();
+        Graphics::RenderFrame();
+        u32 both = Graphics::LastStats().drawCalls;
+        bool noted = Calls().Size() == 1 && Calls()[0] == StringView("shadow:True:2:True:5:True:True:3:0:3:0:True:True:64:1:ShadowProbe:3:1:1:1");
+        if (!noted)
+            for (const String& c : Calls())
+                std::printf("    %s\n", c.CStr());
+        HX_CHECK(noted);
+        // The pipeline's next frame moves the second split's planes away.
+        Graphics::RenderFrame();
+        u32 one = Graphics::LastStats().drawCalls;
+        Calls().Clear();
+        HX_CHECK(both == 2 && one == 1);
+        if (both != 2 || one != 1)
+            std::printf("    draws %u %u\n", both, one);
+        GraphicsSettings::SetDefaultRenderPipeline(nullptr);
+        Graphics::ReleaseResources();
+        device.Destroy(color);
+        device.Destroy(depth);
+    });
+    DestroyImmediate(asset);
+    DestroyImmediate(host);
+    for (const char* name : {"ShadowEye", "ShadowSun", "ShadowCaster", "ShadowSpot", "ShadowPoint", "ShadowProbe"})
+        if (GameObject* g = GameObject::Find(name))
+            DestroyImmediate(g);
 }
