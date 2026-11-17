@@ -23,7 +23,7 @@ namespace HelixEngine.Internal
         {
             "Awake", "OnEnable", "Start", "FixedUpdate", "Update", "LateUpdate", "OnDisable", "OnDestroy", "OnApplicationFocus", "OnApplicationPause",
             "OnApplicationQuit", "OnTransformParentChanged", "OnTransformChildrenChanged", "OnBecameVisible", "OnBecameInvisible", "OnValidate", "Reset",
-            "OnPreCull", "OnPreRender", "OnPostRender", "OnWillRenderObject", "OnRenderObject",
+            "OnPreCull", "OnPreRender", "OnPostRender", "OnWillRenderObject", "OnRenderObject", "OnGui",
         };
         const int FocusMessage = 8, PauseMessage = 9;
 

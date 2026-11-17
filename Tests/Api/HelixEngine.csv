@@ -385,6 +385,12 @@ Color32,g,byte g
 Color32,operators,Implicit(Color) / Implicit(Color32)
 Color32,r,byte r
 Color32,this[],byte this[][int] { get; set; }
+ColorSpace,Gamma,ColorSpace.Gamma = 0
+ColorSpace,Linear,ColorSpace.Linear = 1
+ColorSpace,Uninitialized,ColorSpace.Uninitialized = -1
+ColorUsageAttribute,.ctor,"ColorUsageAttribute(bool) / ColorUsageAttribute(bool, bool)"
+ColorUsageAttribute,hdr,bool hdr
+ColorUsageAttribute,showAlpha,bool showAlpha
 Component,BroadcastMessage,"void BroadcastMessage(string) / void BroadcastMessage(string, object) / void BroadcastMessage(string, object, SendMessageOptions) / void BroadcastMessage(string, SendMessageOptions)"
 Component,CompareTag,bool CompareTag(string)
 Component,GetComponent,Component GetComponent(Type) / T GetComponent<T>() / Component GetComponent(string)
@@ -446,6 +452,9 @@ ComputeShader,SetVectorArray,"void SetVectorArray(string, Vector4[]) / void SetV
 ComputeShader,enabledKeywords,LocalKeyword[] enabledKeywords { get; }
 ComputeShader,keywordSpace,LocalKeywordSpace keywordSpace { get; }
 ComputeShader,shaderKeywords,string[] shaderKeywords { get; set; }
+ContextMenuItemAttribute,.ctor,"ContextMenuItemAttribute(string, string)"
+ContextMenuItemAttribute,function,string function
+ContextMenuItemAttribute,name,string name
 Cubemap,.ctor,"Cubemap(int, TextureFormat, bool) / Cubemap(int, TextureFormat, bool, bool) / Cubemap(int, TextureFormat, int) / Cubemap(int, TextureFormat, int, bool)"
 Cubemap,Apply,"void Apply(bool = True, bool = False)"
 Cubemap,CopyPixels,"void CopyPixels(Texture, int, int, int, int)"
@@ -512,6 +521,7 @@ Debug,LogWarningFormat,"static void LogWarningFormat(string, params object[]) / 
 Debug,isDebugBuild,static bool isDebugBuild { get; }
 DefaultExecutionOrder,.ctor,DefaultExecutionOrder(int)
 DefaultExecutionOrder,order,int order { get; }
+DelayedAttribute,.ctor,DelayedAttribute()
 DepthTextureMode,Depth,DepthTextureMode.Depth = 1
 DepthTextureMode,DepthNormals,DepthTextureMode.DepthNormals = 2
 DepthTextureMode,MotionVectors,DepthTextureMode.MotionVectors = 4
@@ -607,12 +617,11 @@ FullScreenMode,FullScreenWindow,FullScreenMode.FullScreenWindow = 1
 FullScreenMode,MaximizedWindow,FullScreenMode.MaximizedWindow = 2
 FullScreenMode,Windowed,FullScreenMode.Windowed = 3
 GL,GetGPUProjectionMatrix,"static Matrix4x4 GetGPUProjectionMatrix(Matrix4x4, bool)"
-GUIUtility,.ctor,GUIUtility()
-GUIUtility,systemCopyBuffer,static string systemCopyBuffer { get; set; }
 GameBehaviour,StartCoroutine,"Coroutine StartCoroutine(IEnumerator) / Coroutine StartCoroutine(string, object = null)"
 GameBehaviour,StopAllCoroutines,void StopAllCoroutines()
 GameBehaviour,StopCoroutine,void StopCoroutine(IEnumerator) / void StopCoroutine(Coroutine) / void StopCoroutine(string)
 GameBehaviour,destroyCancellationToken,CancellationToken destroyCancellationToken { get; }
+GameBehaviour,useGuiLayout,bool useGuiLayout { get; set; }
 GameObject,.ctor,GameObject(string = GameObject)
 GameObject,AddComponent,Component AddComponent(Type) / T AddComponent<T>()
 GameObject,BroadcastMessage,"void BroadcastMessage(string) / void BroadcastMessage(string, object) / void BroadcastMessage(string, object, SendMessageOptions) / void BroadcastMessage(string, SendMessageOptions)"
@@ -659,6 +668,9 @@ GradientColorKey,time,float time
 GradientMode,Blend,GradientMode.Blend = 0
 GradientMode,Fixed,GradientMode.Fixed = 1
 GradientMode,PerceptualBlend,GradientMode.PerceptualBlend = 2
+GradientUsageAttribute,.ctor,"GradientUsageAttribute(bool) / GradientUsageAttribute(bool, ColorSpace)"
+GradientUsageAttribute,colorSpace,ColorSpace colorSpace
+GradientUsageAttribute,hdr,bool hdr
 Graphics,Blit,"static void Blit(Texture, RenderTexture) / static void Blit(Texture, RenderTexture, Material, int = -1) / static void Blit(Texture, RenderTexture, Vector2, Vector2) / static void Blit(Texture, Material, int = -1)"
 Graphics,BlitMultiTap,"static void BlitMultiTap(Texture, RenderTexture, Material, params Vector2[]) / static void BlitMultiTap(Texture, RenderTexture, Material, int, params Vector2[])"
 Graphics,ConvertTexture,"static bool ConvertTexture(Texture, Texture) / static bool ConvertTexture(Texture, int, Texture, int)"
@@ -711,6 +723,7 @@ GraphicsBuffer.Target,Vertex,GraphicsBuffer.Target.Vertex = 1
 GraphicsBuffer.UsageFlags,LockBufferForWrite,GraphicsBuffer.UsageFlags.LockBufferForWrite = 1
 GraphicsBuffer.UsageFlags,None,GraphicsBuffer.UsageFlags.None = 0
 GraphicsBufferHandle,operators,"Equality(GraphicsBufferHandle, GraphicsBufferHandle) / Inequality(GraphicsBufferHandle, GraphicsBufferHandle)"
+GuiTargetAttribute,.ctor,"GuiTargetAttribute() / GuiTargetAttribute(int) / GuiTargetAttribute(int, int) / GuiTargetAttribute(int, int, params int[])"
 Hash128,.ctor,"Hash128(uint, uint, uint, uint) / Hash128(ulong, ulong)"
 Hash128,Append,"void Append(string) / void Append(int) / void Append(float) / void Append(byte[]) / void Append(byte[], int, int) / void Append<T>(ref T)"
 Hash128,CompareTo,int CompareTo(Hash128) / int CompareTo(object)
@@ -719,6 +732,8 @@ Hash128,Parse,static Hash128 Parse(string)
 Hash128,ToString,string ToString()
 Hash128,isValid,bool isValid { get; }
 Hash128,operators,"Equality(Hash128, Hash128) / Inequality(Hash128, Hash128) / LessThan(Hash128, Hash128) / GreaterThan(Hash128, Hash128)"
+HeaderAttribute,.ctor,HeaderAttribute(string)
+HeaderAttribute,header,string header
 Helix.Collections.Allocator,AudioKernel,Helix.Collections.Allocator.AudioKernel = 5
 Helix.Collections.Allocator,Domain,Helix.Collections.Allocator.Domain = 6
 Helix.Collections.Allocator,FirstUserIndex,Helix.Collections.Allocator.FirstUserIndex = 64
@@ -920,6 +935,8 @@ HideFlags,NotEditable,HideFlags.NotEditable = 8
 HideInInspector,.ctor,HideInInspector()
 ISerializationCallbackReceiver,OnAfterDeserialize,void OnAfterDeserialize()
 ISerializationCallbackReceiver,OnBeforeSerialize,void OnBeforeSerialize()
+InspectorNameAttribute,.ctor,InspectorNameAttribute(string)
+InspectorNameAttribute,displayName,string displayName
 Jobs.IJobParallelForTransform,Execute,"void Execute(int, TransformAccess)"
 Jobs.IJobParallelForTransformExtensions,EarlyJobInit,static void EarlyJobInit<T>()
 Jobs.IJobParallelForTransformExtensions,RunReadOnly,"static void RunReadOnly<T>(T, TransformAccessArray)"
@@ -1462,7 +1479,11 @@ MeshTopology,Lines,MeshTopology.Lines = 3
 MeshTopology,Points,MeshTopology.Points = 5
 MeshTopology,Quads,MeshTopology.Quads = 2
 MeshTopology,Triangles,MeshTopology.Triangles = 0
+MinAttribute,.ctor,MinAttribute(float)
+MinAttribute,min,float min
 MissingReferenceException,.ctor,"MissingReferenceException() / MissingReferenceException(string) / MissingReferenceException(string, Exception)"
+MultilineAttribute,.ctor,MultilineAttribute() / MultilineAttribute(int)
+MultilineAttribute,lines,int lines
 NetworkReachability,NotReachable,NetworkReachability.NotReachable = 0
 NetworkReachability,ReachableViaCarrierDataNetwork,NetworkReachability.ReachableViaCarrierDataNetwork = 1
 NetworkReachability,ReachableViaLocalAreaNetwork,NetworkReachability.ReachableViaLocalAreaNetwork = 2
@@ -1492,6 +1513,8 @@ Plane,Translate,"void Translate(Vector3) / static Plane Translate(Plane, Vector3
 Plane,distance,float distance { get; set; }
 Plane,flipped,Plane flipped { get; }
 Plane,normal,Vector3 normal { get; set; }
+PropertyAttribute,applyToCollection,bool applyToCollection { get; }
+PropertyAttribute,order,int order { get; set; }
 QualitySettings,GetRenderPipelineAssetAt,static RenderPipelineAsset GetRenderPipelineAssetAt(int)
 QualitySettings,lodBias,static float lodBias { get; set; }
 QualitySettings,maximumLODLevel,static int maximumLODLevel { get; set; }
@@ -1536,6 +1559,9 @@ Random,rotation,static Quaternion rotation { get; }
 Random,rotationUniform,static Quaternion rotationUniform { get; }
 Random,state,static Random.State state { get; set; }
 Random,value,static float value { get; }
+RangeAttribute,.ctor,"RangeAttribute(float, float)"
+RangeAttribute,max,float max
+RangeAttribute,min,float min
 RangeInt,.ctor,"RangeInt(int, int)"
 RangeInt,end,int end { get; }
 RangeInt,length,int length
@@ -2586,9 +2612,14 @@ Shader,renderQueue,int renderQueue { get; }
 Shader,subshaderCount,int subshaderCount { get; }
 Space,Self,Space.Self = 1
 Space,World,Space.World = 0
+SpaceAttribute,.ctor,SpaceAttribute() / SpaceAttribute(float)
+SpaceAttribute,height,float height
 SystemInfo,SupportsRenderTextureFormat,static bool SupportsRenderTextureFormat(RenderTextureFormat)
 SystemInfo,graphicsDeviceType,static GraphicsDeviceType graphicsDeviceType { get; }
 SystemInfo,renderingThreadingMode,static RenderingThreadingMode renderingThreadingMode { get; }
+TextAreaAttribute,.ctor,"TextAreaAttribute() / TextAreaAttribute(int, int)"
+TextAreaAttribute,maxLines,int maxLines
+TextAreaAttribute,minLines,int minLines
 Texture,GenerateAllMips,static int GenerateAllMips
 Texture,IncrementUpdateCount,void IncrementUpdateCount()
 Texture,anisoLevel,int anisoLevel { get; set; }
@@ -2719,6 +2750,8 @@ Time,timeSinceLevelLoadAsDouble,static double timeSinceLevelLoadAsDouble { get; 
 Time,unscaledDeltaTime,static float unscaledDeltaTime { get; }
 Time,unscaledTime,static float unscaledTime { get; }
 Time,unscaledTimeAsDouble,static double unscaledTimeAsDouble { get; }
+TooltipAttribute,.ctor,TooltipAttribute(string)
+TooltipAttribute,tooltip,string tooltip
 Transform,DetachChildren,void DetachChildren()
 Transform,Find,Transform Find(string)
 Transform,GetChild,Transform GetChild(int)
