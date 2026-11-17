@@ -644,6 +644,21 @@ GeometryUtility,CalculateBounds,"static Bounds CalculateBounds(Vector3[], Matrix
 GeometryUtility,CalculateFrustumPlanes,"static void CalculateFrustumPlanes(Camera, Plane[]) / static void CalculateFrustumPlanes(Matrix4x4, Plane[]) / static Plane[] CalculateFrustumPlanes(Camera) / static Plane[] CalculateFrustumPlanes(Matrix4x4)"
 GeometryUtility,TestPlanesAABB,"static bool TestPlanesAABB(Plane[], Bounds)"
 GeometryUtility,TryCreatePlaneFromPolygon,"static bool TryCreatePlaneFromPolygon(Vector3[], out Plane)"
+Gradient,.ctor,Gradient()
+Gradient,Evaluate,Color Evaluate(float)
+Gradient,SetKeys,"void SetKeys(GradientColorKey[], GradientAlphaKey[])"
+Gradient,alphaKeys,GradientAlphaKey[] alphaKeys { get; set; }
+Gradient,colorKeys,GradientColorKey[] colorKeys { get; set; }
+Gradient,mode,GradientMode mode { get; set; }
+GradientAlphaKey,.ctor,"GradientAlphaKey(float, float)"
+GradientAlphaKey,alpha,float alpha
+GradientAlphaKey,time,float time
+GradientColorKey,.ctor,"GradientColorKey(Color, float)"
+GradientColorKey,color,Color color
+GradientColorKey,time,float time
+GradientMode,Blend,GradientMode.Blend = 0
+GradientMode,Fixed,GradientMode.Fixed = 1
+GradientMode,PerceptualBlend,GradientMode.PerceptualBlend = 2
 Graphics,Blit,"static void Blit(Texture, RenderTexture) / static void Blit(Texture, RenderTexture, Material, int = -1) / static void Blit(Texture, RenderTexture, Vector2, Vector2) / static void Blit(Texture, Material, int = -1)"
 Graphics,BlitMultiTap,"static void BlitMultiTap(Texture, RenderTexture, Material, params Vector2[]) / static void BlitMultiTap(Texture, RenderTexture, Material, int, params Vector2[])"
 Graphics,ConvertTexture,"static bool ConvertTexture(Texture, Texture) / static bool ConvertTexture(Texture, int, Texture, int)"

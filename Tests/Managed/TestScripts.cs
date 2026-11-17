@@ -128,6 +128,19 @@ namespace Tests
             Check(LayerMask.GetMask("UI", "Water", "NoSuchLayer") == ((1 << 5) | (1 << 4)) && LayerMask.NameToLayer("UI") == 5 &&
                   LayerMask.LayerToName(4) == "Water" && LayerMask.LayerToName(40) == "" && ((LayerMask)8).value == 8 && (int)(LayerMask)(1 << 3) == 8, "LayerMask");
             Check(new Vector3(1.234f, 5.678f, 9.012f).ToString() == "(1.23, 5.68, 9.01)", "Vector3.ToString");
+            // Gradient: two keys blended, the alpha keys apart, Fixed takes the next key, PerceptualBlend through Oklab, the
+            // keys sorted by time.
+            var gradient = new Gradient();
+            gradient.SetKeys(new[] { new GradientColorKey(Color.blue, 1), new GradientColorKey(Color.red, 0) },
+                             new[] { new GradientAlphaKey(1, 0), new GradientAlphaKey(0, 1) });
+            Color half = gradient.Evaluate(0.5f), past = gradient.Evaluate(2);
+            Check(gradient.colorKeys[0].time == 0 && half == new Color(0.5f, 0, 0.5f, 0.5f) && past == new Color(0, 0, 1, 0), "Gradient.Evaluate");
+            gradient.mode = GradientMode.Fixed;
+            Check(gradient.Evaluate(0.25f) == new Color(0, 0, 1, 0), "Gradient.Fixed");
+            gradient.mode = GradientMode.PerceptualBlend;
+            Color mid = gradient.Evaluate(0.5f);
+            Check(Math.Abs(mid.r - 0.55f) < 0.01f && Math.Abs(mid.g - 0.326f) < 0.01f && Math.Abs(mid.b - 0.637f) < 0.01f && Math.Abs(gradient.Evaluate(0).r - 1) < 1e-3f, "Gradient.PerceptualBlend");
+            Check(new Gradient().Evaluate(0.3f) == Color.white && new Gradient().Equals(new Gradient()), "Gradient.default");
             Check(new Vector2(1, 2).ToString() == "(1.00, 2.00)", "Vector2.ToString");
             Check(new Vector3(1, 2, 3).ToString("F1") == "(1.0, 2.0, 3.0)", "Vector3.ToString(F1)");
             Check(Quaternion.identity.ToString() == "(0.00000, 0.00000, 0.00000, 1.00000)", "Quaternion.ToString");
