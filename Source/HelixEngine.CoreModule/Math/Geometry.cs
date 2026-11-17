@@ -161,6 +161,107 @@ namespace HelixEngine
     }
 
     // A rectangle of cells: xMin inclusive, xMax exclusive (y alike).
+    public partial struct BoundsInt : IEquatable<BoundsInt>, IFormattable
+    {
+        public BoundsInt(int xMin, int yMin, int zMin, int sizeX, int sizeY, int sizeZ)
+        {
+            m_Position = new Vector3Int(xMin, yMin, zMin);
+            m_Size = new Vector3Int(sizeX, sizeY, sizeZ);
+        }
+
+        public BoundsInt(Vector3Int position, Vector3Int size)
+        {
+            m_Position = position;
+            m_Size = size;
+        }
+
+        public int x { readonly get => m_Position.x; set => m_Position.x = value; }
+        public int y { readonly get => m_Position.y; set => m_Position.y = value; }
+        public int z { readonly get => m_Position.z; set => m_Position.z = value; }
+        public readonly Vector3 center => new(x + m_Size.x / 2f, y + m_Size.y / 2f, z + m_Size.z / 2f);
+        public Vector3Int min
+        {
+            readonly get => new(xMin, yMin, zMin);
+            set
+            {
+                xMin = value.x;
+                yMin = value.y;
+                zMin = value.z;
+            }
+        }
+        public Vector3Int max
+        {
+            readonly get => new(xMax, yMax, zMax);
+            set
+            {
+                xMax = value.x;
+                yMax = value.y;
+                zMax = value.z;
+            }
+        }
+        public int xMin
+        {
+            readonly get => Math.Min(m_Position.x, m_Position.x + m_Size.x);
+            set
+            {
+                int oldMax = xMax;
+                m_Position.x = value;
+                m_Size.x = oldMax - m_Position.x;
+            }
+        }
+        public int yMin
+        {
+            readonly get => Math.Min(m_Position.y, m_Position.y + m_Size.y);
+            set
+            {
+                int oldMax = yMax;
+                m_Position.y = value;
+                m_Size.y = oldMax - m_Position.y;
+            }
+        }
+        public int zMin
+        {
+            readonly get => Math.Min(m_Position.z, m_Position.z + m_Size.z);
+            set
+            {
+                int oldMax = zMax;
+                m_Position.z = value;
+                m_Size.z = oldMax - m_Position.z;
+            }
+        }
+        public int xMax { readonly get => Math.Max(m_Position.x, m_Position.x + m_Size.x); set => m_Size.x = value - m_Position.x; }
+        public int yMax { readonly get => Math.Max(m_Position.y, m_Position.y + m_Size.y); set => m_Size.y = value - m_Position.y; }
+        public int zMax { readonly get => Math.Max(m_Position.z, m_Position.z + m_Size.z); set => m_Size.z = value - m_Position.z; }
+        public Vector3Int position { readonly get => m_Position; set => m_Position = value; }
+        public Vector3Int size { readonly get => m_Size; set => m_Size = value; }
+
+        public void SetMinMax(Vector3Int minPosition, Vector3Int maxPosition)
+        {
+            min = minPosition;
+            max = maxPosition;
+        }
+
+        public void ClampToBounds(BoundsInt bounds)
+        {
+            position = new Vector3Int(Math.Max(Math.Min(bounds.xMax, position.x), bounds.xMin), Math.Max(Math.Min(bounds.yMax, position.y), bounds.yMin),
+                                      Math.Max(Math.Min(bounds.zMax, position.z), bounds.zMin));
+            size = new Vector3Int(Math.Min(bounds.xMax - position.x, size.x), Math.Min(bounds.yMax - position.y, size.y), Math.Min(bounds.zMax - position.z, size.z));
+        }
+
+        public readonly bool Contains(Vector3Int position) =>
+            position.x >= xMin && position.y >= yMin && position.z >= zMin && position.x < xMax && position.y < yMax && position.z < zMax;
+
+        public readonly bool Equals(BoundsInt other) => m_Position.Equals(other.m_Position) && m_Size.Equals(other.m_Size);
+        public override readonly bool Equals(object other) => other is BoundsInt b && Equals(b);
+        public override readonly int GetHashCode() => m_Position.GetHashCode() ^ (m_Size.GetHashCode() << 2);
+        public static bool operator ==(BoundsInt lhs, BoundsInt rhs) => lhs.Equals(rhs);
+        public static bool operator !=(BoundsInt lhs, BoundsInt rhs) => !lhs.Equals(rhs);
+        public override readonly string ToString() => ToString(null, null);
+        public readonly string ToString(string format) => ToString(format, null);
+        public readonly string ToString(string format, IFormatProvider formatProvider) =>
+            $"Position: {m_Position.ToString(format, formatProvider)}, Size: {m_Size.ToString(format, formatProvider)}";
+    }
+
     public partial struct RectInt : IEquatable<RectInt>, IFormattable
     {
         public RectInt(int xMin, int yMin, int width, int height)

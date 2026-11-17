@@ -91,6 +91,26 @@ Bounds,max,Vector3 max { get; set; }
 Bounds,min,Vector3 min { get; set; }
 Bounds,operators,"Equality(Bounds, Bounds) / Inequality(Bounds, Bounds)"
 Bounds,size,Vector3 size { get; set; }
+BoundsInt,.ctor,"BoundsInt(int, int, int, int, int, int) / BoundsInt(Vector3Int, Vector3Int)"
+BoundsInt,ClampToBounds,void ClampToBounds(BoundsInt)
+BoundsInt,Contains,bool Contains(Vector3Int)
+BoundsInt,SetMinMax,"void SetMinMax(Vector3Int, Vector3Int)"
+BoundsInt,ToString,"string ToString() / string ToString(string) / string ToString(string, IFormatProvider)"
+BoundsInt,center,Vector3 center { get; }
+BoundsInt,max,Vector3Int max { get; set; }
+BoundsInt,min,Vector3Int min { get; set; }
+BoundsInt,operators,"Equality(BoundsInt, BoundsInt) / Inequality(BoundsInt, BoundsInt)"
+BoundsInt,position,Vector3Int position { get; set; }
+BoundsInt,size,Vector3Int size { get; set; }
+BoundsInt,x,int x { get; set; }
+BoundsInt,xMax,int xMax { get; set; }
+BoundsInt,xMin,int xMin { get; set; }
+BoundsInt,y,int y { get; set; }
+BoundsInt,yMax,int yMax { get; set; }
+BoundsInt,yMin,int yMin { get; set; }
+BoundsInt,z,int z { get; set; }
+BoundsInt,zMax,int zMax { get; set; }
+BoundsInt,zMin,int zMin { get; set; }
 Camera,CalculateFrustumCorners,"void CalculateFrustumCorners(Rect, float, Camera.MonoOrStereoscopicEye, Vector3[])"
 Camera,CalculateObliqueMatrix,Matrix4x4 CalculateObliqueMatrix(Vector4)
 Camera,CopyFrom,void CopyFrom(Camera)
@@ -587,6 +607,8 @@ FullScreenMode,FullScreenWindow,FullScreenMode.FullScreenWindow = 1
 FullScreenMode,MaximizedWindow,FullScreenMode.MaximizedWindow = 2
 FullScreenMode,Windowed,FullScreenMode.Windowed = 3
 GL,GetGPUProjectionMatrix,"static Matrix4x4 GetGPUProjectionMatrix(Matrix4x4, bool)"
+GUIUtility,.ctor,GUIUtility()
+GUIUtility,systemCopyBuffer,static string systemCopyBuffer { get; set; }
 GameBehaviour,StartCoroutine,"Coroutine StartCoroutine(IEnumerator) / Coroutine StartCoroutine(string, object = null)"
 GameBehaviour,StopAllCoroutines,void StopAllCoroutines()
 GameBehaviour,StopCoroutine,void StopCoroutine(IEnumerator) / void StopCoroutine(Coroutine) / void StopCoroutine(string)
@@ -674,6 +696,14 @@ GraphicsBuffer.Target,Vertex,GraphicsBuffer.Target.Vertex = 1
 GraphicsBuffer.UsageFlags,LockBufferForWrite,GraphicsBuffer.UsageFlags.LockBufferForWrite = 1
 GraphicsBuffer.UsageFlags,None,GraphicsBuffer.UsageFlags.None = 0
 GraphicsBufferHandle,operators,"Equality(GraphicsBufferHandle, GraphicsBufferHandle) / Inequality(GraphicsBufferHandle, GraphicsBufferHandle)"
+Hash128,.ctor,"Hash128(uint, uint, uint, uint) / Hash128(ulong, ulong)"
+Hash128,Append,"void Append(string) / void Append(int) / void Append(float) / void Append(byte[]) / void Append(byte[], int, int) / void Append<T>(ref T)"
+Hash128,CompareTo,int CompareTo(Hash128) / int CompareTo(object)
+Hash128,Compute,"static Hash128 Compute(string) / static Hash128 Compute(int) / static Hash128 Compute(float) / static Hash128 Compute(byte[]) / static Hash128 Compute(byte[], int, int) / static Hash128 Compute<T>(T)"
+Hash128,Parse,static Hash128 Parse(string)
+Hash128,ToString,string ToString()
+Hash128,isValid,bool isValid { get; }
+Hash128,operators,"Equality(Hash128, Hash128) / Inequality(Hash128, Hash128) / LessThan(Hash128, Hash128) / GreaterThan(Hash128, Hash128)"
 Helix.Collections.Allocator,AudioKernel,Helix.Collections.Allocator.AudioKernel = 5
 Helix.Collections.Allocator,Domain,Helix.Collections.Allocator.Domain = 6
 Helix.Collections.Allocator,FirstUserIndex,Helix.Collections.Allocator.FirstUserIndex = 64
