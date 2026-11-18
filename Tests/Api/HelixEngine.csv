@@ -609,6 +609,19 @@ DepthTextureMode,Depth,DepthTextureMode.Depth = 1
 DepthTextureMode,DepthNormals,DepthTextureMode.DepthNormals = 2
 DepthTextureMode,MotionVectors,DepthTextureMode.MotionVectors = 4
 DepthTextureMode,None,DepthTextureMode.None = 0
+Display,Activate,"void Activate() / void Activate(int, int, RefreshRate)"
+Display,RelativeMouseAt,static Vector3 RelativeMouseAt(Vector3)
+Display,SetParams,"void SetParams(int, int, int, int)"
+Display,SetRenderingResolution,"void SetRenderingResolution(int, int)"
+Display,active,bool active { get; }
+Display,displays,static Display[] displays { get; }
+Display,main,static Display main { get; }
+Display,onDisplaysUpdated,static event Display.DisplaysUpdatedDelegate onDisplaysUpdated
+Display,renderingHeight,int renderingHeight { get; }
+Display,renderingWidth,int renderingWidth { get; }
+Display,systemHeight,int systemHeight { get; }
+Display,systemWidth,int systemWidth { get; }
+Display.DisplaysUpdatedDelegate,delegate,void ()
 DrivenRectTransformTracker,Add,"void Add(Object, RectTransform, DrivenTransformProperties)"
 DrivenRectTransformTracker,Clear,void Clear() / void Clear(bool)
 DrivenRectTransformTracker,StartRecordingUndo,static void StartRecordingUndo()
