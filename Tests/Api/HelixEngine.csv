@@ -1,4 +1,7 @@
 type,member,signature
+AddComponentMenu,.ctor,AddComponentMenu(string) / AddComponentMenu(string, int)
+AddComponentMenu,componentMenu,string componentMenu { get; }
+AddComponentMenu,componentOrder,int componentOrder { get; }
 AdditionalCanvasShaderChannels,None,AdditionalCanvasShaderChannels.None = 0
 AdditionalCanvasShaderChannels,Normal,AdditionalCanvasShaderChannels.Normal = 8
 AdditionalCanvasShaderChannels,Tangent,AdditionalCanvasShaderChannels.Tangent = 16
@@ -793,7 +796,7 @@ GameObject,SetActive,void SetActive(bool)
 GameObject,TryGetComponent,"bool TryGetComponent(Type, out Component) / bool TryGetComponent<T>(out T)"
 GameObject,activeInHierarchy,bool activeInHierarchy { get; }
 GameObject,activeSelf,bool activeSelf { get; }
-GameObject,isStatic,bool isStatic { get; }
+GameObject,isStatic,bool isStatic { get; set; }
 GameObject,layer,int layer { get; set; }
 GameObject,tag,string tag { get; set; }
 GameObject,transform,Transform transform { get; }

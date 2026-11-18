@@ -36,6 +36,23 @@ namespace HelixEngine
         }
     }
 
+    /// <summary>Where the editor's Add Component list shows a component class ("UI/Button"; "" leaves it out) and its
+    /// place among its group's.</summary>
+    [AttributeUsage(AttributeTargets.Class)]
+    public sealed class AddComponentMenu : Attribute
+    {
+        public AddComponentMenu(string menuName) => componentMenu = menuName;
+
+        public AddComponentMenu(string menuName, int order)
+        {
+            componentMenu = menuName;
+            componentOrder = order;
+        }
+
+        public string componentMenu { get; }
+        public int componentOrder { get; }
+    }
+
     /// <summary>A private field that scene and prefab files hold (public fields are held without it).</summary>
     [AttributeUsage(AttributeTargets.Field)]
     public sealed class SerializeField : Attribute
