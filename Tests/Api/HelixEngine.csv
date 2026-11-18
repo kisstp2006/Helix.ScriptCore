@@ -3260,3 +3260,22 @@ WaitUntil,keepWaiting,bool keepWaiting { get; }
 WaitWhile,.ctor,"WaitWhile(Func<bool>) / WaitWhile(Func<bool>, TimeSpan, Action, WaitTimeoutMode = Realtime)"
 WaitWhile,keepWaiting,bool keepWaiting { get; }
 YieldInstruction,.ctor,YieldInstruction()
+Gizmos,CalculateLOD,"static float CalculateLOD(Vector3, float)"
+Gizmos,DrawCube,"static void DrawCube(Vector3, Vector3)"
+Gizmos,DrawFrustum,"static void DrawFrustum(Vector3, float, float, float, float)"
+Gizmos,DrawGUITexture,"static void DrawGUITexture(Rect, Texture) / static void DrawGUITexture(Rect, Texture, Material) / static void DrawGUITexture(Rect, Texture, int, int, int, int, Material)"
+Gizmos,DrawIcon,"static void DrawIcon(Vector3, string) / static void DrawIcon(Vector3, string, bool) / static void DrawIcon(Vector3, string, bool, Color)"
+Gizmos,DrawLine,"static void DrawLine(Vector3, Vector3)"
+Gizmos,DrawLineList,static void DrawLineList(ReadOnlySpan<Vector3>)
+Gizmos,DrawLineStrip,"static void DrawLineStrip(ReadOnlySpan<Vector3>, bool)"
+Gizmos,DrawMesh,"static void DrawMesh(Mesh) / static void DrawMesh(Mesh, Vector3, Quaternion, Vector3) / static void DrawMesh(Mesh, int, Vector3, Quaternion, Vector3)"
+Gizmos,DrawRay,"static void DrawRay(Vector3, Vector3) / static void DrawRay(Ray)"
+Gizmos,DrawSphere,"static void DrawSphere(Vector3, float)"
+Gizmos,DrawWireCube,"static void DrawWireCube(Vector3, Vector3)"
+Gizmos,DrawWireMesh,"static void DrawWireMesh(Mesh) / static void DrawWireMesh(Mesh, Vector3, Quaternion, Vector3) / static void DrawWireMesh(Mesh, int, Vector3, Quaternion, Vector3)"
+Gizmos,DrawWireSphere,"static void DrawWireSphere(Vector3, float)"
+Gizmos,color,static Color color { get; set; }
+Gizmos,enabled,static bool enabled { get; set; }
+Gizmos,exposure,static Texture exposure { get; set; }
+Gizmos,matrix,static Matrix4x4 matrix { get; set; }
+Gizmos,probeSize,static float probeSize { get; }
