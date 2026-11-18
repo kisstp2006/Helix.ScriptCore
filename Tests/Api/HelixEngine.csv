@@ -797,6 +797,7 @@ GameObject,TryGetComponent,"bool TryGetComponent(Type, out Component) / bool Try
 GameObject,activeInHierarchy,bool activeInHierarchy { get; }
 GameObject,activeSelf,bool activeSelf { get; }
 GameObject,isStatic,bool isStatic { get; set; }
+GameObject,scene,Scene scene { get; }
 GameObject,layer,int layer { get; set; }
 GameObject,tag,string tag { get; set; }
 GameObject,transform,Transform transform { get; }
