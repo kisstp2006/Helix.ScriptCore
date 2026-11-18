@@ -1,4 +1,10 @@
 type,member,signature
+AdditionalCanvasShaderChannels,None,AdditionalCanvasShaderChannels.None = 0
+AdditionalCanvasShaderChannels,Normal,AdditionalCanvasShaderChannels.Normal = 8
+AdditionalCanvasShaderChannels,Tangent,AdditionalCanvasShaderChannels.Tangent = 16
+AdditionalCanvasShaderChannels,TexCoord1,AdditionalCanvasShaderChannels.TexCoord1 = 1
+AdditionalCanvasShaderChannels,TexCoord2,AdditionalCanvasShaderChannels.TexCoord2 = 2
+AdditionalCanvasShaderChannels,TexCoord3,AdditionalCanvasShaderChannels.TexCoord3 = 4
 Application,.ctor,Application()
 Application,Quit,static void Quit(int = 0)
 Application,absoluteURL,static string absoluteURL { get; }
@@ -202,6 +208,83 @@ CameraType,Preview,CameraType.Preview = 4
 CameraType,Reflection,CameraType.Reflection = 16
 CameraType,SceneView,CameraType.SceneView = 2
 CameraType,VR,CameraType.VR = 8
+Canvas,ForceUpdateCanvases,static void ForceUpdateCanvases()
+Canvas,GetDefaultCanvasMaterial,static Material GetDefaultCanvasMaterial()
+Canvas,GetDefaultCanvasTextMaterial,static Material GetDefaultCanvasTextMaterial()
+Canvas,GetETC1SupportedCanvasMaterial,static Material GetETC1SupportedCanvasMaterial()
+Canvas,additionalShaderChannels,AdditionalCanvasShaderChannels additionalShaderChannels { get; set; }
+Canvas,batchingInterval,static Canvas.BatchingInterval batchingInterval { get; set; }
+Canvas,cachedSortingLayerValue,int cachedSortingLayerValue { get; }
+Canvas,isRootCanvas,bool isRootCanvas { get; }
+Canvas,normalizedSortingGridSize,float normalizedSortingGridSize { get; set; }
+Canvas,overridePixelPerfect,bool overridePixelPerfect { get; set; }
+Canvas,overrideSorting,bool overrideSorting { get; set; }
+Canvas,pixelPerfect,bool pixelPerfect { get; set; }
+Canvas,pixelRect,Rect pixelRect { get; }
+Canvas,planeDistance,float planeDistance { get; set; }
+Canvas,preWillRenderCanvases,static event Canvas.WillRenderCanvases preWillRenderCanvases
+Canvas,referencePixelsPerUnit,float referencePixelsPerUnit { get; set; }
+Canvas,renderMode,RenderMode renderMode { get; set; }
+Canvas,renderOrder,int renderOrder { get; }
+Canvas,renderingDisplaySize,Vector2 renderingDisplaySize { get; }
+Canvas,rootCanvas,Canvas rootCanvas { get; }
+Canvas,scaleFactor,float scaleFactor { get; set; }
+Canvas,sortingGridNormalizedSize,int sortingGridNormalizedSize { get; set; }
+Canvas,sortingLayerID,int sortingLayerID { get; set; }
+Canvas,sortingLayerName,string sortingLayerName { get; set; }
+Canvas,sortingOrder,int sortingOrder { get; set; }
+Canvas,targetDisplay,int targetDisplay { get; set; }
+Canvas,updateRectTransformForStandalone,StandaloneRenderResize updateRectTransformForStandalone { get; set; }
+Canvas,useReflectionProbes,bool useReflectionProbes { get; set; }
+Canvas,vertexColorAlwaysGammaSpace,bool vertexColorAlwaysGammaSpace { get; set; }
+Canvas,willRenderCanvases,static event Canvas.WillRenderCanvases willRenderCanvases
+Canvas,worldCamera,Camera worldCamera { get; set; }
+Canvas.BatchingInterval,AlwaysUpdate,Canvas.BatchingInterval.AlwaysUpdate = 1
+Canvas.BatchingInterval,GatedByRendering,Canvas.BatchingInterval.GatedByRendering = 0
+Canvas.WillRenderCanvases,delegate,void ()
+CanvasGroup,IsRaycastLocationValid,"bool IsRaycastLocationValid(Vector2, Camera)"
+CanvasGroup,alpha,float alpha { get; set; }
+CanvasGroup,blocksRaycasts,bool blocksRaycasts { get; set; }
+CanvasGroup,ignoreParentGroups,bool ignoreParentGroups { get; set; }
+CanvasGroup,interactable,bool interactable { get; set; }
+CanvasRenderer,AddUIVertexStream,"static void AddUIVertexStream(List<UIVertex>, List<Vector3>, List<Color32>, List<Vector4>, List<Vector4>, List<Vector4>, List<Vector4>, List<Vector3>, List<Vector4>) / static void AddUIVertexStream(List<UIVertex>, List<Vector3>, List<Color32>, List<Vector4>, List<Vector4>, List<Vector3>, List<Vector4>)"
+CanvasRenderer,Clear,void Clear()
+CanvasRenderer,CreateUIVertexStream,"static void CreateUIVertexStream(List<UIVertex>, List<Vector3>, List<Color32>, List<Vector4>, List<Vector4>, List<Vector4>, List<Vector4>, List<Vector3>, List<Vector4>, List<int>) / static void CreateUIVertexStream(List<UIVertex>, List<Vector3>, List<Color32>, List<Vector4>, List<Vector4>, List<Vector3>, List<Vector4>, List<int>)"
+CanvasRenderer,DisableRectClipping,void DisableRectClipping()
+CanvasRenderer,EnableRectClipping,void EnableRectClipping(Rect)
+CanvasRenderer,GetAlpha,float GetAlpha()
+CanvasRenderer,GetColor,Color GetColor()
+CanvasRenderer,GetInheritedAlpha,float GetInheritedAlpha()
+CanvasRenderer,GetMaterial,Material GetMaterial(int) / Material GetMaterial()
+CanvasRenderer,GetMesh,Mesh GetMesh()
+CanvasRenderer,GetPopMaterial,Material GetPopMaterial(int)
+CanvasRenderer,GetSecondaryTexture,Texture2D GetSecondaryTexture(int)
+CanvasRenderer,GetSecondaryTextureCount,int GetSecondaryTextureCount()
+CanvasRenderer,GetSecondaryTextureName,string GetSecondaryTextureName(int)
+CanvasRenderer,SetAlpha,void SetAlpha(float)
+CanvasRenderer,SetAlphaTexture,void SetAlphaTexture(Texture)
+CanvasRenderer,SetColor,void SetColor(Color)
+CanvasRenderer,SetMaterial,"void SetMaterial(Material, int) / void SetMaterial(Material, Texture)"
+CanvasRenderer,SetMesh,void SetMesh(Mesh)
+CanvasRenderer,SetPopMaterial,"void SetPopMaterial(Material, int)"
+CanvasRenderer,SetSecondaryTexture,"void SetSecondaryTexture(int, string, Texture2D)"
+CanvasRenderer,SetSecondaryTextureCount,void SetSecondaryTextureCount(int)
+CanvasRenderer,SetTexture,void SetTexture(Texture)
+CanvasRenderer,SetVertices,"void SetVertices(List<UIVertex>) / void SetVertices(UIVertex[], int)"
+CanvasRenderer,SplitUIVertexStreams,"static void SplitUIVertexStreams(List<UIVertex>, List<Vector3>, List<Color32>, List<Vector4>, List<Vector4>, List<Vector4>, List<Vector4>, List<Vector3>, List<Vector4>, List<int>) / static void SplitUIVertexStreams(List<UIVertex>, List<Vector3>, List<Color32>, List<Vector4>, List<Vector4>, List<Vector3>, List<Vector4>, List<int>)"
+CanvasRenderer,absoluteDepth,int absoluteDepth { get; }
+CanvasRenderer,clippingSoftness,Vector2 clippingSoftness { get; set; }
+CanvasRenderer,cull,bool cull { get; set; }
+CanvasRenderer,cullTransparentMesh,bool cullTransparentMesh { get; set; }
+CanvasRenderer,hasMoved,bool hasMoved { get; }
+CanvasRenderer,hasPopInstruction,bool hasPopInstruction { get; set; }
+CanvasRenderer,hasRectClipping,bool hasRectClipping { get; }
+CanvasRenderer,isMask,bool isMask { get; set; }
+CanvasRenderer,materialCount,int materialCount { get; set; }
+CanvasRenderer,onRequestRebuild,static event CanvasRenderer.OnRequestRebuild onRequestRebuild
+CanvasRenderer,popMaterialCount,int popMaterialCount { get; set; }
+CanvasRenderer,relativeDepth,int relativeDepth { get; }
+CanvasRenderer.OnRequestRebuild,delegate,void ()
 Color,.ctor,"Color(float, float, float, float) / Color(float, float, float)"
 Color,HSVToRGB,"static Color HSVToRGB(float, float, float) / static Color HSVToRGB(float, float, float, bool)"
 Color,Lerp,"static Color Lerp(Color, Color, float)"
@@ -526,8 +609,60 @@ DepthTextureMode,Depth,DepthTextureMode.Depth = 1
 DepthTextureMode,DepthNormals,DepthTextureMode.DepthNormals = 2
 DepthTextureMode,MotionVectors,DepthTextureMode.MotionVectors = 4
 DepthTextureMode,None,DepthTextureMode.None = 0
+DrivenRectTransformTracker,Add,"void Add(Object, RectTransform, DrivenTransformProperties)"
+DrivenRectTransformTracker,Clear,void Clear() / void Clear(bool)
+DrivenRectTransformTracker,StartRecordingUndo,static void StartRecordingUndo()
+DrivenRectTransformTracker,StopRecordingUndo,static void StopRecordingUndo()
+DrivenTransformProperties,All,DrivenTransformProperties.All = -1
+DrivenTransformProperties,AnchorMax,DrivenTransformProperties.AnchorMax = 3072
+DrivenTransformProperties,AnchorMaxX,DrivenTransformProperties.AnchorMaxX = 1024
+DrivenTransformProperties,AnchorMaxY,DrivenTransformProperties.AnchorMaxY = 2048
+DrivenTransformProperties,AnchorMin,DrivenTransformProperties.AnchorMin = 768
+DrivenTransformProperties,AnchorMinX,DrivenTransformProperties.AnchorMinX = 256
+DrivenTransformProperties,AnchorMinY,DrivenTransformProperties.AnchorMinY = 512
+DrivenTransformProperties,AnchoredPosition,DrivenTransformProperties.AnchoredPosition = 6
+DrivenTransformProperties,AnchoredPosition3D,DrivenTransformProperties.AnchoredPosition3D = 14
+DrivenTransformProperties,AnchoredPositionX,DrivenTransformProperties.AnchoredPositionX = 2
+DrivenTransformProperties,AnchoredPositionY,DrivenTransformProperties.AnchoredPositionY = 4
+DrivenTransformProperties,AnchoredPositionZ,DrivenTransformProperties.AnchoredPositionZ = 8
+DrivenTransformProperties,Anchors,DrivenTransformProperties.Anchors = 3840
+DrivenTransformProperties,None,DrivenTransformProperties.None = 0
+DrivenTransformProperties,Pivot,DrivenTransformProperties.Pivot = 49152
+DrivenTransformProperties,PivotX,DrivenTransformProperties.PivotX = 16384
+DrivenTransformProperties,PivotY,DrivenTransformProperties.PivotY = 32768
+DrivenTransformProperties,Rotation,DrivenTransformProperties.Rotation = 16
+DrivenTransformProperties,Scale,DrivenTransformProperties.Scale = 224
+DrivenTransformProperties,ScaleX,DrivenTransformProperties.ScaleX = 32
+DrivenTransformProperties,ScaleY,DrivenTransformProperties.ScaleY = 64
+DrivenTransformProperties,ScaleZ,DrivenTransformProperties.ScaleZ = 128
+DrivenTransformProperties,SizeDelta,DrivenTransformProperties.SizeDelta = 12288
+DrivenTransformProperties,SizeDeltaX,DrivenTransformProperties.SizeDeltaX = 4096
+DrivenTransformProperties,SizeDeltaY,DrivenTransformProperties.SizeDeltaY = 8192
 EntityId,value,ulong value
 Events.HelixAction,delegate,"void () / void (T0) / void (T0, T1) / void (T0, T1, T2) / void (T0, T1, T2, T3)"
+Events.HelixEvent,.ctor,HelixEvent() / HelixEvent() / HelixEvent() / HelixEvent() / HelixEvent()
+Events.HelixEvent,AddListener,"void AddListener(HelixAction) / void AddListener(HelixAction<T0>) / void AddListener(HelixAction<T0, T1>) / void AddListener(HelixAction<T0, T1, T2>) / void AddListener(HelixAction<T0, T1, T2, T3>)"
+Events.HelixEvent,Invoke,"void Invoke() / void Invoke(T0) / void Invoke(T0, T1) / void Invoke(T0, T1, T2) / void Invoke(T0, T1, T2, T3)"
+Events.HelixEvent,RemoveAllListeners,void RemoveAllListeners() / void RemoveAllListeners() / void RemoveAllListeners() / void RemoveAllListeners() / void RemoveAllListeners()
+Events.HelixEvent,RemoveListener,"void RemoveListener(HelixAction) / void RemoveListener(HelixAction<T0>) / void RemoveListener(HelixAction<T0, T1>) / void RemoveListener(HelixAction<T0, T1, T2>) / void RemoveListener(HelixAction<T0, T1, T2, T3>)"
+Events.HelixEventBase,GetPersistentEventCount,int GetPersistentEventCount()
+Events.HelixEventBase,GetPersistentListenerState,HelixEventCallState GetPersistentListenerState(int)
+Events.HelixEventBase,GetPersistentMethodName,string GetPersistentMethodName(int)
+Events.HelixEventBase,GetPersistentTarget,Object GetPersistentTarget(int)
+Events.HelixEventBase,GetValidMethodInfo,"static MethodInfo GetValidMethodInfo(object, string, Type[]) / static MethodInfo GetValidMethodInfo(Type, string, Type[])"
+Events.HelixEventBase,RemoveAllListeners,void RemoveAllListeners()
+Events.HelixEventBase,SetPersistentListenerState,"void SetPersistentListenerState(int, HelixEventCallState)"
+Events.HelixEventBase,ToString,string ToString()
+Events.HelixEventCallState,EditorAndRuntime,Events.HelixEventCallState.EditorAndRuntime = 1
+Events.HelixEventCallState,Off,Events.HelixEventCallState.Off = 0
+Events.HelixEventCallState,RuntimeOnly,Events.HelixEventCallState.RuntimeOnly = 2
+Events.PersistentListenerMode,Bool,Events.PersistentListenerMode.Bool = 6
+Events.PersistentListenerMode,EventDefined,Events.PersistentListenerMode.EventDefined = 0
+Events.PersistentListenerMode,Float,Events.PersistentListenerMode.Float = 4
+Events.PersistentListenerMode,Int,Events.PersistentListenerMode.Int = 3
+Events.PersistentListenerMode,Object,Events.PersistentListenerMode.Object = 2
+Events.PersistentListenerMode,String,Events.PersistentListenerMode.String = 5
+Events.PersistentListenerMode,Void,Events.PersistentListenerMode.Void = 1
 Experimental.Rendering.GraphicsFormat,A2B10G10R10_UNormPack32,Experimental.Rendering.GraphicsFormat.A2B10G10R10_UNormPack32 = 75
 Experimental.Rendering.GraphicsFormat,B10G11R11_UFloatPack32,Experimental.Rendering.GraphicsFormat.B10G11R11_UFloatPack32 = 74
 Experimental.Rendering.GraphicsFormat,B8G8R8A8_SRGB,Experimental.Rendering.GraphicsFormat.B8G8R8A8_SRGB = 57
@@ -933,6 +1068,10 @@ HideFlags,HideInInspector,HideFlags.HideInInspector = 2
 HideFlags,None,HideFlags.None = 0
 HideFlags,NotEditable,HideFlags.NotEditable = 8
 HideInInspector,.ctor,HideInInspector()
+ICanvasRaycastFilter,IsRaycastLocationValid,"bool IsRaycastLocationValid(Vector2, Camera)"
+IMECompositionMode,Auto,IMECompositionMode.Auto = 0
+IMECompositionMode,Off,IMECompositionMode.Off = 2
+IMECompositionMode,On,IMECompositionMode.On = 1
 ISerializationCallbackReceiver,OnAfterDeserialize,void OnAfterDeserialize()
 ISerializationCallbackReceiver,OnBeforeSerialize,void OnBeforeSerialize()
 InspectorNameAttribute,.ctor,InspectorNameAttribute(string)
@@ -1620,6 +1759,63 @@ RectInt.PositionEnumerator,Current,Vector2Int Current { get; }
 RectInt.PositionEnumerator,GetEnumerator,RectInt.PositionEnumerator GetEnumerator()
 RectInt.PositionEnumerator,MoveNext,bool MoveNext()
 RectInt.PositionEnumerator,Reset,void Reset()
+RectTransform,Contains,bool Contains(RectTransform)
+RectTransform,FitInsideCoplanarRectTransform,"RectTransform.FitResult FitInsideCoplanarRectTransform(RectTransform, bool = False)"
+RectTransform,ForceUpdateRectTransforms,void ForceUpdateRectTransforms()
+RectTransform,GetLocalBottom,float GetLocalBottom()
+RectTransform,GetLocalCorners,void GetLocalCorners(Vector3[]) / void GetLocalCorners(Span<Vector3>)
+RectTransform,GetLocalLeft,float GetLocalLeft()
+RectTransform,GetLocalRight,float GetLocalRight()
+RectTransform,GetLocalTop,float GetLocalTop()
+RectTransform,GetWorldCorners,void GetWorldCorners(Vector3[]) / void GetWorldCorners(Span<Vector3>)
+RectTransform,GetWorldRect,Rect GetWorldRect()
+RectTransform,IsCoplanarWith,bool IsCoplanarWith(RectTransform)
+RectTransform,SetAnchors,void SetAnchors(Vector2)
+RectTransform,SetInsetAndSizeFromParentEdge,"void SetInsetAndSizeFromParentEdge(RectTransform.Edge, float, float)"
+RectTransform,SetLocalBottom,"void SetLocalBottom(float, bool = True)"
+RectTransform,SetLocalLeft,"void SetLocalLeft(float, bool = True)"
+RectTransform,SetLocalRight,"void SetLocalRight(float, bool = True)"
+RectTransform,SetLocalTop,"void SetLocalTop(float, bool = True)"
+RectTransform,SetPivotAndAnchors,void SetPivotAndAnchors(Vector2)
+RectTransform,SetPivotWithCounterAdjust,"void SetPivotWithCounterAdjust(Vector2, bool = False)"
+RectTransform,SetSizeWithCurrentAnchors,"void SetSizeWithCurrentAnchors(RectTransform.Axis, float)"
+RectTransform,TryFitInsideCoplanarRectTransform,"RectTransform.FitResult TryFitInsideCoplanarRectTransform(RectTransform, bool = False)"
+RectTransform,anchorMax,Vector2 anchorMax { get; set; }
+RectTransform,anchorMin,Vector2 anchorMin { get; set; }
+RectTransform,anchoredPosition,Vector2 anchoredPosition { get; set; }
+RectTransform,anchoredPosition3D,Vector3 anchoredPosition3D { get; set; }
+RectTransform,drivenByObject,Object drivenByObject { get; }
+RectTransform,offsetMax,Vector2 offsetMax { get; set; }
+RectTransform,offsetMin,Vector2 offsetMin { get; set; }
+RectTransform,pivot,Vector2 pivot { get; set; }
+RectTransform,reapplyDrivenProperties,static event RectTransform.ReapplyDrivenProperties reapplyDrivenProperties
+RectTransform,rect,Rect rect { get; }
+RectTransform,sendChildDimensionsChange,bool sendChildDimensionsChange { get; set; }
+RectTransform,sizeDelta,Vector2 sizeDelta { get; set; }
+RectTransform.Axis,Horizontal,RectTransform.Axis.Horizontal = 0
+RectTransform.Axis,Vertical,RectTransform.Axis.Vertical = 1
+RectTransform.Edge,Bottom,RectTransform.Edge.Bottom = 3
+RectTransform.Edge,Left,RectTransform.Edge.Left = 0
+RectTransform.Edge,Right,RectTransform.Edge.Right = 1
+RectTransform.Edge,Top,RectTransform.Edge.Top = 2
+RectTransform.FitResult,AlreadyInside,RectTransform.FitResult.AlreadyInside = 1
+RectTransform.FitResult,FailInvalidSizeTarget,RectTransform.FitResult.FailInvalidSizeTarget = 5
+RectTransform.FitResult,FailLargerThanTarget,RectTransform.FitResult.FailLargerThanTarget = 2
+RectTransform.FitResult,FailNotCoplanar,RectTransform.FitResult.FailNotCoplanar = 3
+RectTransform.FitResult,FailZRotationMismatch,RectTransform.FitResult.FailZRotationMismatch = 4
+RectTransform.FitResult,Success,RectTransform.FitResult.Success = 0
+RectTransform.ReapplyDrivenProperties,delegate,void (RectTransform)
+RectTransformUtility,CalculateRelativeRectTransformBounds,"static Bounds CalculateRelativeRectTransformBounds(Transform, Transform) / static Bounds CalculateRelativeRectTransformBounds(Transform)"
+RectTransformUtility,FlipLayoutAxes,"static void FlipLayoutAxes(RectTransform, bool, bool)"
+RectTransformUtility,FlipLayoutOnAxis,"static void FlipLayoutOnAxis(RectTransform, int, bool, bool)"
+RectTransformUtility,GetScreenRect,"static Rect GetScreenRect(RectTransform) / static Rect GetScreenRect(RectTransform, Camera)"
+RectTransformUtility,PixelAdjustPoint,"static Vector2 PixelAdjustPoint(Vector2, Transform, Canvas)"
+RectTransformUtility,PixelAdjustRect,"static Rect PixelAdjustRect(RectTransform, Canvas)"
+RectTransformUtility,RectangleContainsScreenPoint,"static bool RectangleContainsScreenPoint(RectTransform, Vector2) / static bool RectangleContainsScreenPoint(RectTransform, Vector2, Camera) / static bool RectangleContainsScreenPoint(RectTransform, Vector2, Camera, Vector4)"
+RectTransformUtility,ScreenPointToLocalPointInRectangle,"static bool ScreenPointToLocalPointInRectangle(RectTransform, Vector2, Camera, out Vector2)"
+RectTransformUtility,ScreenPointToRay,"static Ray ScreenPointToRay(Camera, Vector2)"
+RectTransformUtility,ScreenPointToWorldPointInRectangle,"static bool ScreenPointToWorldPointInRectangle(RectTransform, Vector2, Camera, out Vector3)"
+RectTransformUtility,WorldToScreenPoint,"static Vector2 WorldToScreenPoint(Camera, Vector3)"
 ReflectionProbe,Reset,void Reset()
 ReflectionProbe,backgroundColor,Color backgroundColor { get; set; }
 ReflectionProbe,bakedTexture,Texture bakedTexture { get; set; }
@@ -1649,6 +1845,9 @@ ReflectionProbe,timeSlicingMode,ReflectionProbeTimeSlicingMode timeSlicingMode {
 RefreshRate,denominator,uint denominator
 RefreshRate,numerator,uint numerator
 RenderBuffer,GetNativeRenderBufferPtr,IntPtr GetNativeRenderBufferPtr()
+RenderMode,ScreenSpaceCamera,RenderMode.ScreenSpaceCamera = 1
+RenderMode,ScreenSpaceOverlay,RenderMode.ScreenSpaceOverlay = 0
+RenderMode,WorldSpace,RenderMode.WorldSpace = 2
 RenderParams,.ctor,RenderParams(Material)
 RenderParams,camera,Camera camera { get; set; }
 RenderParams,layer,int layer { get; set; }
@@ -2465,6 +2664,10 @@ Rendering.VisibleReflectionProbe,localToWorldMatrix,Matrix4x4 localToWorldMatrix
 Rendering.VisibleReflectionProbe,operators,"Equality(VisibleReflectionProbe, VisibleReflectionProbe) / Inequality(VisibleReflectionProbe, VisibleReflectionProbe)"
 Rendering.VisibleReflectionProbe,reflectionProbe,ReflectionProbe reflectionProbe { get; }
 Rendering.VisibleReflectionProbe,texture,Texture texture { get; }
+RequireComponent,.ctor,"RequireComponent(Type) / RequireComponent(Type, Type) / RequireComponent(Type, Type, Type)"
+RequireComponent,m_Type0,Type m_Type0
+RequireComponent,m_Type1,Type m_Type1
+RequireComponent,m_Type2,Type m_Type2
 Resolution,height,int height
 Resolution,refreshRateRatio,RefreshRate refreshRateRatio
 Resolution,width,int width
@@ -2614,6 +2817,37 @@ Space,Self,Space.Self = 1
 Space,World,Space.World = 0
 SpaceAttribute,.ctor,SpaceAttribute() / SpaceAttribute(float)
 SpaceAttribute,height,float height
+Sprite,Create,"static Sprite Create(Texture2D, Rect, Vector2, float = 100, uint = 0, SpriteMeshType = Tight) / static Sprite Create(Texture2D, Rect, Vector2, float, uint, SpriteMeshType, Vector4, bool = False)"
+Sprite,associatedAlphaSplitTexture,Texture2D associatedAlphaSplitTexture { get; }
+Sprite,border,Vector4 border { get; }
+Sprite,bounds,Bounds bounds { get; }
+Sprite,packed,bool packed { get; }
+Sprite,packingMode,SpritePackingMode packingMode { get; }
+Sprite,packingRotation,SpritePackingRotation packingRotation { get; }
+Sprite,pivot,Vector2 pivot { get; }
+Sprite,pixelsPerUnit,float pixelsPerUnit { get; }
+Sprite,rect,Rect rect { get; }
+Sprite,texture,Texture2D texture { get; }
+Sprite,textureRect,Rect textureRect { get; }
+Sprite,textureRectOffset,Vector2 textureRectOffset { get; }
+Sprite,triangles,ushort[] triangles { get; }
+Sprite,uv,Vector2[] uv { get; }
+Sprite,vertices,Vector2[] vertices { get; }
+SpriteMeshType,FullRect,SpriteMeshType.FullRect = 0
+SpriteMeshType,Tight,SpriteMeshType.Tight = 1
+SpritePackingMode,Rectangle,SpritePackingMode.Rectangle = 1
+SpritePackingMode,Tight,SpritePackingMode.Tight = 0
+SpritePackingRotation,Any,SpritePackingRotation.Any = 15
+SpritePackingRotation,FlipHorizontal,SpritePackingRotation.FlipHorizontal = 1
+SpritePackingRotation,FlipVertical,SpritePackingRotation.FlipVertical = 2
+SpritePackingRotation,None,SpritePackingRotation.None = 0
+SpritePackingRotation,Rotate180,SpritePackingRotation.Rotate180 = 3
+Sprites.DataUtility,GetInnerUV,static Vector4 GetInnerUV(Sprite)
+Sprites.DataUtility,GetMinSize,static Vector2 GetMinSize(Sprite)
+Sprites.DataUtility,GetOuterUV,static Vector4 GetOuterUV(Sprite)
+Sprites.DataUtility,GetPadding,static Vector4 GetPadding(Sprite)
+StandaloneRenderResize,Disabled,StandaloneRenderResize.Disabled = 1
+StandaloneRenderResize,Enabled,StandaloneRenderResize.Enabled = 0
 SystemInfo,SupportsRenderTextureFormat,static bool SupportsRenderTextureFormat(RenderTextureFormat)
 SystemInfo,graphicsDeviceType,static GraphicsDeviceType graphicsDeviceType { get; }
 SystemInfo,renderingThreadingMode,static RenderingThreadingMode renderingThreadingMode { get; }
@@ -2752,6 +2986,28 @@ Time,unscaledTime,static float unscaledTime { get; }
 Time,unscaledTimeAsDouble,static double unscaledTimeAsDouble { get; }
 TooltipAttribute,.ctor,TooltipAttribute(string)
 TooltipAttribute,tooltip,string tooltip
+Touch,altitudeAngle,float altitudeAngle
+Touch,azimuthAngle,float azimuthAngle
+Touch,deltaPosition,Vector2 deltaPosition
+Touch,deltaTime,float deltaTime
+Touch,fingerId,int fingerId
+Touch,maximumPossiblePressure,float maximumPossiblePressure
+Touch,phase,TouchPhase phase
+Touch,position,Vector2 position
+Touch,pressure,float pressure
+Touch,radius,float radius
+Touch,radiusVariance,float radiusVariance
+Touch,rawPosition,Vector2 rawPosition
+Touch,tapCount,int tapCount
+Touch,type,TouchType type
+TouchPhase,Began,TouchPhase.Began = 0
+TouchPhase,Canceled,TouchPhase.Canceled = 4
+TouchPhase,Ended,TouchPhase.Ended = 3
+TouchPhase,Moved,TouchPhase.Moved = 1
+TouchPhase,Stationary,TouchPhase.Stationary = 2
+TouchType,Direct,TouchType.Direct = 0
+TouchType,Indirect,TouchType.Indirect = 1
+TouchType,Stylus,TouchType.Stylus = 2
 Transform,DetachChildren,void DetachChildren()
 Transform,Find,Transform Find(string)
 Transform,GetChild,Transform GetChild(int)
@@ -2798,6 +3054,20 @@ TransparencySortMode,CustomAxis,TransparencySortMode.CustomAxis = 3
 TransparencySortMode,Default,TransparencySortMode.Default = 0
 TransparencySortMode,Orthographic,TransparencySortMode.Orthographic = 2
 TransparencySortMode,Perspective,TransparencySortMode.Perspective = 1
+UISystemProfilerApi,AddMarker,"static void AddMarker(string, Object)"
+UISystemProfilerApi,BeginSample,static void BeginSample(UISystemProfilerApi.SampleType)
+UISystemProfilerApi,EndSample,static void EndSample(UISystemProfilerApi.SampleType)
+UISystemProfilerApi.SampleType,Layout,UISystemProfilerApi.SampleType.Layout = 0
+UISystemProfilerApi.SampleType,Render,UISystemProfilerApi.SampleType.Render = 1
+UIVertex,color,Color32 color
+UIVertex,normal,Vector3 normal
+UIVertex,position,Vector3 position
+UIVertex,simpleVert,static UIVertex simpleVert
+UIVertex,tangent,Vector4 tangent
+UIVertex,uv0,Vector4 uv0
+UIVertex,uv1,Vector4 uv1
+UIVertex,uv2,Vector4 uv2
+UIVertex,uv3,Vector4 uv3
 VRTextureUsage,DeviceSpecific,VRTextureUsage.DeviceSpecific = 3
 VRTextureUsage,None,VRTextureUsage.None = 0
 VRTextureUsage,OneEye,VRTextureUsage.OneEye = 1

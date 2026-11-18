@@ -1,4 +1,5 @@
 #include <Support/ScriptHost.h>
+#include <Support/TestShaders.h>
 
 #include <Helix/Core/Logging/Log.h>
 #include <Helix/Engine/Application/Application.h>
@@ -998,4 +999,19 @@ HX_TEST(Scripts, CppApiCoroutinesGiveTheCSharpTrace)
     HX_CHECK(Expect({"C:FixedUpdate", "C:Update", "C:inner.end", "C:co.done", "C:LateUpdate"}));
     DestroyImmediate(g);
     HX_CHECK(CoroutineCount() == 0);
+}
+
+HX_TEST(Scripts, CSharpReachesRectTransformsSpritesAndHelixEvents)
+{
+    HX_REQUIRE(StartScripts());
+    // The canvases load the built-in UI shader: the folder's end destroys every object made.
+    engine::testing::TestShaderFolder shaders;
+    Calls().Clear();
+    GameObject* g = GameObject::Create("F");
+    g->AddComponent(CSharp("CsCanvasFoundation").type);
+    RunScriptPhase(ScriptMessage::Update);
+    HX_CHECK(Expect({"F:rect:True:180:80:-90:40:True:True", "F:offsets:10:-10:4", "F:sprite:32:16:6:0.25:0.75:4:6", "F:hide:True",
+                     "F:events:aTrue,bTrue,bFalse:1:Hide:True", "F:valid:True:True",
+                     "F:canvas:True:True:ScreenSpaceOverlay:1:2:0:0.25:True", "F:streams:4:6:6:10:UI/Default"}));
+    DestroyImmediate(g);
 }

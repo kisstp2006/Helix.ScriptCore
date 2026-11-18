@@ -24,6 +24,8 @@ namespace HelixEngine.Internal
             "Awake", "OnEnable", "Start", "FixedUpdate", "Update", "LateUpdate", "OnDisable", "OnDestroy", "OnApplicationFocus", "OnApplicationPause",
             "OnApplicationQuit", "OnTransformParentChanged", "OnTransformChildrenChanged", "OnBecameVisible", "OnBecameInvisible", "OnValidate", "Reset",
             "OnPreCull", "OnPreRender", "OnPostRender", "OnWillRenderObject", "OnRenderObject", "OnGui",
+            "OnRectTransformDimensionsChange", "OnBeforeTransformParentChanged", "OnCanvasGroupChanged", "OnCanvasHierarchyChanged",
+            "OnDidApplyAnimationProperties",
         };
         const int FocusMessage = 8, PauseMessage = 9;
 
@@ -45,6 +47,7 @@ namespace HelixEngine.Internal
         static readonly Dictionary<Type, ScriptType> s_ByType = new();
         static delegate* unmanaged[Cdecl]<int, byte*, int, void> s_Log;
         static delegate* unmanaged[Cdecl]<byte*, int, byte*, int, byte*, int, uint, uint, int, byte, uint*, byte*, uint> s_RegisterClass;
+        static delegate* unmanaged[Cdecl]<uint, uint*, int, void> s_SetRequired;
         static bool s_Started;
 
         static IntPtr Export(string name) => (IntPtr)Host.FindExport(name);
@@ -60,6 +63,7 @@ namespace HelixEngine.Internal
                 HxModule_HelixEngine.Load(Export);
                 s_Log = (delegate* unmanaged[Cdecl]<int, byte*, int, void>)Export("HxEngine_Log");
                 s_RegisterClass = (delegate* unmanaged[Cdecl]<byte*, int, byte*, int, byte*, int, uint, uint, int, byte, uint*, byte*, uint>)Export("HxEngineScripts_RegisterClass");
+                s_SetRequired = (delegate* unmanaged[Cdecl]<uint, uint*, int, void>)Export("HxEngineScripts_SetRequired");
                 SerializedFields.Start(Export);
                 CoroutineRunner.Start(Export);
                 AwaitableScheduler.Start(Export);
@@ -197,6 +201,22 @@ namespace HelixEngine.Internal
         }
 
         static readonly HashSet<Type> s_ModuleBindings = new();
+        static int s_LoadingBindings;
+        static readonly List<Action> s_AfterBindings = new();
+
+        /// <summary>Runs the setup once the bindings being loaded are (at once when none are): a library's module
+        /// initializer runs on the first call into its assembly, which is its own bindings' load, before they reach
+        /// the native side. Before the engine's C# side started it waits for the next bindings' load.</summary>
+        public static void WhenBindingsLoaded(Action setup)
+        {
+            if (setup == null)
+                return;
+            // Outside the engine (an assembly inspected by a tool) nothing reaches the native side: the setup waits.
+            if (s_LoadingBindings > 0 || !s_Started)
+                s_AfterBindings.Add(setup);
+            else
+                setup();
+        }
 
         // The C# bindings of game modules an assembly carries (Helix.Bindgen's HxModule_<module> classes, compiled from
         // the module's generated C#): each takes its module's function table once, so C# reaches the module's classes
@@ -208,6 +228,7 @@ namespace HelixEngine.Internal
                 if (t.Namespace != "Helix.Interop.Generated" || !t.Name.StartsWith("HxModule_", StringComparison.Ordinal) || !s_ModuleBindings.Add(t))
                     continue;
                 MethodInfo load = t.GetMethod("Load", BindingFlags.Public | BindingFlags.Static);
+                s_LoadingBindings++;
                 try
                 {
                     load?.Invoke(null, new object[] { (Func<string, IntPtr>)Export });
@@ -215,6 +236,25 @@ namespace HelixEngine.Internal
                 catch (TargetInvocationException e)
                 {
                     Log(4, $"The bindings of {t.Name.Substring(9)} in {assembly.GetName().Name} did not load: {e.InnerException?.Message}");
+                }
+                finally
+                {
+                    s_LoadingBindings--;
+                }
+            }
+            if (s_LoadingBindings > 0 || s_AfterBindings.Count == 0)
+                return;
+            Action[] setups = s_AfterBindings.ToArray();
+            s_AfterBindings.Clear();
+            foreach (Action setup in setups)
+            {
+                try
+                {
+                    setup();
+                }
+                catch (Exception e)
+                {
+                    Log(4, $"{assembly.GetName().Name}: {e}");
                 }
             }
         }
@@ -263,6 +303,7 @@ namespace HelixEngine.Internal
             }
             st.Index = index;
             st.NativeDerived = derived != 0;
+            SetRequired(t, index);
             Types.Register(t, typeId, generated: false);
             s_ByIndex[index] = st;
             if (index >= s_Indexed.Length)
@@ -270,6 +311,27 @@ namespace HelixEngine.Internal
             s_Indexed[index] = st;
             s_ByType[t] = st;
             return st;
+        }
+
+        // RequireComponent of the class and its C# bases: the types' ids for the engine.
+        static void SetRequired(Type t, uint index)
+        {
+            if (s_SetRequired == null)
+                return;
+            var ids = new List<uint>();
+            foreach (RequireComponent r in t.GetCustomAttributes<RequireComponent>(true))
+                foreach (Type required in new[] { r.m_Type0, r.m_Type1, r.m_Type2 })
+                    if (required != null)
+                    {
+                        uint id = typeof(Object).IsAssignableFrom(required) ? Types.OfObject(required) : 0;
+                        if (id != 0 && !ids.Contains(id))
+                            ids.Add(id);
+                    }
+            if (ids.Count == 0)
+                return;
+            uint[] array = ids.ToArray();
+            fixed (uint* p = array)
+                s_SetRequired(index, p, array.Length);
         }
 
         // A message: the nearest declaration in the script class or its C# bases (any access, empty ones too).
