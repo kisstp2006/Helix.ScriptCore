@@ -169,34 +169,18 @@ endif()
 
 # The script tests once more on the coreclr starter (the desktop's shared framework through coreclr_initialize, as
 # Android hosts it).
-if(TEST helix_scriptcore_tests AND (HELIX_PLATFORM STREQUAL "windows" OR HELIX_PLATFORM STREQUAL "linux"))
-    add_test(NAME helix_scriptcore_tests_coreclr COMMAND helix_scriptcore_tests)
-    set_tests_properties(helix_scriptcore_tests_coreclr PROPERTIES ENVIRONMENT "HELIX_DOTNET_RUNTIME=coreclr")
-endif()
-
-# The rendering tests once more with the persistent blocks, and with a render thread (every golden image the same).
 if(TARGET helix_scriptcore_tests AND (HELIX_PLATFORM STREQUAL "windows" OR HELIX_PLATFORM STREQUAL "linux"))
-    add_test(NAME helix_scriptcore_tests_batching COMMAND helix_scriptcore_tests)
-    set_tests_properties(helix_scriptcore_tests_batching PROPERTIES ENVIRONMENT "HELIX_RENDER_BATCHING=1")
-    add_test(NAME helix_scriptcore_tests_render_thread COMMAND helix_scriptcore_tests)
-    set_tests_properties(helix_scriptcore_tests_render_thread PROPERTIES ENVIRONMENT "HELIX_RENDER_BATCHING=1;HELIX_RENDER_THREAD=1")
+    helix_add_test_run(helix_scriptcore_tests_coreclr PROGRAM helix_scriptcore_tests ENVIRONMENT HELIX_DOTNET_RUNTIME=coreclr)
+    # The rendering tests once more with the persistent blocks, and with a render thread (every golden image the same).
+    helix_add_test_run(helix_scriptcore_tests_batching PROGRAM helix_scriptcore_tests ENVIRONMENT HELIX_RENDER_BATCHING=1)
+    helix_add_test_run(helix_scriptcore_tests_render_thread PROGRAM helix_scriptcore_tests ENVIRONMENT HELIX_RENDER_BATCHING=1 HELIX_RENDER_THREAD=1)
 endif()
 
 # The .NET runtime is never unloaded: LeakSanitizer is told about its modules (as in Helix.Scripting's tests).
-if(TEST helix_scriptcore_tests AND HELIX_ENABLE_ASAN AND HELIX_PLATFORM STREQUAL "linux")
+if(TARGET helix_scriptcore_tests AND HELIX_ENABLE_ASAN AND HELIX_PLATFORM STREQUAL "linux")
     helix_dependency_dir(scripting_dir Scripting)
-    set_tests_properties(helix_scriptcore_tests PROPERTIES
-                         ENVIRONMENT "LSAN_OPTIONS=suppressions=${scripting_dir}/Tests/Support/LeakSuppressions.txt")
-    # The run on the coreclr starter keeps its starter and takes the suppressions too.
-    if(TEST helix_scriptcore_tests_coreclr)
-        set_tests_properties(helix_scriptcore_tests_coreclr PROPERTIES ENVIRONMENT "HELIX_DOTNET_RUNTIME=coreclr;LSAN_OPTIONS=suppressions=${scripting_dir}/Tests/Support/LeakSuppressions.txt")
-    endif()
-    # The rendering runs keep their settings and take the suppressions too.
-    if(TEST helix_scriptcore_tests_batching)
-        set_tests_properties(helix_scriptcore_tests_batching PROPERTIES
-                             ENVIRONMENT "HELIX_RENDER_BATCHING=1;LSAN_OPTIONS=suppressions=${scripting_dir}/Tests/Support/LeakSuppressions.txt")
-        set_tests_properties(helix_scriptcore_tests_render_thread PROPERTIES
-                             ENVIRONMENT "HELIX_RENDER_BATCHING=1;HELIX_RENDER_THREAD=1;LSAN_OPTIONS=suppressions=${scripting_dir}/Tests/Support/LeakSuppressions.txt")
-    endif()
+    foreach(run helix_scriptcore_tests helix_scriptcore_tests_coreclr helix_scriptcore_tests_batching helix_scriptcore_tests_render_thread)
+        helix_add_test_run_environment(${run} "LSAN_OPTIONS=suppressions=${scripting_dir}/Tests/Support/LeakSuppressions.txt")
+    endforeach()
 endif()
 
